@@ -1,0 +1,61 @@
+# kubernetes-ssh-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsm-msba-${USER}  # Will be replaced with host username
+  labels:
+    app: ssh-server
+    user: ${USER}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ssh-server
+      user: ${USER}
+  template:
+    metadata:
+      annotations:
+        NB_UID: "${USER_UID}"  # Will be replaced with host UID
+        NB_GID: "${USER_GID}"  # Will be replaced with host GID
+      labels:
+        app: ssh-server
+        user: ${USER}
+    spec:
+      securityContext:
+        runAsUser: 0
+        fsGroup: ${USER_GID}
+      containers:
+      - name: ssh-container
+        image: vnijs/rsm-msba-k8s-intel:latest
+        env:
+        - name: NB_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['NB_UID']
+        - name: NB_GID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['NB_GID']
+        ports:
+        - containerPort: 22
+        volumeMounts:
+        - name: home-volume
+          mountPath: /home/jovyan
+      volumes:
+      - name: home-volume
+        hostPath:
+          path: /home/${USER}  # Will be replaced with actual home directory
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsm-msba-ssh-${USER}  # Will be replaced with actual username
+spec:
+  type: NodePort
+  selector:
+    app: ssh-server
+    user: ${USER}
+  ports:
+  - protocol: TCP
+    port: 22
