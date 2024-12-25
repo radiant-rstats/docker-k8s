@@ -16,10 +16,23 @@ build () {
   {
     if [[ "$1" == "NO" ]]; then
       # build without cache
-      docker buildx build -f "${LABEL}/Dockerfile" --progress=plain --load --platform ${ARCH} --build-arg DOCKERHUB_VERSION_UPDATE=${DOCKERHUB_VERSION} --no-cache --tag $DOCKERHUB_USERNAME/${LABEL}:latest --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION . > build.log 2>&1
+      docker buildx build -f "${LABEL}/Dockerfile" \
+        --progress=plain \
+        --load \
+        --platform ${ARCH} \
+        --build-arg DOCKERHUB_VERSION="${DOCKERHUB_VERSION}" \
+        --no-cache \
+        --tag $DOCKERHUB_USERNAME/${LABEL}:latest \
+        --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION . 
     else
       # build with cache
-      docker buildx build -f "${LABEL}/Dockerfile" --progress=plain --load --platform ${ARCH} --tag $DOCKERHUB_USERNAME/${LABEL}:latest --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION . # > build.log 2>&1
+      docker buildx build -f "${LABEL}/Dockerfile" \
+        --progress=plain \
+        --load \
+        --platform ${ARCH} \
+        --build-arg DOCKERHUB_VERSION="${DOCKERHUB_VERSION}" \
+        --tag $DOCKERHUB_USERNAME/${LABEL}:latest \
+        --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION .
     fi
   } || {
     echo "-----------------------------------------------------------------------"

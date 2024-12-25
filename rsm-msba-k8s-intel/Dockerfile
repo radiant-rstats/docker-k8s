@@ -3,8 +3,11 @@
 FROM quay.io/jupyter/pyspark-notebook@sha256:5f93a810a742783edbccb394c51baa5d3a653b64b333880146d7c8adc8ea7ad7 
 # for the arm version use: sha256:b5f757d298647b15ad3f72f893df9895b9dfa4421594c1b2b00e83855cdb3b87
 
-ARG DOCKERHUB_VERSION_UPDATE
-ENV DOCKERHUB_VERSION=$DOCKERHUB_VERSION_UPDATE
+USER root
+
+# Define build argument and set it as an environment variable in one step
+ARG DOCKERHUB_VERSION
+ENV DOCKERHUB_VERSION=${DOCKERHUB_VERSION}
 ENV DOCKERHUB_NAME="rsm-msba-k8s-intel"
 
 # python env variables
