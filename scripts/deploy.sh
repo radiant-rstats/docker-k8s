@@ -14,5 +14,8 @@ microk8s kubectl describe pod $pod_name
 
 microk8s kubectl exec -it $pod_name -- openssl version
 microk8s kubectl exec -it $pod_name -- ls -la /home/jovyan
-microk8s kubectl exec -it $pod_name -- /bin/bash -c "cd /home/jovyan && su jovyan && exec /bin/bash"
+microk8s kubectl exec -it $pod_name -- /bin/zsh -c "cd /home/jovyan && su jovyan && exec /bin/zsh"
+
+# can you connect to the pod using ssh?
+ssh k8s-pod
 

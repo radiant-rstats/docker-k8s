@@ -9,3 +9,8 @@ ssh-keygen -A
 # Configure SSH
 echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 echo "UsePAM yes" >> /etc/ssh/sshd_config
+
+echo "Cleaning up after installation..."
+apt-get clean
+apt-get autoremove -y
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
