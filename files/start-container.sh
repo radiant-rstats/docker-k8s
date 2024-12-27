@@ -46,20 +46,8 @@ echo "Starting PostgreSQL service..."
 sudo -u postgres /usr/lib/postgresql/${POSTGRES_VERSION}/bin/postgres \
     -c config_file=/etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf &
 
-# echo "Starting JupyterLab..."
-# sudo -u ${NB_USER} jupyter lab \
-#     --ip=0.0.0.0 \
-#     --port=8989 \
-#     --allow-root \
-#     --NotebookApp.token='' \
-#     >> /var/log/jupyter/jupyterlab.log 2>&1 &
-
 echo "All services started. Tailing logs..."
-# Start tailing SSHD logs immediately
-# tail -f /var/log/jupyter/jupyterlab.log /var/log/sshd/sshd.log &
 tail -f /var/log/sshd/sshd.log &
-
-# Give postgres a moment to create its log file, then tail it
 sleep 2
 sudo -u postgres tail -f /var/log/postgresql/postgresql-*.log 2>/dev/null &
 

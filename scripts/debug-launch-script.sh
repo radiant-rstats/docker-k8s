@@ -25,8 +25,17 @@ NB_USER=jovyan
 }
 
 docker run --name ${LABEL} --net ${NETWORK} \
-    -p 127.0.0.1:2222:22 -p 127.0.0.1:8989:8989 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 \
+    -p 127.0.0.1:2222:22 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 -p 127.0.0.1:8000:8000 \
     -e TZ=${TIMEZONE} \
     -v "${HOMEDIR}":/home/${NB_USER} $MNT \
     -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
     ${IMAGE}:${IMAGE_VERSION}
+
+# docker run -d --name ${LABEL} --net ${NETWORK} \
+#     -p 127.0.0.1:2222:22 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 -p 127.0.0.1:8000:8000 \
+#     -e TZ=${TIMEZONE} \
+#     -v "${HOMEDIR}":/home/${NB_USER} $MNT \
+#     -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
+#     ${IMAGE}:${IMAGE_VERSION}
+
+# docker exec -it ${LABEL} /bin/zsh
