@@ -10,7 +10,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ssh-server
+      app: rsm-msba
       user: ${USER}
   template:
     metadata:
@@ -18,7 +18,7 @@ spec:
         NB_UID: "${USER_UID}"  # Will be replaced with host UID
         NB_GID: "${USER_GID}"  # Will be replaced with host GID
       labels:
-        app: ssh-server
+        app: rsm-msba
         user: ${USER}
     spec:
       securityContext:
@@ -29,7 +29,7 @@ spec:
         image: vnijs/rsm-msba-k8s-intel:latest
         resources:
           requests:
-            memory: "16i"
+            memory: "16Gi"
             cpu: "2"
           limits:
             memory: "36Gi"
