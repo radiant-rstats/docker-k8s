@@ -1,11 +1,34 @@
 #!/bin/bash
 
+## create lock file path in user's home directory
+LOCK_FILE="${HOME}/.rsm-msba-launch.lock"
+
+## check if lock file exists
+if [ -f "${LOCK_FILE}" ]; then
+  echo "---------------------------------------------------------------------------"
+  echo "A launch script may already be running. To close the new session and"
+  echo "continue with the previous session press q + enter. To continue with"
+  echo "the new session and stop the previous session, press enter"
+  echo "---------------------------------------------------------------------------"
+  read contd
+  if [ "${contd}" == "q" ]; then
+    exit 1
+  fi
+  rm -f "${LOCK_FILE}"
+fi
+
+## create lock file
+touch "${LOCK_FILE}"
+
+## ensure lock file is removed when script exits
+trap 'rm -f "${LOCK_FILE}"; exit' INT TERM EXIT
+
 ## set ARG_HOME to a directory of your choosing if you do NOT
 ## want to to map the docker home directory to your local
 ## home directory
 
 ## use the command below on to launch the container:
-## ~/git/docker/launch-rsm-msba-k8s-arm.sh -v ~
+## ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh -v ~
 
 ## to map the directory where the launch script is located to
 ## the docker home directory call the script_home function
@@ -70,22 +93,6 @@ fi
 
 BOUNDARY="---------------------------------------------------------------------------"
 
-## check the return code - if curl can connect something is already running
-curl -S localhost:8989 2>/dev/null
-ret_code=$?
-if [ "$ret_code" == 0 ]; then
-  echo $BOUNDARY
-  echo "A launch script may already be running. To close the new session and"
-  echo "continue with the previous session press q + enter. To continue with"
-  echo "the new session and stop the previous session, press enter"
-  echo $BOUNDARY
-  read contd
-  if [ "${contd}" == "q" ]; then
-    exit 1
-  fi
-fi
-
-## script to start Radiant, Rstudio, and JupyterLab
 if [ "$ARG_SHOW" != "show" ]; then
   clear
 fi
@@ -98,7 +105,7 @@ if [ "${has_docker}" == "" ]; then
     if [[ "$is_wsl" != "" ]]; then
       echo "https://hub.docker.com/editions/community/docker-ce-desktop-windows"
     else
-      echo "https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04"
+      echo "https://docs.docker.com/engine/install/ubuntu/"
     fi
   elif [[ "$ostype" == "Darwin" ]]; then
     echo "https://hub.docker.com/editions/community/docker-ce-desktop-mac"
@@ -299,26 +306,6 @@ else
       fi
     fi
 
-    if [ -d "${HOMEDIR}/.rstudio" ] && [ ! -d "${ARG_HOME}/.rstudio" ]; then
-      echo $BOUNDARY
-      echo "Copying Rstudio and JupyterLab settings to:"
-      echo "${ARG_HOME}"
-      echo $BOUNDARY
-
-      {
-        which rsync 2>/dev/null
-        HD="$(echo "$HOMEDIR" | sed -E "s|^([A-z]):|/\1|")"
-        AH="$(echo "$ARG_HOME" | sed -E "s|^([A-z]):|/\1|")"
-        rsync -a "${HD}/.rstudio" "${AH}/" --exclude sessions --exclude projects --exclude projects_settings
-      } ||
-      {
-        cp -r "${HOMEDIR}/.rstudio" "${ARG_HOME}/.rstudio"
-        rm -rf "${ARG_HOME}/.rstudio/sessions"
-        rm -rf "${ARG_HOME}/.rstudio/projects"
-        rm -rf "${ARG_HOME}/.rstudio/projects_settings"
-      }
-
-    fi
     if [ -d "${HOMEDIR}/.rsm-msba" ] && [ ! -d "${ARG_HOME}/.rsm-msba" ]; then
 
       {
@@ -383,7 +370,7 @@ else
   fi
   {
     docker run --name ${LABEL} --net ${NETWORK} -d \
-      -p 127.0.0.1:2222:22 -p 127.0.0.1:8989:8989 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 -p 127.0.0.1:8501:8501 -p 127.0.0.1:8000:8000 \
+      -p 127.0.0.1:2222:22 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 -p 127.0.0.1:8000:8000 \
       -e TZ=${TIMEZONE} \
       -v "${HOMEDIR}":/home/${NB_USER} $MNT \
       -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
@@ -397,28 +384,6 @@ else
     read
   }
 
-  ## make sure abend is set correctly
-  ## https://community.rstudio.com/t/restarting-rstudio-server-in-docker-avoid-error-message/10349/2
-  rstudio_abend () {
-    if [ -d "${HOMEDIR}/.rstudio/sessions/active" ]; then
-      RSTUDIO_STATE_FILES=$(find "${HOMEDIR}/.rstudio/sessions/active/*/session-persistent-state" -type f 2>/dev/null)
-      if [ "${RSTUDIO_STATE_FILES}" != "" ]; then
-        sed_fun 's/abend="1"/abend="0"/' ${RSTUDIO_STATE_FILES}
-      fi
-    fi
-    if [ -d "${HOMEDIR}/.rstudio/monitored/user-settings" ]; then
-      touch "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-      sed_fun '/^alwaysSaveHistory="[0-1]"/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-      sed_fun '/^loadRData="[0-1]"/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-      sed_fun '/^saveAction=/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-      echo 'alwaysSaveHistory="1"' >> "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-      echo 'loadRData="0"' >> "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-      echo 'saveAction="0"' >> "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-      sed_fun '/^$/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    fi
-  }
-  rstudio_abend
-
   show_service () {
     echo $BOUNDARY
     echo "Starting the ${LABEL} computing environment on ${ostype} ${chip}"
@@ -427,22 +392,20 @@ else
     echo "Base dir. : ${HOMEDIR}"
     echo "Cont. name: ${LABEL}"
     echo $BOUNDARY
-    echo "Press (1) to show Jupyter Lab, followed by [ENTER]:"
-    echo "Press (2) to show Rstudio, followed by [ENTER]:"
-    echo "Press (3) to show Radiant, followed by [ENTER]:"
-    echo "Press (4) to show GitGadget, followed by [ENTER]:"
-    echo "Press (5) to show a (ZSH) terminal, followed by [ENTER]:"
-    echo "Press (6) to update the ${LABEL} container, followed by [ENTER]:"
-    echo "Press (7) to update the launch script, followed by [ENTER]:"
-    echo "Press (8) to clear Rstudio sessions and packages, followed by [ENTER]:"
-    echo "Press (9) to clear local Python packages, followed by [ENTER]:"
-    echo "Press (10) to start a Selenium container, followed by [ENTER]:"
+    echo "Press (1) to show a (ZSH) terminal, followed by [ENTER]:"
+    echo "Press (2) to show Radiant, followed by [ENTER]:"
+    echo "Press (3) to show GitGadget, followed by [ENTER]:"
+    echo "Press (4) to update the ${LABEL} container, followed by [ENTER]:"
+    echo "Press (5) to update the launch script, followed by [ENTER]:"
+    echo "Press (6) to clear local R packages, followed by [ENTER]:"
+    echo "Press (7) to clear local Python packages, followed by [ENTER]:"
+    echo "Press (8) to start a Selenium container, followed by [ENTER]:"
     echo "Press (h) to show help in the terminal and browser, followed by [ENTER]:"
     echo "Press (c) to commit changes, followed by [ENTER]:"
     echo "Press (q) to stop the docker process, followed by [ENTER]:"
     echo $BOUNDARY
-    echo "Note: To start, e.g., Jupyter on a different port type 1 8991 [ENTER]"
-    echo "Note: To start a specific container version type, e.g., 6 ${DOCKERHUB_VERSION} [ENTER]"
+    echo "Note: To start, e.g., Radiant on a different port type 2 8182 [ENTER]"
+    echo "Note: To start a specific container version type, e.g., 4 ${DOCKERHUB_VERSION} [ENTER]"
     echo "Note: To commit changes to the container type, e.g., c myversion [ENTER]"
     echo $BOUNDARY
     read menu_exec menu_arg
@@ -458,40 +421,27 @@ else
     if [ -z "${menu_exec}" ]; then
       echo "Invalid entry. Resetting launch menu ..."
     elif [ ${menu_exec} == 1 ]; then
+      if [ "$ARG_SHOW" != "show" ]; then
+        clear
+      fi
       if [ "${menu_arg}" == "" ]; then
-        echo "Starting Jupyter Lab in the default browser on localhost:8989/lab"
-        sleep 2
-        open_browser http://localhost:8989/lab
+        zsh_lab="${LABEL}"
       else
-        echo "Starting Jupyter Lab in the default browser on localhost:${menu_arg}/lab"
-        docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
-          -p 127.0.0.1:${menu_arg}:8989 \
-          -e TZ=${TIMEZONE} \
-          -v "${HOMEDIR}":/home/${NB_USER} $MNT \
-          -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
-          ${IMAGE}:${IMAGE_VERSION}
-        sleep 3
-        open_browser http://localhost:${menu_arg}/lab
+        zsh_lab="${LABEL}-${menu_arg}"
+      fi
+
+      echo $BOUNDARY
+      echo "ZSH terminal for container ${zsh_lab} of ${IMAGE}:${IMAGE_VERSION}"
+      echo "Type 'exit' to return to the launch menu"
+      echo $BOUNDARY
+      echo ""
+      ## git bash has issues with tty
+      if [[ "$ostype" == "Windows" ]]; then
+        winpty docker exec -it --user ${NB_USER} ${zsh_lab} sh
+      else
+        docker exec -it --user ${NB_USER} ${zsh_lab} /bin/zsh
       fi
     elif [ ${menu_exec} == 2 ]; then
-      if [ "${menu_arg}" == "" ]; then
-        echo "Starting Rstudio in the default browser on localhost:8989/rstudio"
-        open_browser http://localhost:8989/rstudio
-      else
-        echo "Starting Rstudio in the default browser on localhost:${menu_arg}/rstudio"
-        { 
-          docker run --name "${LABEL}_${menu_arg}" --net ${NETWORK} -d \
-            -p 127.0.0.1:${menu_arg}:8989 \
-            -e TZ=${TIMEZONE} \
-            -v "${HOMEDIR}":/home/${NB_USER} $MNT \
-            -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
-            ${IMAGE}:${IMAGE_VERSION} 2>/dev/null
-          rstudio_abend
-          sleep 4
-        }
-        open_browser http://localhost:${menu_arg}/rstudio
-      fi
-    elif [ ${menu_exec} == 3 ]; then
       RPROF="${HOMEDIR}/.Rprofile"
       touch "${RPROF}"
       if ! grep -q 'radiant.report = TRUE' ${RPROF} || ! grep -q 'radiant.shinyFiles = TRUE' ${RPROF}; then
@@ -523,8 +473,8 @@ else
       fi
       if [ "${menu_arg}" == "" ]; then
         echo "Starting Radiant in the default browser on port 8181"
-        docker exec -d ${LABEL} /usr/local/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=8181, run=FALSE)"
-        sleep 4
+        docker exec -d ${LABEL} /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=8181, run=FALSE)"
+        sleep 2
         open_browser http://localhost:8181
       else
         echo "Starting Radiant in the default browser on port ${menu_arg}"
@@ -533,14 +483,14 @@ else
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}
-        docker exec -d "${LABEL}-${menu_arg}" /usr/local/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=8181, run=FALSE)"
-        sleep 4
-        open_browser http://localhost:${menu_arg} 
+        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=8181, run=FALSE)"
+        sleep 2
+        open_browser http://localhost:${menu_arg}
       fi
-    elif [ ${menu_exec} == 4 ]; then
+    elif [ ${menu_exec} == 3 ]; then
       if [ "${menu_arg}" == "" ]; then
         echo "Starting GitGadget in the default browser on port 8282"
-        docker exec -d ${LABEL} /usr/local/bin/R -e "gitgadget:::gitgadget(host='0.0.0.0', port=8282, launch.browser=FALSE)"
+        docker exec -d ${LABEL} /opt/conda/bin/R -e "gitgadget:::gitgadget(host='0.0.0.0', port=8282, launch.browser=FALSE)"
         sleep 2
         open_browser http://localhost:8282
       else
@@ -550,32 +500,11 @@ else
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}
-        docker exec -d "${LABEL}-${menu_arg}" /usr/local/bin/R -e "gitgadget:::gitgadget(host='0.0.0.0', port=${menu_arg}, launch.browser=FALSE)"
+        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "gitgadget:::gitgadget(host='0.0.0.0', port=${menu_arg}, launch.browser=FALSE)"
         sleep 2
-        open_browser http://localhost:${menu_arg} 
+        open_browser http://localhost:${menu_arg}
       fi
-    elif [ ${menu_exec} == 5 ]; then
-      if [ "$ARG_SHOW" != "show" ]; then
-        clear
-      fi
-      if [ "${menu_arg}" == "" ]; then
-        zsh_lab="${LABEL}"
-      else
-        zsh_lab="${LABEL}-${menu_arg}"
-      fi
-
-      echo $BOUNDARY
-      echo "ZSH terminal for container ${zsh_lab} of ${IMAGE}:${IMAGE_VERSION}"
-      echo "Type 'exit' to return to the launch menu"
-      echo $BOUNDARY
-      echo ""
-      ## git bash has issues with tty
-      if [[ "$ostype" == "Windows" ]]; then
-        winpty docker exec -it --user ${NB_USER} ${zsh_lab} sh
-      else
-        docker exec -it --user ${NB_USER} ${zsh_lab} /bin/zsh
-      fi
-    elif [ ${menu_exec} == 6 ]; then
+    elif [ ${menu_exec} == 4 ]; then
       echo $BOUNDARY
       echo "Updating the ${LABEL} computing environment"
       clean_rsm_containers
@@ -601,7 +530,7 @@ else
       fi
       $CMD
       exit 1
-    elif [ ${menu_exec} == 7 ]; then
+    elif [ ${menu_exec} == 5 ]; then
       echo "Updating ${IMAGE} launch script"
       clean_rsm_containers
       if [ -d "${HOMEDIR}/Desktop" ]; then
@@ -610,11 +539,11 @@ else
         SCRIPT_DOWNLOAD="${HOMEDIR}"
       fi
       if [ $ostype == "macOS" ]; then
-        cd ~/git/docker 2>/dev/null;
+        cd ~/git/docker-k8s 2>/dev/null;
         git pull 2>/dev/null;
         cd -
-        chmod 755 ~/git/docker/launch-${LABEL}.sh 2>/dev/null;
-        curl https://raw.githubusercontent.com/radiant-rstats/docker/master/launch-${LABEL}.sh -o "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
+        chmod 755 ~/git/docker-k8s/launch-${LABEL}.sh 2>/dev/null;
+        curl https://raw.githubusercontent.com/radiant-rstats/docker-k8s/main/launch-${LABEL}.sh -o "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
         chmod 755 "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
         "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
         exit 1
@@ -622,19 +551,7 @@ else
         echo "launch-rsm-msba-k8s-arm.sh used on $ostype. This script is only intended for macOS systems with an ARM chip (e.g., M3)"
         sleep 5
       fi
-    elif [ ${menu_exec} == 8 ]; then
-      echo $BOUNDARY
-      echo "Clean up Rstudio sessions (y/n)?"
-      echo $BOUNDARY
-      read cleanup
-
-      if [ "${cleanup}" == "y" ]; then
-        echo "Cleaning up Rstudio sessions and settings"
-        rm -rf "${HOMEDIR}/.rstudio/sessions"
-        rm -rf "${HOMEDIR}/.rstudio/projects"
-        rm -rf "${HOMEDIR}/.rstudio/projects_settings"
-      fi
-
+    elif [ ${menu_exec} == 6 ]; then
       echo $BOUNDARY
       echo "Remove locally installed R packages (y/n)?"
       echo $BOUNDARY
@@ -649,7 +566,7 @@ else
           mkdir "${i}"
         done
       fi
-    elif [ ${menu_exec} == 9 ]; then
+    elif [ ${menu_exec} == 7 ]; then
       echo $BOUNDARY
       echo "Remove locally installed Pyton packages (y/n)?"
       echo $BOUNDARY
@@ -665,7 +582,7 @@ else
           done
         fi
       fi
-    elif [ "${menu_exec}" == 10 ]; then
+    elif [ "${menu_exec}" == 8 ]; then
       if [ "${menu_arg}" != "" ]; then
         selenium_port=${menu_arg}
       else 
@@ -694,22 +611,22 @@ else
       echo ""
       if [[ "$ostype" == "macOS" ]]; then
         if [[ "$archtype" == "arm64" ]]; then
-          open_browser https://github.com/radiant-rstats/docker/blob/master/install/rsm-msba-macos-arm.md
+          open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-macos-arm.md
         else
-          open_browser https://github.com/radiant-rstats/docker/blob/master/install/rsm-msba-macos.md
+          open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-macos.md
         fi
       elif [[ "$ostype" == "Windows" ]]; then
-        open_browser https://github.com/radiant-rstats/docker/blob/master/install/rsm-msba-windows-1909.md
+        open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-windows-1909.md
       elif [[ "$ostype" == "WSL2" ]]; then
         if [[ "$archtype" == "aarch64" ]]; then
-          open_browser https://github.com/radiant-rstats/docker/blob/master/install/rsm-msba-windows-arm.md
+          open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-windows-arm.md
         else
-          open_browser https://github.com/radiant-rstats/docker/blob/master/install/rsm-msba-windows.md
+          open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-windows.md
         fi
       elif [[ "$ostype" == "ChromeOS" ]]; then
-        open_browser https://github.com/radiant-rstats/docker/blob/master/install/rsm-msba-chromeos.md
+        open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-chromeos.md
       else
-        open_browser https://github.com/radiant-rstats/docker/blob/master/install/rsm-msba-linux.md
+        open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-linux.md
       fi
       $0 --help
       echo "Press any key to continue"
@@ -785,19 +702,6 @@ else
       echo $BOUNDARY
       echo "Stopping the ${LABEL} computing environment and cleaning up as needed"
       echo $BOUNDARY
-
-      suspend_sessions () {
-        active_session=$(docker exec -t $1 rstudio-server active-sessions | awk '/[0-9]+/ { print $1}' 2>/dev/null)
-        if [ "${active_session}" != "" ] && [ "${active_session}" != "OCI" ]; then
-          echo "Stopping Rstudio sessions ..."
-          docker exec -t $1 rstudio-server suspend-session ${active_session} 2>/dev/null
-        fi
-      }
-
-      running=$(docker ps -q)
-      for index in ${running}; do
-        suspend_sessions $index
-      done
 
       selenium_containers=$(docker ps -a --format {{.Names}} | grep 'selenium' | tr '\n' ' ')
       if [ "${selenium_containers}" != "" ]; then

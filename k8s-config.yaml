@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: rsm-msba-${USER}  # Will be replaced with host username
   labels:
-    app: ssh-server
+    app: rsm-msba
     user: ${USER}
 spec:
   replicas: 1
@@ -25,8 +25,15 @@ spec:
         runAsUser: 0
         fsGroup: ${USER_GID}
       containers:
-      - name: ssh-container
+      - name: rsm-msba-container
         image: vnijs/rsm-msba-k8s-intel:latest
+        resources:
+          requests:
+            memory: "16i"
+            cpu: "2"
+          limits:
+            memory: "36Gi"
+            cpu: "4"
         env:
         - name: NB_UID
           valueFrom:
@@ -54,7 +61,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: ssh-server
+    app: rsm-msba
     user: ${USER}
   ports:
   - protocol: TCP
