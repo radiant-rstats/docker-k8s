@@ -114,8 +114,6 @@ source $ZSH/oh-my-zsh.sh
 alias c="clear"
 alias r="radian"
 alias pgweb="/usr/local/bin/pgweb0 --bind=0.0.0.0 --listen=8000"
-alias radiant='R -e "radiant.data:::launch(package=\"radiant\", host=\"0.0.0.0\", port=8181, run=FALSE)"'
-alias gitgadget='R -e "gitgadget:::gitgadget(host=\"0.0.0.0\", port=8282, launch.browser=FALSE)"'
 
 alias kh="k -h"
 alias ks="k -hS"
