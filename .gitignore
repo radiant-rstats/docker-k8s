@@ -2,4 +2,6 @@
 .ipynb_checkpoints
 .mypy_cache
 .vscode
+.bash_history
 build.log
+build-full.log

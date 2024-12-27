@@ -1,8 +1,11 @@
 IMAGE_VERSION="latest"
 NB_USER="jovyan"
 ID="vnijs"
-LABEL="rsm-msba-k8s-arm"
-LABEL="rsm-msba-k8s-intel"
+if [ "$(uname -m)" = "arm64" ]; then
+    LABEL="rsm-msba-k8s-arm"
+else
+    LABEL="rsm-msba-k8s-intel"
+fi
 NETWORK="rsm-docker"
 IMAGE=${ID}/${LABEL}
 HOMEDIR=/Users/vnijs

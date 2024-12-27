@@ -8,11 +8,11 @@ if [ ! -z "$NB_UID" ] && [ ! -z "$NB_GID" ]; then
     # Create new group first if it doesn't exist
     echo "Creating group ${NB_GROUP:-${NB_USER}} with GID: $NB_GID"
     sudo groupadd -g $NB_GID -o ${NB_GROUP:-${NB_USER}} || true
-    
+
     # Modify user's primary group and UID
     echo "Setting ${NB_USER} UID to: $NB_UID and GID to: $NB_GID"
     sudo usermod -u $NB_UID -g $NB_GID ${NB_USER}
-    
+
     # Only set ownership of essential directories
     echo "Setting ownership of essential directories..."
     sudo chown $NB_UID:$NB_GID /home/${NB_USER}
@@ -31,10 +31,7 @@ sudo chown -R ${NB_USER}:${NB_GID:-users} /tmp/jupyter
 
 # Create and set permissions for log files
 echo "Creating and setting permissions for log files..."
-sudo touch /var/log/jupyter/jupyterlab.log
 sudo touch /var/log/sshd/sshd.log
-sudo chown ${NB_USER}:${NB_GID:-users} /var/log/jupyter/jupyterlab.log
-sudo chmod 640 /var/log/jupyter/jupyterlab.log
 sudo chown ${NB_USER}:${NB_GID:-users} /var/log/sshd/sshd.log
 sudo chmod 640 /var/log/sshd/sshd.log
 
@@ -49,17 +46,18 @@ echo "Starting PostgreSQL service..."
 sudo -u postgres /usr/lib/postgresql/${POSTGRES_VERSION}/bin/postgres \
     -c config_file=/etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf &
 
-echo "Starting JupyterLab..."
-sudo -u ${NB_USER} jupyter lab \
-    --ip=0.0.0.0 \
-    --port=8989 \
-    --allow-root \
-    --NotebookApp.token='' \
-    >> /var/log/jupyter/jupyterlab.log 2>&1 &
+# echo "Starting JupyterLab..."
+# sudo -u ${NB_USER} jupyter lab \
+#     --ip=0.0.0.0 \
+#     --port=8989 \
+#     --allow-root \
+#     --NotebookApp.token='' \
+#     >> /var/log/jupyter/jupyterlab.log 2>&1 &
 
 echo "All services started. Tailing logs..."
-# Start tailing Jupyter and SSHD logs immediately
-tail -f /var/log/jupyter/jupyterlab.log /var/log/sshd/sshd.log &
+# Start tailing SSHD logs immediately
+# tail -f /var/log/jupyter/jupyterlab.log /var/log/sshd/sshd.log &
+tail -f /var/log/sshd/sshd.log &
 
 # Give postgres a moment to create its log file, then tail it
 sleep 2

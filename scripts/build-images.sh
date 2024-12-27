@@ -1,5 +1,4 @@
 #!/bin/bash
-docker login
 
 DOCKERHUB_VERSION=0.1.0
 DOCKERHUB_USERNAME=vnijs
@@ -23,7 +22,7 @@ build () {
         --build-arg DOCKERHUB_VERSION="${DOCKERHUB_VERSION}" \
         --no-cache \
         --tag $DOCKERHUB_USERNAME/${LABEL}:latest \
-        --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION . 
+        --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION .
     else
       # build with cache
       docker buildx build -f "${LABEL}/Dockerfile" \
@@ -41,7 +40,8 @@ build () {
     sleep 3s
     exit 1
   }
-  if [ "${UPLOAD}" == "YES" ]; then
+  if [ "${UPLOAD}" == "YES" ] && [ "${LABEL}" != "connectorx" ]; then
+    docker login
     docker tag $USER/${LABEL}:latest $USER/${LABEL}:${DOCKERHUB_VERSION}
     docker push $USER/${LABEL}:${DOCKERHUB_VERSION}
     docker push $USER/${LABEL}:latest
@@ -61,6 +61,11 @@ else
 fi
 
 if [ "$(uname -m)" = "arm64" ]; then
+
+  # LABEL=connectorx
+  # build
+  # exit
+
   LABEL=rsm-msba-k8s-arm
   build
 else
