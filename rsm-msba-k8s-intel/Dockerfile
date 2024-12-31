@@ -41,8 +41,6 @@ ENV PYBASE=${PYBASE} \
 # Add autojump to initial package installation
 COPY files/init-apt.sh setup.sh
 RUN chmod +x setup.sh && \
-    apt-get update && \
-    apt-get install -y autojump && \
     ./setup.sh && \
     rm setup.sh
 
@@ -135,8 +133,6 @@ RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/inst
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && \
     git clone https://github.com/supercrabtree/k ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/k && \
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && \
-    apt update && \
-    apt install -y autojump && \
     cp -R /home/jovyan/.oh-my-zsh /etc/skel/.oh-my-zsh
 
 COPY files/zsh/zshrc /etc/skel/.zshrc

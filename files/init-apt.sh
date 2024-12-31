@@ -22,6 +22,7 @@ apt -y install \
 echo "Installing shell and editors..."
 apt -y install \
   zsh \
+  autojump \
   vim \
   vifm
 
