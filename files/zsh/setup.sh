@@ -38,33 +38,6 @@ else
   }
 fi
 
-## make sure abend is set correctly
-## https://community.rstudio.com/t/restarting-rstudio-server-in-docker-avoid-error-message/10349/2
-rstudio_abend () {
-  if [ -d "${HOMEDIR}/.rstudio/sessions/active" ]; then
-    RSTUDIO_STATE_FILES=$(find "${HOMEDIR}/.rstudio/sessions/active/*/session-persistent-state" -type f 2>/dev/null)
-    if [ "${RSTUDIO_STATE_FILES}" != "" ]; then
-      sed_fun 's/abend="1"/abend="0"/' ${RSTUDIO_STATE_FILES}
-    fi
-  fi
-  if [ -d "${HOMEDIR}/.rstudio/monitored/user-settings" ]; then
-    touch "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    sed_fun '/^alwaysSaveHistory="[0-1]"/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    sed_fun '/^loadRData="[0-1]"/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    sed_fun '/^saveAction=/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    echo 'alwaysSaveHistory="1"' >> "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    echo 'loadRData="0"' >> "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    echo 'saveAction="0"' >> "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-    sed_fun '/^$/d' "${HOMEDIR}/.rstudio/monitored/user-settings/user-settings"
-  fi
-}
-
-echo "-----------------------------------------------------------------------"
-echo "Set appropriate default settings for Rstudio"
-echo "-----------------------------------------------------------------------"
-
-rstudio_abend
-
 echo "-----------------------------------------------------------------------"
 echo "Set report generation options for Radiant"
 echo "-----------------------------------------------------------------------"
@@ -89,7 +62,7 @@ if ! grep -q 'options(\s*repos\s*' ${RPROF}; then
   echo '
   if (Sys.info()["sysname"] == "Linux") {
     options(repos = c(
-      RSPM = "https://packagemanager.posit.co/cran/__linux__/jammy/latest",
+      RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
       CRAN = "https://cloud.r-project.org"
     ))
   } else {
