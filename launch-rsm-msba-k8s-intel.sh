@@ -539,10 +539,12 @@ else
         SCRIPT_DOWNLOAD="${HOMEDIR}"
       fi
       {
+        current_dir=$(pwd)
         cd ~/git/docker-k8s 2>/dev/null;
         git pull 2>/dev/null;
-        cd -;
+        cd $current_dir
         chmod 755 ~/git/docker-k8s/launch-${LABEL}.sh 2>/dev/null;
+        rm -f "${LOCK_FILE}"
         eval "~/git/docker-k8s/launch-${LABEL}.sh ${LAUNCH_ARGS}"
         exit 1
         sleep 10

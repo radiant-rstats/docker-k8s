@@ -539,12 +539,14 @@ else
         SCRIPT_DOWNLOAD="${HOMEDIR}"
       fi
       if [ $ostype == "macOS" ]; then
+        current_dir=$(pwd)
         cd ~/git/docker-k8s 2>/dev/null;
         git pull 2>/dev/null;
-        cd -
+        cd $current_dir
         chmod 755 ~/git/docker-k8s/launch-${LABEL}.sh 2>/dev/null;
         curl https://raw.githubusercontent.com/radiant-rstats/docker-k8s/main/launch-${LABEL}.sh -o "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
         chmod 755 "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
+        rm -f "${LOCK_FILE}"
         "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
         exit 1
       else
