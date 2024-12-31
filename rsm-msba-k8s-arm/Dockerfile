@@ -38,6 +38,7 @@ ENV PYBASE=${PYBASE} \
     SHELL=/bin/zsh \
     ZDOTDIR=/home/${NB_USER}/.rsm-msba/zsh
 
+# Add autojump to initial package installation
 COPY files/init-apt.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
@@ -148,7 +149,7 @@ RUN chmod +x /usr/local/bin/radiant /usr/local/bin/gitgadget
 COPY files/start-container.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start-container.sh
 
-EXPOSE 22 8765 8181 8282 8000
+EXPOSE 22 8765
 
 CMD ["/usr/local/bin/start-container.sh"]
 
