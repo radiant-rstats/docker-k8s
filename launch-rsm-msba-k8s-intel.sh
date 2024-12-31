@@ -554,19 +554,7 @@ else
         echo "\nPress any key to continue"
         read any_to_continue
       }
-    elif [ ${menu_exec} == 8 ]; then
-      echo $BOUNDARY
-      echo "Clean up Rstudio sessions (y/n)?"
-      echo $BOUNDARY
-      read cleanup
-
-      if [ "${cleanup}" == "y" ]; then
-        echo "Cleaning up Rstudio sessions and settings"
-        rm -rf "${HOMEDIR}/.rstudio/sessions"
-        rm -rf "${HOMEDIR}/.rstudio/projects"
-        rm -rf "${HOMEDIR}/.rstudio/projects_settings"
-      fi
-
+    elif [ ${menu_exec} == 6 ]; then
       echo $BOUNDARY
       echo "Remove locally installed R packages (y/n)?"
       echo $BOUNDARY
@@ -581,7 +569,7 @@ else
           mkdir "${i}"
         done
       fi
-    elif [ ${menu_exec} == 9 ]; then
+    elif [ ${menu_exec} == 7 ]; then
       echo $BOUNDARY
       echo "Remove locally installed Pyton packages (y/n)?"
       echo $BOUNDARY
@@ -597,7 +585,7 @@ else
           done
         fi
       fi
-    elif [ "${menu_exec}" == 10 ]; then
+    elif [ "${menu_exec}" == 8 ]; then
       if [ "${menu_arg}" != "" ]; then
         selenium_port=${menu_arg}
       else 
@@ -715,19 +703,6 @@ else
       echo $BOUNDARY
       echo "Stopping the ${LABEL} computing environment and cleaning up as needed"
       echo $BOUNDARY
-
-      suspend_sessions () {
-        active_session=$(docker exec -t $1 rstudio-server active-sessions | awk '/[0-9]+/ { print $1}' 2>/dev/null)
-        if [ "${active_session}" != "" ] && [ "${active_session}" != "OCI" ]; then
-          echo "Stopping Rstudio sessions ..."
-          docker exec -t $1 rstudio-server suspend-session ${active_session} 2>/dev/null
-        fi
-      }
-
-      running=$(docker ps -q)
-      for index in ${running}; do
-        suspend_sessions $index
-      done
 
       selenium_containers=$(docker ps -a --format {{.Names}} | grep 'selenium' | tr '\n' ' ')
       if [ "${selenium_containers}" != "" ]; then

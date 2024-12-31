@@ -272,12 +272,12 @@ If you see `root` as the username when you type `whoami` in an Ubuntu terminal y
 
 ## Installing Python and R packages locally
 
-To install the latest version of R-packages you need, add the lines of code shown below to `~/.Rprofile` or copy-and-paste the lines into the Rstudio console.
+To install the latest version of R-packages you need, add the lines of code shown below to `~/.Rprofile`. You can edit the file by running `code ~/.Rprofile` in a VS Code terminal.
 
 ```r
 if (Sys.info()["sysname"] == "Linux") {
   options(repos = c(
-    RSPM = "https://packagemanager.posit.co/cran/__linux__/jammy/latest",
+    RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
     CRAN = "https://cloud.r-project.org"
   ))
 } else {
@@ -287,14 +287,14 @@ if (Sys.info()["sysname"] == "Linux") {
 }
 ```
 
-This will be done for you automatically if you run the `setup` command from a terminal inside the docker container. To install R packages that will persist after restarting the docker container, enter code like the below in Rstudio and follow any prompts. After doing this once, you can use `install.packages("some-other-package")` in the future.
+This will be done for you automatically if you run the `setup` command from a terminal inside the docker container. To install R packages that will persist after restarting the docker container, enter code like the below in R and follow any prompts. After doing this once, you can use `install.packages("some-other-package")` to install packages locally in the future.
 
 ```r
 fs::dir_create(Sys.getenv("R_LIBS_USER"), recurse = TRUE)
 install.packages("fortunes", lib = Sys.getenv("R_LIBS_USER"))
 ```
 
-To install Python modules that will **not** persist after restarting the docker container, enter code like the below from the terminal in Jupyter Lab:
+To install Python modules that will **not** persist after restarting the docker container, enter code like the below from the terminal in VS Code:
 
 ```bash
 pip install pyasn1
@@ -334,7 +334,7 @@ sudo apt update;
 sudo apt install libgdal-dev libproj-dev;
 ```
 
-After completing the step above you can install the `rgdal` R-package locally using the following from Rstudio:
+After completing the step above you can install the `rgdal` R-package locally using the following from R:
 
 `install.packages("rgdal", lib = Sys.getenv("R_LIBS_USER"))`
 
@@ -357,11 +357,11 @@ For additional resources on developing docker images see the links below:
 
 ## Cleanup
 
-To remove any prior Rstudio sessions and locally installed R-packages, press 8 (+ Enter) in the launch menu. To remove locally installed Python modules press 9 (+ Enter) in the launch menu.
+To remove any locally installed R-packages, press 6 (+ Enter) in the launch menu. To remove locally installed Python modules press 7 (+ Enter) in the launch menu.
 
-> Note: It is also possible initiate the process of removing locally installed packages and settings from within the container. Open a terminal in Jupyter Lab or Rstudio and type `clean`. Then follow the prompts to indicate what needs to be removed.
+> Note: It is also possible initiate the process of removing locally installed packages and settings from within the container. Open a terminal in VS Code and type `clean`. Then follow the prompts to indicate what needs to be removed.
 
-You should always stop the `rsm-msba-k8s-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove prior R(studio) and Python modules, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-k8s-arm):
+You should always stop the `rsm-msba-k8s-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove locally installed R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-k8s-arm):
 
 ```bash
 rm -rf ~/.rsm-msba;
