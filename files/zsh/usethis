@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/conda/bin/python3
 
 import requests
 import zipfile
@@ -6,18 +6,19 @@ import os
 import shutil
 import argparse
 
+
 def download_zip(url, output_folder, file_or_folder_name):
     local_filename = "__temp_download__.zip"
     local_filepath = os.path.join(output_folder, local_filename)
 
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
-        with open(local_filepath, 'wb') as f:
+        with open(local_filepath, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
 
     temp_extract_path = os.path.join(output_folder, "temp_extracted")
-    with zipfile.ZipFile(local_filepath, 'r') as zip_ref:
+    with zipfile.ZipFile(local_filepath, "r") as zip_ref:
         zip_ref.extractall(temp_extract_path)
 
     extracted_content = os.listdir(temp_extract_path)
@@ -35,6 +36,7 @@ def download_zip(url, output_folder, file_or_folder_name):
     if os.path.exists(temp_extract_path):
         shutil.rmtree(temp_extract_path)
 
+
 def validate_path(path):
     expanded_path = os.path.expanduser(path)
     if os.path.exists(os.path.dirname(expanded_path)):
@@ -43,11 +45,22 @@ def validate_path(path):
     print(f"Warning: Path '{path}' is invalid. Using home directory '{home_dir}' instead.")
     return home_dir
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Download and extract a ZIP file (e.g., from Dropbox)')
-    parser.add_argument('--name', type=str, required=True, help='The name to assign to the extracted file or folder')
-    parser.add_argument('--dest', type=str, default=os.getcwd(), help='The output folder for extraction. Defaults to the current directory')
-    parser.add_argument('--url', type=str, required=True, help='The URL of the ZIP file to download. When using Dropbox, make sure the url ends with ?dl=1')
+    parser = argparse.ArgumentParser(description="Download and extract a ZIP file (e.g., from Dropbox)")
+    parser.add_argument("--name", type=str, required=True, help="The name to assign to the extracted file or folder")
+    parser.add_argument(
+        "--dest",
+        type=str,
+        default=os.getcwd(),
+        help="The output folder for extraction. Defaults to the current directory",
+    )
+    parser.add_argument(
+        "--url",
+        type=str,
+        required=True,
+        help="The URL of the ZIP file to download. When using Dropbox, make sure the url ends with ?dl=1",
+    )
 
     args = parser.parse_args()
 
