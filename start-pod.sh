@@ -23,7 +23,7 @@ else
         microk8s kubectl delete svc rsm-msba-ssh-$USER
         sleep 5
     fi
-    
+
     # Create temporary yaml with substituted values
     envsubst < k8s-config.yaml > "$USER-k8s-config.yaml"
     # Apply the configuration
@@ -50,6 +50,11 @@ if [ ! -f ~/.ssh/config ]; then
     touch ~/.ssh/config
     chmod 600 ~/.ssh/config
 fi
+# if [ ! -d ~/postgresql ]; then
+#     mkdir -p ~/postgresql
+#     chown -R 999:999 ~/postgresql
+#     chmod 700 ~/postgresql
+# fi
 
 # Check if SSH key exists, if not create one
 if [ ! -f ~/.ssh/id_rsa ]; then
@@ -58,9 +63,9 @@ fi
 
 # Add or update SSH config
 if grep -q "Host k8s-pod" ~/.ssh/config; then
-    sed -i "/Host k8s-pod/,/Port/c\Host k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT" ~/.ssh/config
+    sed -i "/Host k8s-pod/,/Port/c\Host k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    RemoteCommand /bin/zsh -l" ~/.ssh/config
 else
-    echo -e "\nHost k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT" >> ~/.ssh/config
+    echo -e "\nHost k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    RemoteCommand /bin/zsh -l" >> ~/.ssh/config
 fi
 
 echo "Pod '$POD_NAME' is running and ready for SSH connection"

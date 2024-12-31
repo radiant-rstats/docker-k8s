@@ -32,9 +32,27 @@ spec:
             memory: "16Gi"
             cpu: "2"
           limits:
-            memory: "36Gi"
+            memory: "32Gi"
             cpu: "4"
         env:
+        - name: TZ
+          value: "America/Los_Angeles"
+        - name: USER
+          value: "jovyan"
+        - name: HOME
+          value: "/home/jovyan"
+        - name: SHELL
+          value: "/bin/zsh"
+        - name: ZDOTDIR
+          value: /home/jovyan/.rsm-msba/zsh
+        - name: PYTHONUSERBASE
+          value: "/home/jovyan/.rsm-msba"
+        - name: JUPYTER_PATH
+          value: "/home/jovyan/.rsm-msba/share/jupyter"
+        - name: JUPYTER_RUNTIME_DIR
+          value: "/tmp/jupyter/runtime"
+        - name: JUPYTER_CONFIG_DIR
+          value: "/home/jovyan/.rsm-msba/jupyter"
         - name: NB_UID
           valueFrom:
             fieldRef:
@@ -45,6 +63,10 @@ spec:
               fieldPath: metadata.annotations['NB_GID']
         ports:
         - containerPort: 22
+        - containerPort: 8765
+        - containerPort: 8181
+        - containerPort: 8282
+        - containerPort: 8000
         volumeMounts:
         - name: home-volume
           mountPath: /home/jovyan
@@ -64,5 +86,11 @@ spec:
     app: rsm-msba
     user: ${USER}
   ports:
-  - protocol: TCP
+  - name: ssh
+    protocol: TCP
     port: 22
+    targetPort: 22
+  - name: postgresql
+    protocol: TCP
+    port: 8765
+    targetPort: 8765

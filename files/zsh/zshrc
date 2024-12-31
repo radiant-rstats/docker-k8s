@@ -80,16 +80,27 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
+  k
+  autojump
   zsh-completions
   zsh-autosuggestions
   zsh-syntax-highlighting
-  k
   poetry
 )
+
+# Add autojump initialization
+. /usr/share/autojump/autojump.sh
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
+
+# Set language environment explicitly
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Ensure local binaries are in path
+export PATH=$HOME/.local/bin:$PATH
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -123,8 +134,9 @@ alias zc="code ~/.rsm-msba/zsh/.zshrc"
 alias om="code ~/.rsm-msba/zsh/.oh-my-zsh"
 alias zp="code ~/.rsm-msba/zsh/.p10k.zsh"
 
-# fpath+=~/.zfunc
-# autoload -Uz compinit && compinit
+# Enable completions
+fpath+=~/.zfunc
+autoload -Uz compinit && compinit
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.rsm-msba/zsh/.p10k.zsh ]] || source ~/.rsm-msba/zsh/.p10k.zsh

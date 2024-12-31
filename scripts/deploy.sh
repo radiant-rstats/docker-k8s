@@ -1,4 +1,5 @@
 ./start-pod.sh
+clear
 
 microk8s kubectl get pod
 microk8s kubectl get services
@@ -14,8 +15,22 @@ microk8s kubectl describe pod $pod_name
 
 microk8s kubectl exec -it $pod_name -- openssl version
 microk8s kubectl exec -it $pod_name -- ls -la /home/jovyan
-microk8s kubectl exec -it $pod_name -- /bin/zsh -c "cd /home/jovyan && su jovyan && exec /bin/zsh"
+microk8s kubectl exec -it $pod_name --user=$(id -u jovyan) -- /bin/zsh
 
 # can you connect to the pod using ssh?
 ssh k8s-pod
 
+# Stop microk8s
+microk8s stop
+
+# Clean docker cache
+# docker system prune -af
+
+# Remove microk8s storage
+sudo rm -rf /var/snap/microk8s/common/var/lib/kubelet/*
+
+# Start microk8s
+microk8s start
+
+# Verify status
+microk8s status
