@@ -24,7 +24,6 @@ rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 mamba install --yes -c conda-forge pyarrow=${PYARROW_VERSION} libgit2 sqlite
 
-# removed reticulate due to issue compiling RcppTOML
 R -e "install.packages('igraph', repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "install.packages('reticulate', repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "install.packages(c('shiny', 'png', 'miniUI', 'webshot', 'tinytex'), repo='${CRAN}', Ncpus=${NCPUS})" \

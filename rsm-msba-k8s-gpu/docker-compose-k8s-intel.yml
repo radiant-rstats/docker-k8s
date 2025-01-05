@@ -1,0 +1,29 @@
+services:
+  rsm-msba:
+    image: vnijs/rsm-msba-k8s-gpu:latest
+    container_name: rsm-msba-k8s-gpu
+    ports:
+      - "127.0.0.1:2222:22"
+      - "127.0.0.1:8765:8765"
+    environment:
+      TZ: America/Los_Angeles
+      USER: jovyan
+      HOME: /home/jovyan
+      SHELL: /bin/zsh
+      PYTHONUSERBASE: /home/jovyan/.rsm-msba
+      JUPYTER_PATH: /home/jovyan/.rsm-msba/share/jupyter
+      JUPYTER_RUNTIME_DIR: /tmp/jupyter/runtime
+      JUPYTER_CONFIG_DIR: /home/jovyan/.rsm-msba/jupyter
+    volumes:
+      - ${HOME}:/home/jovyan
+      - pg_data:/var/lib/postgresql/16/main
+    networks:
+      - rsm-docker
+
+networks:
+  rsm-docker:
+    name: rsm-docker
+
+volumes:
+  pg_data:
+    name: pg_data
