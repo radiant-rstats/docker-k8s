@@ -141,4 +141,5 @@ autoload -Uz compinit && compinit
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.rsm-msba/zsh/.p10k.zsh ]] || source ~/.rsm-msba/zsh/.p10k.zsh
 
-export QUARTO_PYTHON=/opt/conda/bin/python
+export QUARTO_PYTHON="/opt/conda/bin/python"
+export RETICULATE_PYTHON="/opt/conda/bin/python"
