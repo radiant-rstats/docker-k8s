@@ -80,7 +80,7 @@ If for some reason you are having trouble updating either the container or the l
 
 ```bash
 docker pull vnijs/rsm-msba-k8s-intel;
-rm -rf ~/git/docker-k8s;
+rm -rf ~/git/docker*;
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
 cp -p ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh ~/Desktop/launch-rsm-msba.command;
 ```
