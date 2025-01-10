@@ -122,8 +122,8 @@ else
 fi
 
 if [ ! -d "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry" ]; then
-  mkdir "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry" ]
-  poetry completions zsh > $ZSH_CUSTOM/plugins/poetry/_poetry
+  mkdir -p "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry" ]
+  poetry completions zsh > "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry/_poetry
 fi
 
 if [ ! -f "${HOMEDIR}/.rsm-msba/zsh/.zshrc" ]; then
