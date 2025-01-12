@@ -20,15 +20,6 @@ services:
     networks:
       - rsm-docker
 
-  # selenium:
-  #   image: seleniarm/standalone-firefox:latest
-  #   platform: linux/arm64
-  #   container_name: selenium_0
-  #   ports:
-  #     - "127.0.0.1:4444:4444"
-  #   networks:
-  #     - rsm-docker
-
 networks:
   rsm-docker:
     name: rsm-docker

@@ -3,5 +3,6 @@
 .mypy_cache
 .vscode
 .bash_history
+.env
 build.log
 build-full.log
