@@ -114,16 +114,9 @@ else
   fi
 fi
 
-if command -v poetry &> /dev/null; then
-  echo "Poetry is already installed"
-else
-  echo "Installing Poetry"
-  pipx install poetry
-fi
-
 if [ ! -d "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry" ]; then
   mkdir -p "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry" ]
-  poetry completions zsh > "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry/_poetry
+  poetry completions zsh > ${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry/_poetry
 fi
 
 if [ ! -f "${HOMEDIR}/.rsm-msba/zsh/.zshrc" ]; then
