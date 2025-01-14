@@ -133,7 +133,8 @@ RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/inst
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && \
     git clone https://github.com/supercrabtree/k ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/k && \
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && \
-    cp -R /home/jovyan/.oh-my-zsh /etc/skel/.oh-my-zsh
+    cp -R /home/jovyan/.oh-my-zsh /etc/skel/.oh-my-zsh && \
+    fix-permissions /etc/skel/
 
 COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh
