@@ -89,7 +89,7 @@ plugins=(
 )
 
 # Add autojump initialization
-. /usr/share/autojump/autojump.sh
+source /usr/share/autojump/autojump.sh
 
 source $ZSH/oh-my-zsh.sh
 
