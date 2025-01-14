@@ -2,9 +2,6 @@ services:
   rsm-msba:
     image: vnijs/rsm-msba-k8s-gpu:latest
     container_name: rsm-msba-k8s-gpu
-    ports:
-      - "127.0.0.1:2222:22"
-      - "127.0.0.1:8765:8765"
     environment:
       TZ: America/Los_Angeles
       USER: jovyan
