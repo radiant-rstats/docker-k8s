@@ -50,6 +50,13 @@ if [ ! -f ~/.ssh/config ]; then
     touch ~/.ssh/config
     chmod 600 ~/.ssh/config
 fi
+
+if [ ! -d ~/.rsm-msba ]; then
+    mkdir -p ~/.rsm-msba
+    chmod -R 755 ~/.rsm-msba
+    chmod g+s ~/.rsm-msba    # This sets the setgid bit
+fi
+
 # if [ ! -d ~/postgresql ]; then
 #     mkdir -p ~/postgresql
 #     chown -R 999:999 ~/postgresql
