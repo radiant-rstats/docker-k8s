@@ -42,6 +42,10 @@ R -e "install.packages('igraph', repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "remotes::install_github('radiant-rstats/radiant', upgrade = 'never')" \
   -e "webshot::install_phantomjs()"
 
+# setup location of user installed R packages
+echo "R_LIBS_USER='~/.rsm-msba/R/${R_VERSION}'" >> ${R_HOME}/etc/Renviron.site
+echo '.libPaths(unique(c(Sys.getenv("R_LIBS_USER"), .libPaths())))' >> ${R_HOME}/etc/Rprofile.site
+
 # Clean up
 rm -rf /var/lib/apt/lists/*
 rm -rf /tmp/downloaded_packages
