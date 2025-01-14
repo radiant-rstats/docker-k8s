@@ -19,6 +19,12 @@ if [ ! -z "$NB_UID" ] && [ ! -z "$NB_GID" ]; then
 fi
 
 echo "Creating and setting permissions for PYBASE directories..."
+
+# Create PYBASE directory
+mkdir -p ${PYBASE}
+chmod -R 755 ${PYBASE}
+chmod g+s ${PYBASE}    # set the setgid bit
+
 # Create PYBASE directories if they don't exist
 mkdir -p ${PYBASE}/share/jupyter
 mkdir -p ${PYBASE}/jupyter
