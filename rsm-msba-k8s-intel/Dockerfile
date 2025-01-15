@@ -126,15 +126,11 @@ RUN mkdir -p /var/log/postgresql /var/log/sshd && \
     chown postgres:postgres /var/log/postgresql && \
     chmod 750 /var/log/postgresql
 
-# oh-my-zsh
-RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
-    git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions && \
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && \
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && \
-    git clone https://github.com/supercrabtree/k ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/k && \
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && \
-    cp -R /home/jovyan/.oh-my-zsh /etc/skel/.oh-my-zsh && \
-    fix-permissions /etc/skel/
+# Oh-my-zsh and other zsh setup
+COPY files/install-ohmyzsh.sh setup.sh
+RUN chmod +x setup.sh && \
+    ./setup.sh && \
+    rm setup.sh
 
 COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh

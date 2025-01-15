@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 # Install required packages
 apt update -qq
 apt -y --no-install-recommends install openssh-server
