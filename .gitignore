@@ -6,3 +6,4 @@
 .env
 build.log
 build-full.log
+files/devcontainer
