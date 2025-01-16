@@ -44,6 +44,7 @@ mamba install --quiet --yes -c conda-forge \
   pyspark \
   plotly \
   poetry \
+  markdown \
   bash_kernel \
   && python -m bash_kernel.install
 
