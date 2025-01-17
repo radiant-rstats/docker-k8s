@@ -78,7 +78,7 @@ RUN chmod +x setup.sh && \
 RUN pip install --no-cache-dir --root-user-action=ignore "connectorx==0.3.3"
 
 # setup hadoop
-ENV JAVA_HOME "/usr/lib/jvm/java-17-openjdk-arm64/"
+ENV JAVA_HOME "/usr/lib/jvm/java-17-openjdk-amd64/"
 ENV HADOOP_VERSION 3.3.4
 ENV HADOOP_HOME /opt/hadoop
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
