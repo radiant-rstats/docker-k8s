@@ -44,7 +44,7 @@ function launch_usage() {
   echo "  -s, --show        Show all output generated on launch"
   echo "  -h, --help        Print help and exit"
   echo ""
-  echo "Example: $0 --tag 3.0.0 --volume ~/project_1"
+  echo "Example: $0 --tag 1.0.0 --volume ~/project_1"
   echo ""
   exit 1
 }
@@ -105,7 +105,7 @@ if [ "${has_docker}" == "" ]; then
     if [[ "$is_wsl" != "" ]]; then
       echo "https://hub.docker.com/editions/community/docker-ce-desktop-windows"
     else
-      echo "https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04"
+      echo "https://docs.docker.com/engine/install/ubuntu/"
     fi
   elif [[ "$ostype" == "Darwin" ]]; then
     echo "https://hub.docker.com/editions/community/docker-ce-desktop-mac"
@@ -370,7 +370,7 @@ else
   fi
   {
     docker run --name ${LABEL} --net ${NETWORK} -d \
-      -p 127.0.0.1:2222:22 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 -p 127.0.0.1:8000:8000 \
+      -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 \
       -e TZ=${TIMEZONE} \
       -v "${HOMEDIR}":/home/${NB_USER} $MNT \
       -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
@@ -479,13 +479,13 @@ else
       else
         echo "Starting Radiant in the default browser on port ${menu_arg}"
         docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
-          -p 127.0.0.1:${menu_arg}:8181 \
+          -p 127.0.0.1:${menu_arg}:${menu_arg} \
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}
-        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=8181, run=FALSE)"
+        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=${menu_arg}, run=FALSE)"
         sleep 2
-        open_browser http://localhost:${menu_arg} 
+        open_browser http://localhost:${menu_arg}
       fi
     elif [ ${menu_exec} == 3 ]; then
       if [ "${menu_arg}" == "" ]; then
@@ -496,7 +496,7 @@ else
       else
         echo "Starting GitGadget in the default browser on port ${menu_arg}"
         docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
-          -p 127.0.0.1:${menu_arg}:8282 \
+          -p 127.0.0.1:${menu_arg}:${menu_arg} \
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}
@@ -622,7 +622,7 @@ else
         fi
       elif [[ "$ostype" == "WSL2" ]]; then
         if [[ "$archtype" == "aarch64" ]]; then
-          open_browser https://github.com/radiant-rstats/docker-k8s/blob/master/install/rsm-msba-windows-arm.md
+          open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-windows-arm.md
         else
           open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-windows.md
         fi
