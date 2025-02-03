@@ -44,7 +44,7 @@ function launch_usage() {
   echo "  -s, --show        Show all output generated on launch"
   echo "  -h, --help        Print help and exit"
   echo ""
-  echo "Example: $0 --tag 3.0.0 --volume ~/project_1"
+  echo "Example: $0 --tag 1.0.0 --volume ~/project_1"
   echo ""
   exit 1
 }
@@ -370,7 +370,7 @@ else
   fi
   {
     docker run --name ${LABEL} --net ${NETWORK} -d \
-      -p 127.0.0.1:2222:22 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 -p 127.0.0.1:8000:8000 \
+      -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 \
       -e TZ=${TIMEZONE} \
       -v "${HOMEDIR}":/home/${NB_USER} $MNT \
       -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
@@ -479,11 +479,11 @@ else
       else
         echo "Starting Radiant in the default browser on port ${menu_arg}"
         docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
-          -p 127.0.0.1:${menu_arg}:8181 \
+          -p 127.0.0.1:${menu_arg}:${menu_arg} \
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}
-        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=8181, run=FALSE)"
+        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=${menu_arg}, run=FALSE)"
         sleep 2
         open_browser http://localhost:${menu_arg}
       fi
@@ -496,7 +496,7 @@ else
       else
         echo "Starting GitGadget in the default browser on port ${menu_arg}"
         docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
-          -p 127.0.0.1:${menu_arg}:8282 \
+          -p 127.0.0.1:${menu_arg}:${menu_arg} \
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}
@@ -538,21 +538,24 @@ else
       else
         SCRIPT_DOWNLOAD="${HOMEDIR}"
       fi
-      if [ $ostype == "macOS" ]; then
+      {
         current_dir=$(pwd)
         cd ~/git/docker-k8s 2>/dev/null;
         git pull 2>/dev/null;
         cd $current_dir
         chmod 755 ~/git/docker-k8s/launch-${LABEL}.sh 2>/dev/null;
-        curl https://raw.githubusercontent.com/radiant-rstats/docker-k8s/main/launch-${LABEL}.sh -o "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
-        chmod 755 "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
         rm -f "${LOCK_FILE}"
-        "${SCRIPT_DOWNLOAD}/launch-${LABEL}.${EXT}"
+        eval "~/git/docker-k8s/launch-${LABEL}.sh ${LAUNCH_ARGS}"
         exit 1
-      else
-        echo "launch-rsm-msba-k8s-arm.sh used on $ostype. This script is only intended for macOS systems with an ARM chip (e.g., M3)"
-        sleep 5
-      fi
+        sleep 10
+      } || {
+        echo "Updating the launch script failed\n"
+        echo "Copy the code below and run it after stopping the docker container with q + Enter\n"
+        echo "rm -rf ~/git/docker-k8s;\n"
+        echo "git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;\n"
+        echo "\nPress any key to continue"
+        read any_to_continue
+      }
     elif [ ${menu_exec} == 6 ]; then
       echo $BOUNDARY
       echo "Remove locally installed R packages (y/n)?"
@@ -617,8 +620,6 @@ else
         else
           open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-macos.md
         fi
-      elif [[ "$ostype" == "Windows" ]]; then
-        open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-windows-1909.md
       elif [[ "$ostype" == "WSL2" ]]; then
         if [[ "$archtype" == "aarch64" ]]; then
           open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-windows-arm.md
