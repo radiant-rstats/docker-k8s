@@ -66,7 +66,8 @@ pip install --no-cache-dir --root-user-action=ignore \
   shinywidgets \
   dowhy \
   econml \
-  uv
+  uv \
+  pyspark==4.0.0.dev2
 
 # causalml does not support python 3.12 yet
 # https://github.com/uber/causalml/issues/813
