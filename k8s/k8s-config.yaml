@@ -63,10 +63,10 @@ spec:
               fieldPath: metadata.annotations['NB_GID']
         ports:
         - containerPort: 22
-        - containerPort: 8765
-        - containerPort: 8181
-        - containerPort: 8282
-        - containerPort: 8000
+        # - containerPort: 8765
+        # - containerPort: 8181
+        # - containerPort: 8282
+        # - containerPort: 8000
         volumeMounts:
         - name: home-volume
           mountPath: /home/jovyan
