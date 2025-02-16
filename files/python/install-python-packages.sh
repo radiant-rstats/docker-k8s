@@ -46,11 +46,6 @@ mamba install --quiet --yes -c conda-forge \
   bash_kernel \
   && python -m bash_kernel.install
 
-# Install Python packages
-mamba install --quiet --yes -c pytorch \
-  pytorch \
-  torchvision
-
 pip install --no-cache-dir --root-user-action=ignore \
   radian \
   fastexcel \
@@ -68,6 +63,12 @@ pip install --no-cache-dir --root-user-action=ignore \
   econml \
   uv \
   pyspark==4.0.0.dev2
+
+pip install --no-cache-dir --root-user-action=ignore \
+  torch \
+  torchvision \
+  torchaudio \
+  --index-url https://download.pytorch.org/whl/cu126
 
 # causalml does not support python 3.12 yet
 # https://github.com/uber/causalml/issues/813
