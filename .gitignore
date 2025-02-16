@@ -6,4 +6,9 @@
 .env
 build.log
 build-full.log
-files/devcontainer
+devcontainer/
+connectorx/logs/
+connectorx/wheels/
+causalml/logs/
+causalml/wheels/
+

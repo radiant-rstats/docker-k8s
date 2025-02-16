@@ -30,7 +30,6 @@ ENV PGPASSWORD=postgres
 ARG PYBASE=/home/${NB_USER}/.rsm-msba
 ENV PYBASE=${PYBASE} \
     PYTHONUSERBASE=${PYBASE} \
-    POETRY_VERSION="1.8.5" \
     JUPYTER_PATH=${PYBASE}/share/jupyter \
     JUPYTER_DATA_DIR=${PYBASE}/share/jupyter \
     JUPYTER_CONFIG_DIR=${PYBASE}/jupyter \
@@ -67,7 +66,7 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-COPY files/install-python-packages.sh setup.sh
+COPY files/python/install-python-packages.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh

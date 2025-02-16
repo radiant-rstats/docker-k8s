@@ -595,16 +595,16 @@ else
       fi
       CPORT=$(curl -s localhost:${selenium_port} 2>/dev/null)
       echo $BOUNDARY
-      selenium_nr=($(docker ps -a | awk "/selenium_/" | awk '{print $1}'))
+      selenium_nr=($(docker ps -a | awk "/rsm-selenium/" | awk '{print $1}'))
       selenium_nr=${#selenium_nr[@]}
       if [ "$CPORT" != "" ]; then
         echo "A Selenium container may already be running on port ${selenium_port}"
         selenium_nr=$((${selenium_nr}-1))
       else
-        docker run --name="selenium_${selenium_nr}" --net ${NETWORK} -d -p 127.0.0.1:${selenium_port}:4444 --platform linux/arm64 seleniarm/standalone-firefox
+        docker run --name="rsm-selenium${selenium_nr}" --net ${NETWORK} -d -p 127.0.0.1:${selenium_port}:4444 --platform linux/arm64 seleniarm/standalone-firefox
       fi
-      echo "You can access selenium at ip: selenium_${selenium_nr}, port: 4444 from the"
-      echo "${LABEL} container (selenium_${selenium_nr}:4444) and ip: 127.0.0.1,"
+      echo "You can access selenium at ip: rsm-selenium${selenium_nr}, port: 4444 from the"
+      echo "${LABEL} container (rsm-selenium${selenium_nr}:4444) and ip: 127.0.0.1,"
       echo "port: ${selenium_port} (http://127.0.0.1:${selenium_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY

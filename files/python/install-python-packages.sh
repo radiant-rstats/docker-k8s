@@ -41,9 +41,7 @@ mamba install --quiet --yes -c conda-forge \
   simpy \
   awscli \
   findspark \
-  pyspark \
   plotly \
-  poetry \
   markdown \
   bash_kernel \
   && python -m bash_kernel.install
@@ -64,11 +62,18 @@ pip install --no-cache-dir --root-user-action=ignore \
   transformers \
   gensim \
   vadersentiment \
-  gradio
+  gradio \
+  shinywidgets \
+  dowhy \
+  econml \
+  uv
+
+# causalml does not support python 3.12 yet
+# https://github.com/uber/causalml/issues/813
+# causalml[torch] \
 
 # causing issues
 # alpaca-trade-api \
-# shinywidgets \
 
 # updating conda to the latest version
 mamba update -n base -c conda-forge conda

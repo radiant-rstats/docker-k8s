@@ -114,11 +114,6 @@ else
   fi
 fi
 
-if [ ! -d "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry" ]; then
-  mkdir -p "${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry" ]
-  poetry completions zsh > ${HOMEDIR}/.rsm-msba/zsh/.oh-my-zsh/plugins/poetry/_poetry
-fi
-
 if [ ! -f "${HOMEDIR}/.rsm-msba/zsh/.zshrc" ]; then
   cp /etc/skel/.zshrc "${HOMEDIR}/.rsm-msba/zsh/.zshrc"
   source ~/.rsm-msba/zsh/.zshrc 2>/dev/null
