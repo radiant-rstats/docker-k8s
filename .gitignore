@@ -4,6 +4,8 @@
 .vscode
 .bash_history
 .env
+__pycache__
+*.pyc
 build.log
 build-full.log
 devcontainer/

@@ -74,7 +74,7 @@ RUN chmod +x setup.sh && \
 # connectorx is default for sql stuff in polars but is not built for aarch64
 # had to do that manually with a docker file
 # see https://github.com/sfu-db/connector-x/issues/386
-COPY files/connectorx/*.whl /tmp/
+COPY connectorx/wheels/*.whl /tmp/
 RUN find /tmp -name "*.whl" -print0 | xargs -0 -I {} pip install {} && \
     find /tmp -name "*.whl" -delete
 
