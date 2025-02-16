@@ -1,4 +1,4 @@
-FROM vnijs/rsm-msba-k8s-intel
+FROM vnijs/rsm-msba-k8s-intel:1.1.0
 
 USER root
 
@@ -6,9 +6,10 @@ ARG DOCKERHUB_VERSION
 ENV DOCKERHUB_VERSION=${DOCKERHUB_VERSION}
 ENV DOCKERHUB_NAME="rsm-msba-k8s-gpu"
 
-# install CUDA
-
-
+COPY files/install-cuda.sh setup.sh
+RUN chmod +x setup.sh && \
+    ./setup.sh && \
+    rm setup.sh
 
 EXPOSE 22 8765
 

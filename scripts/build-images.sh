@@ -69,8 +69,12 @@ if [ "$(uname -m)" = "arm64" ]; then
   LABEL=rsm-msba-k8s-arm
   build
 else
-  LABEL=rsm-msba-k8s-intel
+
+  LABEL=rsm-msba-k8s-gpu
   build
+
+  # LABEL=rsm-msba-k8s-intel
+  # build
 fi
 
 # run script using to ensure it keeps running on a server even if the connection goes down
