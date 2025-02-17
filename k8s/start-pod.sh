@@ -88,7 +88,7 @@ echo "    Host $NODE_IP"
 echo "    User $USER"
 echo "    Port $NODE_PORT"
 echo "    RequestTTY yes"
-echo "    RemoteCommand zsh -c '/opt/k8s/bin/start-pod.sh && sleep 3 && exec ssh -t jovyan@localhost -p 30364 /bin/zsh -l'"
+echo "    RemoteCommand zsh -c '/opt/k8s/bin/start-pod.sh && sleep 3 && exec ssh -t jovyan@localhost -p $NODE_PORT /bin/zsh -l'"
 echo "    StrictHostKeyChecking accept-new"
 
 # output VS Code connection information
