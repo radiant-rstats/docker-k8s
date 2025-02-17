@@ -35,20 +35,20 @@ else
         microk8s kubectl delete svc rsm-msba-ssh-$USER
         sleep 5
     fi
-    
+
     # Create temporary yaml with substituted values
-    touch "/opt/k8s/$USER-k8s-config.yaml"
-    envsubst < /opt/k8s/bin/k8s-config.yaml > "/opt/k8s/$USER-k8s-config.yaml"
-    
+    touch "/opt/k8s/tmp/$USER-k8s-config.yaml"
+    envsubst < /opt/k8s/bin/k8s-config.yaml > "/opt/k8s/tmp/$USER-k8s-config.yaml"
+
     # Apply the configuration
-    microk8s kubectl apply -f "/opt/k8s/$USER-k8s-config.yaml"
-    
+    microk8s kubectl apply -f "/opt/k8s/tmp/$USER-k8s-config.yaml"
+
     # Wait for pod to be ready
     echo "Waiting for pod to be ready..."
     while [[ $(microk8s kubectl get pods -l user=$USER -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do 
         echo "Waiting for pod..." && sleep 1;
     done
-    rm "/opt/k8s/$USER-k8s-config.yaml"
+    rm "/opt/k8s/tmp/$USER-k8s-config.yaml"
 fi
 
 # Get pod name and service details
@@ -71,11 +71,11 @@ if [ ! -d ~/.rsm-msba ]; then
 fi
 
 # Add or update SSH config
-# if grep -q "Host k8s-pod" ~/.ssh/config; then
-#     sed -i "/Host k8s-pod/,/RemoteCommand/c\Host k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    StrictHostKeyChecking accept-new\n    RemoteCommand /bin/zsh -l" ~/.ssh/config
-# else
-#     echo -e "\nHost k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    StrictHostKeyChecking accept-new\n    RemoteCommand /bin/zsh -l" >> ~/.ssh/config
-# fi
+if grep -q "Host k8s-pod" ~/.ssh/config; then
+    sed -i "/Host k8s-pod/,/RemoteCommand/c\Host k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    StrictHostKeyChecking accept-new\n    RemoteCommand /bin/zsh -l" ~/.ssh/config
+else
+    echo -e "\nHost k8s-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    StrictHostKeyChecking accept-new\n    RemoteCommand /bin/zsh -l" >> ~/.ssh/config
+fi
 
 echo "Pod '$POD_NAME' is running and ready for SSH connection"
 echo "Your dedicated NodePort is: $NODE_PORT"
@@ -84,6 +84,7 @@ echo "Node IP: $NODE_IP"
 # output terminal connection information
 echo -e "\nFor access from a terminal, use these settings in ~/.ssh/config:\n"
 echo "Host rsm-msba-terminal"
+echo "    Host $NODE_IP"
 echo "    User $USER"
 echo "    Port $NODE_PORT"
 echo "    RequestTTY yes"

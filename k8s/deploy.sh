@@ -1,6 +1,8 @@
-cd ~/gh/docker-k8s/k8s
-./start-pod.sh
+# cd ~/gh/docker-k8s/k8s
+k8s/start-pod.sh
 clear
+
+# newgrp microk8s
 
 microk8s kubectl get pod
 microk8s kubectl get services
@@ -17,9 +19,10 @@ microk8s kubectl describe pod $pod_name
 
 microk8s kubectl exec -it $pod_name -- openssl version
 microk8s kubectl exec -it $pod_name -- ls -la /home/jovyan
-microk8s kubectl exec -it $pod_name -- su jovyan -c /bin/zsh
+microk8s kubectl exec -it $pod_nam -- su jovyan -c /bin/zsh
 
 # can you connect to the pod using ssh?
+ssh -vvv k8s-pod
 ssh k8s-pod
 
 # Stop microk8s
