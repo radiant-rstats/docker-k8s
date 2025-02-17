@@ -3,7 +3,7 @@
 /*
 Run the below command to create a new database
 
-source <(curl -s https://raw.githubusercontent.com/radiant-rstats/docker-k8s/master/postgres/postgres-createdb.sh)
+source <(curl -s https://raw.githubusercontent.com/radiant-rstats/docker-k8s/refs/heads/main/files/postgres/postgres-createdb.sh)
 
 Add connections for the databases that you will use in the SQL + ETL class.
 Make the PostgreSQL Explorer extension visible and click on the + icon to add connections. Use:
