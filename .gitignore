@@ -13,4 +13,6 @@ connectorx/logs/
 connectorx/wheels/
 causalml/logs/
 causalml/wheels/
+.devcontainer
+.devcontainer.json
 
