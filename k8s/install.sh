@@ -5,7 +5,9 @@ sudo snap install microk8s --classic --channel=1.32
 sudo groupadd microk8s
 
 # Add desired users to the group (replace username with actual usernames)
+sudo su
 sudo usermod -a -G microk8s $USER
+exit
 groups
 
 # setup to work for anyone in the microk8s group
@@ -28,8 +30,6 @@ EOF
 sudo tee /etc/profile.d/microk8s.sh << 'EOF'
 export KUBECONFIG=/opt/k8s/microk8s/config
 EOF
-
-newgrp microk8s
 
 # check that you have nvidia
 nvidia-smi

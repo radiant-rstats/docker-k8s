@@ -141,6 +141,7 @@ RUN chmod +x /usr/local/bin/radiant /usr/local/bin/gitgadget
 
 # startup script that starts sshd and postgres and manages permissions
 COPY files/start-container.sh /usr/local/bin/
+COPY files/sshd/sshd_config /etc/ssh/sshd_config
 RUN chmod +x /usr/local/bin/start-container.sh
 
 EXPOSE 22 8765
