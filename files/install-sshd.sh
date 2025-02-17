@@ -10,8 +10,10 @@ mkdir /var/run/sshd
 ssh-keygen -A
 
 # Configure SSH
-echo "PermitRootLogin no" >> /etc/ssh/sshd_config
-echo "UsePAM yes" >> /etc/ssh/sshd_config
+# echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+# echo "UsePAM yes" >> /etc/ssh/sshd_config
+# replaced by new default config
+
 
 echo "Cleaning up after installation..."
 apt clean
