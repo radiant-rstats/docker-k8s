@@ -90,7 +90,3 @@ spec:
     port: 22
     targetPort: 22
     nodePort: ${NODE_PORT}  # Will be calculated and set by the startup script
-  - name: postgresql
-    protocol: TCP
-    port: 8765
-    targetPort: 8765

@@ -6,6 +6,9 @@ clear
 microk8s kubectl get pod
 microk8s kubectl get services
 
+microk8s kubectl get svc -A | grep 30099
+microk8s kubectl get svc -A | grep 30364
+
 # microk8s kubectl delete all --all -n default
 microk8s kubectl delete deployment rsm-msba-vnijs
 microk8s kubectl delete service rsm-msba-ssh-vnijs

@@ -18,13 +18,15 @@ export NODE_PORT=$(calculate_port "${USER}-gpu")
 
 # Function to get pod status
 check_pod_status() {
-    POD_STATUS=$(microk8s kubectl get pods -l user=$USER -o jsonpath='{.items[0].status.phase}' 2>/dev/null)
-    POD_NAME=$(microk8s kubectl get pods -l user=$USER -o jsonpath="{.items[0].metadata.name}" 2>/dev/null)
+    local POD_TYPE=$1  # Accept pod type as parameter (e.g., "gpu" or "msba")
+    # Get status of pods that start with the pod type and have the user label
+    POD_STATUS=$(microk8s kubectl get pods -l user=$USER,app=$POD_TYPE -o jsonpath='{.items[0].status.phase}' 2>/dev/null)
+    POD_NAME=$(microk8s kubectl get pods -l user=$USER,app=$POD_TYPE -o jsonpath="{.items[0].metadata.name}" 2>/dev/null)
     echo $POD_STATUS
 }
 
 # Check if pod already exists and is running
-POD_STATUS=$(check_pod_status)
+POD_STATUS=$(check_pod_status "rsm-msba-gpu")
 if [ "$POD_STATUS" = "Running" ]; then
     echo "Pod already running for user $USER"
 else
