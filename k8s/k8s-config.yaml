@@ -1,8 +1,7 @@
-# kubernetes-ssh-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rsm-msba-${USER}  # Will be replaced with host username
+  name: rsm-msba-${USER}
   labels:
     app: rsm-msba
     user: ${USER}
@@ -15,8 +14,8 @@ spec:
   template:
     metadata:
       annotations:
-        NB_UID: "${USER_UID}"  # Will be replaced with host UID
-        NB_GID: "${USER_GID}"  # Will be replaced with host GID
+        NB_UID: "${USER_UID}"
+        NB_GID: "${USER_GID}"
       labels:
         app: rsm-msba
         user: ${USER}
@@ -63,23 +62,21 @@ spec:
               fieldPath: metadata.annotations['NB_GID']
         ports:
         - containerPort: 22
-        # - containerPort: 8765
-        # - containerPort: 8181
-        # - containerPort: 8282
-        # - containerPort: 8000
         volumeMounts:
         - name: home-volume
           mountPath: /home/jovyan
       volumes:
       - name: home-volume
         hostPath:
-          path: /home/${USER}  # Will be replaced with actual home directory
+          path: /home/${USER}
           type: Directory
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rsm-msba-ssh-${USER}  # Will be replaced with actual username
+  name: rsm-msba-ssh-${USER}
+  annotations:
+    nodePort: "${NODE_PORT}"
 spec:
   type: NodePort
   selector:
@@ -90,6 +87,7 @@ spec:
     protocol: TCP
     port: 22
     targetPort: 22
+    nodePort: ${NODE_PORT}  # Will be calculated and set by the startup script
   - name: postgresql
     protocol: TCP
     port: 8765

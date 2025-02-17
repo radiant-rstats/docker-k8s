@@ -19,7 +19,6 @@ microk8s kubectl exec -it $pod_name -- openssl version
 microk8s kubectl exec -it $pod_name -- ls -la /home/jovyan
 microk8s kubectl exec -it $pod_name -- su jovyan -c /bin/zsh
 
-
 # can you connect to the pod using ssh?
 ssh k8s-pod
 
