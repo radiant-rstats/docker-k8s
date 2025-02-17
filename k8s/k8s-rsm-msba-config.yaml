@@ -25,14 +25,14 @@ spec:
         fsGroup: ${USER_GID}
       containers:
       - name: rsm-msba-container
-        image: vnijs/rsm-msba-k8s-intel:latest
+        image: vnijs/rsm-msba-k8s-intel:${INTEL_VERSION}
         resources:
           requests:
             memory: "16Gi"
-            cpu: "2"
+            cpu: "1"
           limits:
-            memory: "32Gi"
-            cpu: "4"
+            memory: "64Gi"
+            cpu: "2"
         env:
         - name: TZ
           value: "America/Los_Angeles"

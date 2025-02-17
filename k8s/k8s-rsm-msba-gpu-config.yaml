@@ -25,15 +25,15 @@ spec:
         fsGroup: ${USER_GID}
       containers:
       - name: rsm-msba-container
-        image: vnijs/rsm-msba-k8s-gpu:latest
+        image: vnijs/rsm-msba-k8s-gpu:${GPU_VERSION}
         resources:
           requests:
-            memory: "16Gi"
-            cpu: "2"
+            memory: "32Gi"
+            cpu: "1"
             nvidia.com/gpu: 1  # Request 1 GPU
           limits:
-            memory: "32Gi"
-            cpu: "4"
+            memory: "64Gi"
+            cpu: "2"
             nvidia.com/gpu: 1  # Limit to 1 GPU
         env:
         - name: TZ
@@ -76,7 +76,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rsm-msba-ssh-gpu-${USER}
+  name: rsm-msba-gpu-ssh-${USER}
   annotations:
     nodePort: "${NODE_PORT}"
 spec:

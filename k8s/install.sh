@@ -50,9 +50,8 @@ sudo chmod -R 777 /opt/k8s/tmp
 sudo mkdir -p /opt/k8s/bin
 cd ~/gh/docker-k8s
 sudo cp k8s/start-pod.sh /opt/k8s/bin
-sudo cp k8s/k8s-config.yaml /opt/k8s/bin
-sudo cp k8s/start-gpu-pod.sh /opt/k8s/bin
-sudo cp k8s/k8s-gpu-config.yaml /opt/k8s/bin
+sudo cp k8s/k8s-rsm-msba-config.yaml /opt/k8s/bin
+sudo cp k8s/k8s-rsm-msba-gpu-config.yaml /opt/k8s/bin
 sudo chmod -R 755 /opt/k8s/bin
 
 # Create the microk8s-specific directory
