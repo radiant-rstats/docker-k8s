@@ -57,5 +57,8 @@ tail -f /var/log/sshd/sshd.log &
 sleep 2
 sudo -u postgres tail -f /var/log/postgresql/postgresql-*.log 2>/dev/null &
 
+# making sure that /bin/zsh is the default
+sudo usermod -s /bin/zsh jovyan || echo "Failed to change shell"
+
 # Wait for all background processes
 wait

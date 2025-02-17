@@ -88,7 +88,7 @@ echo "    Host $NODE_IP"
 echo "    User $USER"
 echo "    Port $NODE_PORT"
 echo "    RequestTTY yes"
-echo "    RemoteCommand bash -c '/opt/k8s/bin/startup-pod.sh && sleep 3 && exec ssh -t jovyan@localhost -p 30364 /bin/zsh -l'"
+echo "    RemoteCommand zsh -c '/opt/k8s/bin/start-pod.sh && sleep 3 && exec ssh -t jovyan@localhost -p 30364 /bin/zsh -l'"
 echo "    StrictHostKeyChecking accept-new"
 
 # output VS Code connection information
@@ -96,5 +96,5 @@ echo -e "\nFor VS Code Remote-SSH connection, use these settings in ~/.ssh/confi
 echo "Host rsm-msba-vscode"
 echo "    User jovyan"
 echo "    Port $NODE_PORT"
-echo "    ProxyCommand ssh -t $USER@$NODE_IP \"bash -c '/opt/k8s/bin/startup-pod.sh >/dev/null 2>&1 && sleep 3 && nc localhost %p'\""
+echo "    ProxyCommand ssh -t $USER@$NODE_IP \"zsh -c '/opt/k8s/bin/start-pod.sh >/dev/null 2>&1 && sleep 3 && nc localhost %p'\""
 echo "    StrictHostKeyChecking accept-new"

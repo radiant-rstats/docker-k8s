@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-sudo chsh -s /bin/zsh jovyan
 export ZSH="/home/${NB_USER}/.rsm-msba/zsh/.oh-my-zsh"
 
 # oh-my-zsh
