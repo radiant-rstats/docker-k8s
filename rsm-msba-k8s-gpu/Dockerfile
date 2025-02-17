@@ -1,21 +1,30 @@
 FROM vnijs/rsm-msba-k8s-intel:1.1.0
-
 USER root
 
-ARG DOCKERHUB_VERSION
-ENV DOCKERHUB_VERSION=${DOCKERHUB_VERSION}
-ENV DOCKERHUB_NAME="rsm-msba-k8s-gpu"
+# Install CUDA repository and keys
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    gnupg2 \
+    && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb \
+    && dpkg -i cuda-keyring_1.1-1_all.deb \
+    && rm cuda-keyring_1.1-1_all.deb
 
-COPY files/install-cuda.sh setup.sh
-RUN chmod +x setup.sh && \
-    ./setup.sh && \
-    rm setup.sh
+# Install CUDA 12.8 (system CUDA, which is backward compatible)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cuda-toolkit-12-8 \
+    cuda-libraries-12-8 \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Set CUDA environment variables
+ENV PATH=/usr/local/cuda/bin:${PATH}
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}
 
 EXPOSE 22 8765
 
 CMD ["/usr/local/bin/start-container.sh"]
 
-# switch back to jovyan to avoid accidental container runs as root
+# Switch back to jovyan to avoid accidental container runs as root
 USER ${NB_UID}
-ENV HOME /home/${NB_USER}
+ENV HOME=/home/${NB_USER}
 WORKDIR "${HOME}"

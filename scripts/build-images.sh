@@ -69,12 +69,15 @@ if [ "$(uname -m)" = "arm64" ]; then
   LABEL=rsm-msba-k8s-arm
   build
 else
-
-  # LABEL=rsm-msba-k8s-gpu
-  # build
-
-  LABEL=rsm-msba-k8s-intel
-  build
+  if [[ $(hostname -I) == *"132.249.225.85"* ]]; then
+    LABEL=rsm-msba-k8s-gpu
+    echo $LABEL
+    # build
+  else
+    LABEL=rsm-msba-k8s-intel
+    echo $LABEL
+    # build
+  fi
 fi
 
 # run script using to ensure it keeps running on a server even if the connection goes down
