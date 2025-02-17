@@ -1,0 +1,33 @@
+# SSH Server Configuration
+Port 22
+AddressFamily any
+ListenAddress 0.0.0.0
+
+# Security
+PermitRootLogin no
+MaxAuthTries 6
+MaxSessions 10
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitEmptyPasswords no
+KbdInteractiveAuthentication no
+UsePAM yes
+
+# Forwarding and Connection Settings
+AllowAgentForwarding yes
+AllowTcpForwarding yes
+GatewayPorts no
+X11Forwarding no
+PermitTTY yes
+PrintMotd no
+
+# Keep Alive Settings
+TCPKeepAlive yes
+ClientAliveInterval 60
+ClientAliveCountMax 3
+
+# Environment
+AcceptEnv LANG LC_*
+
+# SFTP Subsystem
+Subsystem sftp /usr/lib/openssh/sftp-server
