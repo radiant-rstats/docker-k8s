@@ -137,6 +137,7 @@ COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh
 COPY files/zsh/usethis /usr/local/bin/usethis
 COPY files/zsh/clean.sh /usr/local/bin/clean
+COPY files/zsh/github.sh /usr/local/bin/github
 COPY files/zsh/scripts/radiant.sh /usr/local/bin/radiant
 COPY files/zsh/scripts/gitgadget.sh /usr/local/bin/gitgadget
 RUN chmod +x /usr/local/bin/radiant /usr/local/bin/gitgadget

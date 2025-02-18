@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV PATH=/usr/local/cuda/bin:${PATH}
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}
 
+# add github setup script
+COPY files/zsh/github.sh /usr/local/bin/github
+
 EXPOSE 22 8765
 
 CMD ["/usr/local/bin/start-container.sh"]

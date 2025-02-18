@@ -72,11 +72,11 @@ else
   if [[ $(hostname -I) == *"132.249.225.85"* ]]; then
     LABEL=rsm-msba-k8s-gpu
     echo $LABEL
-    # build
+    build
   else
     LABEL=rsm-msba-k8s-intel
     echo $LABEL
-    # build
+    build
   fi
 fi
 
