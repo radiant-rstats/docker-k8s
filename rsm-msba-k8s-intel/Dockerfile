@@ -137,8 +137,7 @@ COPY files/zsh/usethis /usr/local/bin/usethis
 COPY files/zsh/clean.sh /usr/local/bin/clean
 COPY files/zsh/github.sh /usr/local/bin/github
 COPY files/zsh/scripts/radiant.sh /usr/local/bin/radiant
-COPY files/zsh/scripts/gitgadget.sh /usr/local/bin/gitgadget
-RUN chmod +x /usr/local/bin/radiant /usr/local/bin/gitgadget
+RUN chmod +x /usr/local/bin/radiant
 
 # startup script that starts sshd and postgres and manages permissions
 COPY files/start-container.sh /usr/local/bin/

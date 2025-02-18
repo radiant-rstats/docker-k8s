@@ -370,7 +370,7 @@ else
   fi
   {
     docker run --name ${LABEL} --net ${NETWORK} -d \
-      -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 \
+      -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 \
       -e TZ=${TIMEZONE} \
       -v "${HOMEDIR}":/home/${NB_USER} $MNT \
       -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
@@ -394,9 +394,9 @@ else
     echo $BOUNDARY
     echo "Press (1) to show a (ZSH) terminal, followed by [ENTER]:"
     echo "Press (2) to show Radiant, followed by [ENTER]:"
-    echo "Press (3) to show GitGadget, followed by [ENTER]:"
-    echo "Press (4) to update the ${LABEL} container, followed by [ENTER]:"
-    echo "Press (5) to update the launch script, followed by [ENTER]:"
+    echo "Press (3) to update the ${LABEL} container, followed by [ENTER]:"
+    echo "Press (4) to update the launch script, followed by [ENTER]:"
+    echo "Press (5) to setup Git and GitHub, followed by [ENTER]:"
     echo "Press (6) to clear local R packages, followed by [ENTER]:"
     echo "Press (7) to clear local Python packages, followed by [ENTER]:"
     echo "Press (8) to start a Selenium container, followed by [ENTER]:"
@@ -487,24 +487,7 @@ else
         sleep 2
         open_browser http://localhost:${menu_arg}
       fi
-    elif [ ${menu_exec} == 3 ]; then
-      if [ "${menu_arg}" == "" ]; then
-        echo "Starting GitGadget in the default browser on port 8282"
-        docker exec -d ${LABEL} /opt/conda/bin/R -e "gitgadget:::gitgadget(host='0.0.0.0', port=8282, launch.browser=FALSE)"
-        sleep 2
-        open_browser http://localhost:8282
-      else
-        echo "Starting GitGadget in the default browser on port ${menu_arg}"
-        docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
-          -p 127.0.0.1:${menu_arg}:${menu_arg} \
-          -e TZ=${TIMEZONE} \
-          -v "${HOMEDIR}":/home/${NB_USER} $MNT \
-          ${IMAGE}:${IMAGE_VERSION}
-        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "gitgadget:::gitgadget(host='0.0.0.0', port=${menu_arg}, launch.browser=FALSE)"
-        sleep 2
-        open_browser http://localhost:${menu_arg}
-      fi
-    elif [ ${menu_exec} == 4 ]; then
+   elif [ ${menu_exec} == 3 ]; then
       echo $BOUNDARY
       echo "Updating the ${LABEL} computing environment"
       clean_rsm_containers
@@ -530,7 +513,7 @@ else
       fi
       $CMD
       exit 1
-    elif [ ${menu_exec} == 5 ]; then
+    elif [ ${menu_exec} == 4 ]; then
       echo "Updating ${IMAGE} launch script"
       clean_rsm_containers
       if [ -d "${HOMEDIR}/Desktop" ]; then
@@ -556,6 +539,15 @@ else
         echo "\nPress any key to continue"
         read any_to_continue
       }
+    elif [ ${menu_exec} == 5 ]; then
+      echo $BOUNDARY
+      echo "Setup Git and Github (y/n)?"
+      echo $BOUNDARY
+      read github
+
+      if [ "${github}" == "y" ]; then
+        /usr/local/bin/github
+      fi
     elif [ ${menu_exec} == 6 ]; then
       echo $BOUNDARY
       echo "Remove locally installed R packages (y/n)?"

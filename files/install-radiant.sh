@@ -33,7 +33,6 @@ R -e "install.packages('igraph', repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "Sys.setenv(ARROW_PARQUET = 'ON', ARROW_WITH_SNAPPY = 'ON', ARROW_R_DEV = TRUE); remotes::install_version('arrow', version='${PYARROW_VERSION}', repos='${CRAN}', Ncpus=${NCPUS})" \
   -e "install.packages(c('radiant', 'dbplyr', 'DBI', 'RPostgres', 'RSQLite', 'pool', 'usethis'), repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "remotes::install_github('radiant-rstats/radiant.update', upgrade = 'never')" \
-  -e "remotes::install_github('vnijs/gitgadget', upgrade = 'never')" \
   -e "remotes::install_github('radiant-rstats/radiant.data', upgrade = 'never')" \
   -e "remotes::install_github('radiant-rstats/radiant.design', upgrade = 'never')" \
   -e "remotes::install_github('radiant-rstats/radiant.basics', upgrade = 'never')" \
