@@ -83,37 +83,47 @@ if [ ! -d ~/.rsm-msba ]; then
     chmod g+s ~/.rsm-msba
 fi
 
+# Check if the test key pair exists
+if [ ! -f ~/.ssh/k8s_pod_key ]; then
+    echo "Generating new SSH key pair to test pod access..."
+    ssh-keygen -t rsa -f ~/.ssh/k8s_pod_key -N ""
+    chmod 600 ~/.ssh/k8s_pod_key
+fi
+
+# Create authorized_keys if it doesn't exist
+if [ ! -f ~/.ssh/authorized_keys ]; then
+    echo "Creating authorized_keys file..."
+    touch ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+fi
+
+# Check if the public key is already in authorized_keys
+if ! grep -q "$(cat ~/.ssh/k8s_pod_key.pub)" ~/.ssh/authorized_keys; then
+    echo "Adding public key to authorized_keys to test pod access..."
+    cat ~/.ssh/k8s_pod_key.pub >> ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+fi
+
+# Create ssh config if it doesn't exist
+if [ ! -f ~/.ssh/config ]; then
+    echo "Creating config file..."
+    touch ~/.ssh/config
+    chmod 600 ~/.ssh/config
+fi
+
 # Add or update SSH config
-if grep -q "Host k8s-$APP-pod" ~/.ssh/config; then
-    sed -i "/Host k8s-$APP-pod/,/RemoteCommand/c\Host k8s-$APP-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    StrictHostKeyChecking accept-new\n    RemoteCommand /bin/zsh -l" ~/.ssh/config
-else
-    echo -e "\nHost k8s-$APP-pod\n    HostName $NODE_IP\n    User jovyan\n    Port $NODE_PORT\n    RequestTTY yes\n    StrictHostKeyChecking accept-new\n    RemoteCommand /bin/zsh -l" >> ~/.ssh/config
+if ! grep -q "Host k8s-$APP-pod" ~/.ssh/config; then
+    echo -e "\nHost k8s-$APP-pod\n    HostName localhost\n    User jovyan\n    Port $NODE_PORT\n    IdentityFile ~/.ssh/k8s_pod_key\n    StrictHostKeyChecking accept-new\n" >> ~/.ssh/config
 fi
 
 echo "Pod '$POD_NAME' is running and ready for SSH connection"
 echo "Your dedicated NodePort is: $NODE_PORT"
 echo "Node IP: $NODE_IP"
 
-# output terminal connection information
-echo -e "\nFor access from a terminal, use these settings in ~/.ssh/config:\n"
-echo "Host $APP-terminal"
-echo "    Host $NODE_IP"
-echo "    User $USER"
-echo "    Port $NODE_PORT"
-echo "    RequestTTY yes"
-echo "    RemoteCommand zsh -c '/opt/k8s/bin/start$CALC-pod.sh && sleep 3 && exec ssh -t jovyan@localhost -p $NODE_PORT /bin/zsh -l'"
-echo "    StrictHostKeyChecking accept-new"
-echo "    ServerAliveInterval 60"
-echo "    ServerAliveCountMax 5"
-echo "    ConnectTimeout 120"
-
-# output VS Code connection information
-echo -e "\nFor VS Code Remote-SSH connection, use these settings in ~/.ssh/config:\n"
-echo "Host $APP-vscode"
+# output ssh connection information
+echo -e "\nAdd connection settings to ~/.ssh/config:\n"
+echo "Host $APP"
 echo "    User jovyan"
 echo "    Port $NODE_PORT"
-echo "    ProxyCommand ssh -t $USER@$NODE_IP \"zsh -c '/opt/k8s/bin/start$CALC-pod.sh >/dev/null 2>&1 && sleep 3 && nc localhost %p'\""
+echo "    ProxyCommand ssh $USER@$NODE_IP \"zsh -c '/opt/k8s/bin/start-pod.sh $CALC >/dev/null 2>&1 && sleep 3 && nc localhost %p'\""
 echo "    StrictHostKeyChecking accept-new"
-echo "    ServerAliveInterval 60"
-echo "    ServerAliveCountMax 5"
-echo "    ConnectTimeout 120"

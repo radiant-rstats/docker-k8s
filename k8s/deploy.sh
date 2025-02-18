@@ -1,6 +1,7 @@
 cd ~/gh/docker-k8s/
 k8s/start-pod.sh
 k8s/start-pod.sh "-gpu"
+cat ~/.ssh/config
 clear
 
 microk8s kubectl get pod
@@ -35,7 +36,7 @@ ssh -vvv k8s-rsm-msba-pod
 ssh k8s-rsm-msba-pod
 
 ssh -vvv k8s-rsm-msba-gpu-pod
-ssh k8s-rsm-msba-pod
+ssh k8s-rsm-msba-gpu-pod
 
 # Stop microk8s
 microk8s stop
