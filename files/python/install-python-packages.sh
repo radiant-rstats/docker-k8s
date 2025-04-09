@@ -30,7 +30,6 @@ mamba install --quiet --yes -c conda-forge \
   linearmodels \
   IPython \
   jupytext \
-  black \
   isort \
   streamlit \
   xlrd \
@@ -61,7 +60,7 @@ pip install --no-cache-dir --root-user-action=ignore \
   shinywidgets \
   dowhy \
   econml \
-  uv \
+  causalml[torch] \
   pyspark==4.0.0.dev2
 
 pip install --no-cache-dir --root-user-action=ignore \
@@ -76,7 +75,6 @@ pip install --no-cache-dir --root-user-action=ignore \
 
 # causing issues
 # alpaca-trade-api \
-
 # updating conda to the latest version
 mamba update -n base -c conda-forge conda
 

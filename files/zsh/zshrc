@@ -85,6 +85,7 @@ plugins=(
   zsh-completions
   zsh-autosuggestions
   zsh-syntax-highlighting
+  uv
 )
 
 # Add autojump initialization

@@ -146,6 +146,18 @@ COPY files/start-container.sh /usr/local/bin/
 COPY files/sshd/sshd_config /etc/ssh/sshd_config
 RUN chmod +x /usr/local/bin/start-container.sh
 
+# setup the GitHub CLI
+COPY files/install-gh.sh setup.sh
+RUN chmod +x setup.sh && \
+    ./setup.sh && \
+    rm setup.sh
+
+# setup UV
+COPY files/install-uv.sh setup.sh
+RUN chmod +x setup.sh && \
+    ./setup.sh && \
+    rm setup.sh
+
 EXPOSE 22 8765
 
 CMD ["/usr/local/bin/start-container.sh"]
