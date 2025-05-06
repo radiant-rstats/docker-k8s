@@ -1,18 +1,21 @@
 # Contents
 
-- [Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with and ARM chip (e.g., M3)](#installing-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-ARM-chip)
-- [Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip](#updating-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-ARM-chip)
-- [Using VS Code](#using-vs-code)
-- [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
-- [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-- [Cleanup](#cleanup)
-- [Getting help](#getting-help)
-- [Trouble shooting](#trouble-shooting)
-- [Optional](#optional)
+- [Contents](#contents)
+  - [Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3)](#installing-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip-eg-m3)
+  - [Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip](#updating-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip)
+  - [Using VS Code](#using-vs-code)
+  - [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
+    - [Using pip to install python packages](#using-pip-to-install-python-packages)
+    - [Removing locally installed packages](#removing-locally-installed-packages)
+  - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
+  - [Cleanup](#cleanup)
+  - [Getting help](#getting-help)
+  - [Trouble shooting](#trouble-shooting)
+  - [Optional](#optional)
 
 ## Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3)
 
-Please follow the instructions below to install the rsm-msba-k8s-arm computing environment. It has Python, R, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
+Please follow the instructions below to install the rsm-msba-k8s-arm computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
 **Step 1**: Install docker from the link below and make sure it is running. You will know it is running if you see the icon below at the top-right of your screen. If the containers in the image are moving up and down docker hasn't finished starting up yet.
 
@@ -28,7 +31,7 @@ You should also go to the "Advanced" tab and configure the installation of the C
 
 <img src="figures/docker-system-mac.png" width="500px">
 
-Optional: If you are interested, the linked video gives a brief intro to what Docker is: https://www.youtube.com/watch?v=YFl2mCHdv24
+Optional: If you are interested, the linked video gives a brief intro to what Docker is: <https://www.youtube.com/watch?v=YFl2mCHdv24>{target="_blank"}
 
 **Step 2**: Open a terminal and copy-and-paste the code below
 
@@ -52,7 +55,7 @@ This step will clone and start up a script that will finalize the installation o
 
 The code above also copies the file `launch-rsm-msba-k8s-arm.sh` to `launch-rsm-msba.command` on your Desktop. You will be able to double-click this file to start the container again in the future.
 
-Run the command below to launch the docker container from the command line.
+Run the command below to launch the docker container from a terminal (i.e., iTerm2).
 
 ```bash
 ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh -v ~;
