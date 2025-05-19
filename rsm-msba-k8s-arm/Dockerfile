@@ -11,13 +11,11 @@ ENV DOCKERHUB_NAME="rsm-msba-k8s-arm"
 
 # python env variables
 # ENV PANDAS_VERSION="2.2.2"
-ENV PYARROW_VERSION="17.0.0"
-# needed to install gensim
-ENV SCIPY_VERSION="1.12.0"
+ENV PYARROW_VERSION="20.0.0"
 
 # R and Posit related env variables
-ENV QUARTO_VERSION="1.7.5"
-ENV R_VERSION=4.4.2
+ENV QUARTO_VERSION="1.7.31"
+ENV R_VERSION=4.4.3
 ENV TERM=xterm
 ENV R_HOME=/opt/conda/lib/R
 ENV PATH="/usr/local/bin:$PATH"
@@ -154,6 +152,12 @@ RUN chmod +x setup.sh && \
 
 # setup UV
 COPY files/install-uv.sh setup.sh
+RUN chmod +x setup.sh && \
+    ./setup.sh && \
+    rm setup.sh
+
+# setup crawl4ai
+COPY files/install-crawl4ai.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh

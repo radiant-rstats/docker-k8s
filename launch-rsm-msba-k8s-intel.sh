@@ -400,6 +400,7 @@ else
     echo "Press (6) to clear local R packages, followed by [ENTER]:"
     echo "Press (7) to clear local Python packages, followed by [ENTER]:"
     echo "Press (8) to start a Selenium container, followed by [ENTER]:"
+    echo "Press (9) to start a Crawl4AI container, followed by [ENTER]:"
     echo "Press (h) to show help in the terminal and browser, followed by [ENTER]:"
     echo "Press (c) to commit changes, followed by [ENTER]:"
     echo "Press (q) to stop the docker process, followed by [ENTER]:"
@@ -601,6 +602,28 @@ else
       echo "Press any key to continue"
       echo $BOUNDARY
       read continue
+    elif [ "${menu_exec}" == 9 ]; then
+      if [ "${menu_arg}" != "" ]; then
+        crawl_port=${menu_arg}
+      else
+        crawl_port=11235
+      fi
+      CPORT=$(curl -s localhost:${crawl_port} 2>/dev/null)
+      echo $BOUNDARY
+      crawl_nr=($(docker ps -a | awk "/rsm-crawl/" | awk '{print $1}'))
+      crawl_nr=${#crawl_nr[@]}
+      if [ "$CPORT" != "" ]; then
+        echo "A Crawl4AI container may already be running on port ${crawl_port}"
+        crawl_nr=$((${crawl_nr}-1))
+      else
+        docker run --name="rsm-crawl${crawl_nr}" --net ${NETWORK} -d -p 127.0.0.1:${crawl_port}:11235 --platform linux/arm64 unclecode/crawl4ai:latest
+      fi
+      echo "You can access crawl4ai at ip: rsm-crawl${crawl_nr}, port: 11235 from the"
+      echo "${LABEL} container (rsm-crawl${crawl_nr}:11235) and ip: 127.0.0.1,"
+      echo "port: ${crawl_port} (http://127.0.0.1:${crawl_port}) from the host OS"
+      echo "Press any key to continue"
+      echo $BOUNDARY
+      read continue
     elif [ "${menu_exec}" == "h" ]; then
       echo $BOUNDARY
       echo "Showing help for your OS in the default browser"
@@ -703,6 +726,13 @@ else
         echo "Stopping Selenium containers ..."
         eval "docker stop $selenium_containers"
         eval "docker container rm $selenium_containers"
+      fi
+
+      crawl_containers=$(docker ps -a --format {{.Names}} | grep 'crawl' | tr '\n' ' ')
+      if [ "${crawl_containers}" != "" ]; then
+        echo "Stopping crawl4ai containers ..."
+        eval "docker stop $crawl_containers"
+        eval "docker container rm $crawl_containers"
       fi
 
       clean_rsm_containers

@@ -3,7 +3,7 @@
 set -e
 
 mamba install --quiet --yes -c conda-forge \
-  scipy=${SCIPY_VERSION} \
+  scipy \
   pandas \
   sqlalchemy \
   psycopg2 \

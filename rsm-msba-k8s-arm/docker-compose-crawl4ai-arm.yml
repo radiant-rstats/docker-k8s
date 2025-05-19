@@ -1,0 +1,13 @@
+services:
+  crawl4ai:
+    image: unclecode/crawl4ai:latest
+    platform: linux/arm64
+    container_name: rsm-crawl
+    environment:
+      - CRAWL_PORT=11235
+    networks:
+      - rsm-docker
+
+networks:
+  rsm-docker:
+    name: rsm-docker
