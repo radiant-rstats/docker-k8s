@@ -17,7 +17,7 @@ fi
 NCPUS=${NCPUS:--1}
 
 apt update -qq || { echo "Failed to update package list"; exit 1; }
-apt -y install libpq-dev libssl-dev
+apt -y install libpq-dev libssl-dev libxml2-dev liblzma-dev libcurl4-openssl-dev
 apt clean
 apt autoremove -y
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
