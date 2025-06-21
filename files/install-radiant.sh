@@ -17,12 +17,12 @@ fi
 NCPUS=${NCPUS:--1}
 
 apt update -qq || { echo "Failed to update package list"; exit 1; }
-apt -y install libpq-dev libssl-dev libxml2-dev liblzma-dev libcurl4-openssl-dev
+apt -y install libpq-dev libssl-dev
 apt clean
 apt autoremove -y
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-mamba install --yes -c conda-forge pyarrow=${PYARROW_VERSION} libgit2 sqlite
+mamba install --yes -c conda-forge pyarrow=${PYARROW_VERSION} libgit2 sqlite libxml2 xz
 
 R -e "install.packages('reticulate', repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "install.packages(c('shiny', 'png', 'miniUI', 'webshot', 'tinytex'), repo='${CRAN}', Ncpus=${NCPUS})" \
