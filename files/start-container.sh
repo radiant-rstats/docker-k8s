@@ -41,10 +41,6 @@ sudo touch /var/log/sshd/sshd.log
 sudo chown ${NB_USER}:${NB_GID:-users} /var/log/sshd/sshd.log
 sudo chmod 640 /var/log/sshd/sshd.log
 
-echo "Activating conda environment..."
-source /opt/conda/etc/profile.d/conda.sh
-conda activate base
-
 echo "Starting SSHD service..."
 sudo /usr/sbin/sshd -E /var/log/sshd/sshd.log
 

@@ -39,12 +39,11 @@ script_home () {
 function launch_usage() {
   echo "Usage: $0 [-t tag (version)] [-d directory]"
   echo "  -t, --tag         Docker image tag (version) to use"
-  echo "  -d, --directory   Project directory to use"
   echo "  -v, --volume      Volume to mount as home directory"
   echo "  -s, --show        Show all output generated on launch"
   echo "  -h, --help        Print help and exit"
   echo ""
-  echo "Example: $0 --tag 1.0.0 --volume ~/project_1"
+  echo "Example: $0 --tag 1.3.0 --volume ~/project_1"
   echo ""
   exit 1
 }
@@ -54,7 +53,6 @@ LAUNCH_ARGS="${@:1}"
 ## parse command-line arguments
 while [[ "$#" > 0 ]]; do case $1 in
   -t|--tag) ARG_TAG="$2"; shift;shift;;
-  -d|--directory) ARG_DIR="$2";shift;shift;;
   -v|--volume) ARG_VOLUME="$2";shift;shift;;
   -s|--show) ARG_SHOW="show";shift;shift;;
   -h|--help) launch_usage;shift; shift;;
@@ -238,7 +236,7 @@ else
     HOMEDIR="$ARG_VOLUME"
   fi
 
-  if [ "$ARG_DIR" != "" ] || [ "$ARG_HOME" != "" ]; then
+  if [ "$ARG_HOME" != "" ]; then
     ## change mapping of docker home directory to local directory if specified
     if [ "${ARG_HOME}" != "" ] && [ ! -d "${ARG_HOME}" ]; then
       echo "The directory ${ARG_HOME} does not yet exist."
@@ -246,26 +244,6 @@ else
       sleep 5
       exit 1
     fi
-    if [ "$ARG_DIR" != "" ]; then
-      if [ ! -d "${ARG_DIR}" ]; then
-        echo "The directory ${ARG_DIR} does not yet exist."
-        echo "Please create the directory and restart the launch script"
-        sleep 5
-        exit 1
-      fi
-      ARG_HOME="$(cd "$ARG_DIR"; pwd)"
-      ## https://unix.stackexchange.com/questions/295991/sed-error-1-not-defined-in-the-re-under-os-x
-      ARG_HOME="$(echo "$ARG_HOME" | sed -E "s|^/([A-z]{1})/|\1:/|")"
-
-      echo $BOUNDARY
-      echo "Do you want to access git, ssh, and R configuration in this directory (y/n)"
-      echo "${ARG_HOME}"
-      echo $BOUNDARY
-      read copy_config
-    else
-      copy_config="y"
-    fi
-
     if [ "${copy_config}" == "y" ]; then
       if [ -f "${HOMEDIR}/.inputrc" ] && [ ! -s "${ARG_HOME}/.inputrc" ]; then
         MNT="$MNT -v ${HOMEDIR}/.inputrc:/home/$NB_USER/.inputrc"
@@ -336,11 +314,6 @@ else
     HOMEDIR="${ARG_HOME}"
   fi
 
-  ## adding an environment dir for conda to use
-  if [ ! -d "${HOMEDIR}/.rsm-msba/conda/envs" ]; then
-    mkdir -p "${HOMEDIR}/.rsm-msba/conda/envs"
-  fi
-
   ## adding an dir for zsh to use
   if [ ! -d "${HOMEDIR}/.rsm-msba/zsh" ]; then
     mkdir -p "${HOMEDIR}/.rsm-msba/zsh"
@@ -397,10 +370,8 @@ else
     echo "Press (3) to update the ${LABEL} container, followed by [ENTER]:"
     echo "Press (4) to update the launch script, followed by [ENTER]:"
     echo "Press (5) to setup Git and GitHub, followed by [ENTER]:"
-    echo "Press (6) to clear local R packages, followed by [ENTER]:"
-    echo "Press (7) to clear local Python packages, followed by [ENTER]:"
-    echo "Press (8) to start a Selenium container, followed by [ENTER]:"
-    echo "Press (9) to start a Crawl4AI container, followed by [ENTER]:"
+    echo "Press (6) to start a Selenium container, followed by [ENTER]:"
+    echo "Press (7) to start a Crawl4AI container, followed by [ENTER]:"
     echo "Press (h) to show help in the terminal and browser, followed by [ENTER]:"
     echo "Press (c) to commit changes, followed by [ENTER]:"
     echo "Press (q) to stop the docker process, followed by [ENTER]:"
@@ -506,9 +477,6 @@ else
       if [ "${menu_arg}" != "" ]; then
         CMD="$CMD -t ${menu_arg}"
       fi
-      if [ "$ARG_DIR" != "" ]; then
-        CMD="$CMD -d ${ARG_DIR}"
-      fi
       if [ "$ARG_VOLUME" != "" ]; then
         CMD="$CMD -v ${ARG_VOLUME}"
       fi
@@ -549,41 +517,10 @@ else
       if [ "${github}" == "y" ]; then
         /usr/local/bin/github
       fi
-    elif [ ${menu_exec} == 6 ]; then
-      echo $BOUNDARY
-      echo "Remove locally installed R packages (y/n)?"
-      echo $BOUNDARY
-      read cleanup
-
-      if [ "${cleanup}" == "y" ]; then
-        echo "Removing locally installed R packages"
-        rm_list=$(ls -d "${HOMEDIR}"/.rsm-msba/R/* 2>/dev/null)
-        for i in ${rm_list}; do
-          echo ${i}
-          rm -rf "${i}"
-          mkdir "${i}"
-        done
-      fi
-    elif [ ${menu_exec} == 7 ]; then
-      echo $BOUNDARY
-      echo "Remove locally installed Pyton packages (y/n)?"
-      echo $BOUNDARY
-      read cleanup
-      if [ "${cleanup}" == "y" ]; then
-        echo "Removing locally installed Python packages"
-        rm -rf "${HOMEDIR}/.rsm-msba/bin"
-        rm -rf "${HOMEDIR}/.rsm-msba/lib"
-        if [ -d "${HOMEDIR}/.rsm-msba/share" ]; then
-          rm_list=$(ls "${HOMEDIR}/.rsm-msba/share" | grep -v jupyter)
-          for i in ${rm_list}; do
-            rm -rf "${HOMEDIR}/.rsm-msba/share/${i}"
-          done
-        fi
-      fi
-    elif [ "${menu_exec}" == 8 ]; then
+    elif [ "${menu_exec}" == 6 ]; then
       if [ "${menu_arg}" != "" ]; then
         selenium_port=${menu_arg}
-      else 
+      else
         selenium_port=4444
       fi
       CPORT=$(curl -s localhost:${selenium_port} 2>/dev/null)
@@ -602,7 +539,7 @@ else
       echo "Press any key to continue"
       echo $BOUNDARY
       read continue
-    elif [ "${menu_exec}" == 9 ]; then
+    elif [ "${menu_exec}" == 7 ]; then
       if [ "${menu_arg}" != "" ]; then
         crawl_port=${menu_arg}
       else
@@ -690,7 +627,7 @@ else
       echo $BOUNDARY
       echo "Do you want to push this image to Docker hub (y/n)?"
       echo "Note: This requires an account at https://hub.docker.com/"
-      echo "Note: To specify a version tag type, e.g., y 1.0.0"
+      echo "Note: To specify a version tag type, e.g., y 1.3.0"
       echo $BOUNDARY
       read menu_push menu_tag
       if [ "${menu_push}" == "y" ]; then
@@ -742,12 +679,6 @@ else
         echo "Removing unused containers ..."
         docker rmi -f ${imgs}
       fi
-
-      # procs=$(docker ps -a -q --no-trunc)
-      # if [ "${procs}" != "" ]; then
-      #   echo "Stopping docker processes ..."
-      #   docker rm ${procs}
-      # fi
     else
       echo "Invalid entry. Resetting launch menu ..."
     fi
