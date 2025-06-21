@@ -61,17 +61,14 @@ pip install --no-cache-dir --root-user-action=ignore \
   dowhy \
   econml \
   causalml[torch] \
-  pyspark==4.0.0.dev2
+  pyspark \
+  connectorx
 
 pip install --no-cache-dir --root-user-action=ignore \
   torch \
   torchvision \
   torchaudio \
   --index-url https://download.pytorch.org/whl/cu126
-
-# causalml does not support python 3.12 yet
-# https://github.com/uber/causalml/issues/813
-# causalml[torch] \
 
 # causing issues
 # alpaca-trade-api \

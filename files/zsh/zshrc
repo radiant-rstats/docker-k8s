@@ -143,3 +143,17 @@ autoload -Uz compinit && compinit
 
 export QUARTO_PYTHON="/opt/conda/bin/python"
 export RETICULATE_PYTHON="/opt/conda/bin/python"
+
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
+
+source /opt/base-uv/.venv/bin/activate
+
+# to install local:
+# uv init .
+# uv venv --python 3.12.11
+# uv python install 3.12.11
+# uv add pyrsm
+# brew install libomp
+# test using the below:
+# python -c "import platform, struct; print(f'Architecture: {platform.machine()}'); print(f'Pointer size: {struct.calcsize(\"P\") * 8}-bit'); print(f'Platform: {platform.platform()}'); print(f'Python executable: {platform.sys.executable}')"

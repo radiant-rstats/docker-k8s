@@ -30,6 +30,7 @@ apt -y install \
 echo "Installing development tools..."
 apt -y install \
   git \
+  git-lfs \
   rsync \
   pipx
 

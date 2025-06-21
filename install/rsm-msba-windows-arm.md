@@ -1,15 +1,17 @@
 # Contents
 
-- [Installing the RSM-MSBA-K8S-ARM computing environment on Windows](#installing-the-rsm-msba-k8s-arm-computing-environment-on-Windows)
-- [Updating the RSM-MSBA-K8S-ARM computing environment on Windows](#updating-the-rsm-msba-k8s-arm-computing-environment-on-Windows)
-- [Using VS Code](#using-vs-code)
-- [Connecting to postgresql](#connecting-to-postgresql)
-- [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
-- [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-- [Cleanup](#cleanup)
-- [Getting help](#getting-help)
-- [Trouble shooting](#trouble-shooting)
-- [Optional](#optional)
+- [Contents](#contents)
+  - [Installing the RSM-MSBA-K8S-ARM computing environment on Windows](#installing-the-rsm-msba-k8s-arm-computing-environment-on-windows)
+  - [Updating the RSM-MSBA-K8S-ARM computing environment on Windows](#updating-the-rsm-msba-k8s-arm-computing-environment-on-windows)
+  - [Using VS Code](#using-vs-code)
+    - [Trouble shooting](#trouble-shooting)
+  - [Installing Python packages locally](#installing-python-packages-locally)
+    - [Removing locally installed packages](#removing-locally-installed-packages)
+  - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
+  - [Cleanup](#cleanup)
+  - [Getting help](#getting-help)
+  - [Trouble shooting](#trouble-shooting-1)
+  - [Optional](#optional)
 
 ## Installing the RSM-MSBA-K8S-ARM computing environment on Windows
 
@@ -270,43 +272,15 @@ A major new feature in VS Code is the ability to use AI to help you write code. 
 
 If you see `root` as the username when you type `whoami` in an Ubuntu terminal you will need to reset your username for WSL2. Please review step 4 in the install process for more guidance.
 
-## Installing Python and R packages locally
+## Installing Python packages locally
 
-To install the latest version of R-packages you need, add the lines of code shown below to `~/.Rprofile`. You can edit the file by running `code ~/.Rprofile` in a VS Code terminal.
-
-```r
-if (Sys.info()["sysname"] == "Linux") {
-  options(repos = c(
-    RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
-    CRAN = "https://cloud.r-project.org"
-  ))
-} else {
-  options(repos = c(
-    CRAN = "https://cloud.r-project.org"
-  ))
-}
-```
-
-This will be done for you automatically if you run the `setup` command from a terminal inside the docker container. To install R packages that will persist after restarting the docker container, enter code like the below in R and follow any prompts. After doing this once, you can use `install.packages("some-other-package")` to install packages locally in the future.
-
-```r
-fs::dir_create(Sys.getenv("R_LIBS_USER"), recurse = TRUE)
-install.packages("fortunes", lib = Sys.getenv("R_LIBS_USER"))
-```
-
-To install Python modules that will **not** persist after restarting the docker container, enter code like the below from the terminal in VS Code:
+Use `uv` to install any additional packages you might need. For example, you can use the commands below to install a different version of the numpy package for a project of class. Note that adding `--user` is important to ensure the package is still available after you restart the docker container
 
 ```bash
-pip install pyasn1
-```
+cd ~;
+mkdir my_project;
+cd my_project;
 
-After installing a module you will have to restart any running Python kernels to `import` the module in your code.
-
-### Using pip to install python packages
-
-We recommend you use `pip` to install any additional packages you might need. For example, you can use the command below to install a new version of the `pyrsm` package that you will use regularly throughout the Rady MSBA program. Note that adding `--user` is important to ensure the package is still available after you restart the docker container
-
-```bash
 pip install --user --upgrade pyrsm
 ```
 
@@ -357,11 +331,7 @@ For additional resources on developing docker images see the links below:
 
 ## Cleanup
 
-To remove any locally installed R-packages, press 6 (+ Enter) in the launch menu. To remove locally installed Python modules press 7 (+ Enter) in the launch menu.
-
-> Note: It is also possible initiate the process of removing locally installed packages and settings from within the container. Open a terminal in VS Code and type `clean`. Then follow the prompts to indicate what needs to be removed.
-
-You should always stop the `rsm-msba-k8s-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove locally installed R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-k8s-arm):
+You should always stop the `rsm-msba-k8s-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash or zsh) terminal to (1) remove all docker images, networks, and (data) volumes, and (2) 'pull' only the docker image you need (i.e., the latest version of rsm-msba-k8s-arm):
 
 ```bash
 rm -rf ~/.rsm-msba;
@@ -373,9 +343,8 @@ docker pull vnijs/rsm-msba-k8s-arm;
 
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
-* `launch -t 3.0.0` ensures a specific version of the docker container is used. Suppose you used version 3.0.0 for a project. Running the launch script with `-t 3.0.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
+* `launch -t 1.3.0` ensures a specific version of the docker container is used. Suppose you used version 3.0.0 for a project. Running the launch script with `-t 3.0.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
 * `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to setup a particular directory that will house multiple projects
-* `launch -d ~/project_1` will treat the `project_1` directory on the host system (i.e., your Windows computer) as the project home directory in the docker container. This is an additional level of isolation that can help ensure your work is reproducible in the future. This can be particularly useful in combination with the `-t` option as this will make a copy of the launch script with the appropriate `tag` or `version` already set. Simply double-click the script in the `project_1` directory and you will be back in the development environment you used when you completed the project
 * `launch -s` show additional output in the terminal that can be useful to debug any problems
 * `launch -h` prints the help shown in the screenshot below
 

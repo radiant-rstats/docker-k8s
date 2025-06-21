@@ -5,9 +5,10 @@ set -e
 mamba install --quiet --yes -c conda-forge \
   c-compiler \
   "r-base>=${R_VERSION}" \
-  r-curl \
-  r-matrix \
   r-systemfonts \
+  r-matrix \
+  r-curl \
+  r-igraph \
   pandoc \
   snappy \
   cmake
