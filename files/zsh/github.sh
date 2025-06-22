@@ -30,18 +30,8 @@ chmod 600 ~/.ssh/id_ed25519
 # Add key to github
 url="https://github.com/settings/ssh/new"
 echo -e "\nOpen $url"
-
-# Try to open in browser (works on macOS and some Linux/WSL2 setups)
-if command -v xdg-open > /dev/null; then
-  xdg-open "$url"
-elif command -v open > /dev/null; then
-  open "$url"
-elif command -v start > /dev/null; then
-  start "$url"
-else
-  echo "Please open the above URL in your default browser."
-fi
-
+echo "Please open the above URL in your default browser."
+echo
 echo -e "\nCopy your public key to GitHub:\n"
 cat ~/.ssh/id_ed25519.pub
 

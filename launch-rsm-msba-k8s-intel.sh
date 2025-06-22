@@ -515,7 +515,18 @@ else
       read github
 
       if [ "${github}" == "y" ]; then
-        /usr/local/bin/github
+        if [ "${menu_arg}" == "" ]; then
+          zsh_lab="${LABEL}"
+        else
+          zsh_lab="${LABEL}-${menu_arg}"
+        fi
+
+        # open_browser "https://github.com/settings/ssh/new"
+        if [[ "$ostype" == "Windows" ]]; then
+          winpty docker exec -it --user ${NB_USER} ${zsh_lab} /usr/local/bin/github
+        else
+          docker exec -it --user ${NB_USER} ${zsh_lab} /usr/local/bin/github
+        fi
       fi
     elif [ "${menu_exec}" == 6 ]; then
       if [ "${menu_arg}" != "" ]; then
