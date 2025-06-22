@@ -18,9 +18,10 @@ uv add \
   --default-index https://download.pytorch.org/whl/cpu
 
 # Install core data science packages first
+# Issue with causlalml and scipy 1.16.0
 uv add \
   pyrsm \
-  scipy \
+  "scipy==1.15.3" \
   pandas \
   sqlalchemy \
   psycopg2 \
@@ -35,9 +36,7 @@ uv add \
 
 # Install web scraping and NLP packages
 uv add \
-  beautifulsoup4 \
-  selenium \
-  spacy \
+ spacy \
   nltk \
   textblob \
   transformers[torch] \

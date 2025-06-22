@@ -138,8 +138,8 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# setup crawl4ai
-COPY files/install-crawl4ai.sh setup.sh
+# setup webscrapers
+COPY files/install-webscrapers.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh

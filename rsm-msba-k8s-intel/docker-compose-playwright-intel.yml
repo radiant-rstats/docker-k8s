@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Playwright service - similar to rsm-selenium containers
+  rsm-playwright:
+    image: mcr.microsoft.com/playwright:v1.40.0-jammy
+    platform: linux/amd64
+    container_name: rsm-playwright
+    networks:
+      - rsm-docker
+    ports:
+      - "3000:3000"  # Simple HTTP API port
+    environment:
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    # Create a simple API server for Playwright
+    command: >
+      sh -c "
+      echo 'Installing Playwright browsers...' &&
+      npm install -g express playwright &&
+      npx playwright install chromium &&
+      echo 'Starting Playwright API server...' &&
+      node -e \"
+      const express = require('express');
+      const { chromium } = require('playwright');
+      const app = express();
+      app.use(express.json());
+      
+      app.get('/health', (req, res) => res.json({ status: 'ok' }));
+      
+      app.post('/execute', async (req, res) => {
+        const browser = await chromium.launch({ headless: true });
+        const page = await browser.newPage();
+        try {
+          const result = await page.evaluate(req.body.script);
+          await browser.close();
+          res.json({ success: true, result });
+        } catch (error) {
+          await browser.close();
+          res.status(500).json({ error: error.message });
+        }
+      });
+      
+      app.listen(3000, '0.0.0.0', () => console.log('Playwright server ready on port 3000'));
+      \"
+      "
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  rsm-docker:
+    external: true

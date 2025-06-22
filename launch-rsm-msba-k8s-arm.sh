@@ -372,6 +372,7 @@ else
     echo "Press (5) to setup Git and GitHub, followed by [ENTER]:"
     echo "Press (6) to start a Selenium container, followed by [ENTER]:"
     echo "Press (7) to start a Crawl4AI container, followed by [ENTER]:"
+    echo "Press (8) to start a Playwright container, followed by [ENTER]:"
     echo "Press (h) to show help in the terminal and browser, followed by [ENTER]:"
     echo "Press (c) to commit changes, followed by [ENTER]:"
     echo "Press (q) to stop the docker process, followed by [ENTER]:"
@@ -569,6 +570,28 @@ else
       echo "You can access crawl4ai at ip: rsm-crawl${crawl_nr}, port: 11235 from the"
       echo "${LABEL} container (rsm-crawl${crawl_nr}:11235) and ip: 127.0.0.1,"
       echo "port: ${crawl_port} (http://127.0.0.1:${crawl_port}) from the host OS"
+      echo "Press any key to continue"
+      echo $BOUNDARY
+      read continue
+    elif [ "${menu_exec}" == 8 ]; then
+      if [ "${menu_arg}" != "" ]; then
+        playr_port=${menu_arg}
+      else
+        playr_port=11000
+      fi
+      CPORT=$(curl -s localhost:${playr_port} 2>/dev/null)
+      echo $BOUNDARY
+      crawl_nr=($(docker ps -a | awk "/rsm-playwright/" | awk '{print $1}'))
+      crawl_nr=${#crawl_nr[@]}
+      if [ "$CPORT" != "" ]; then
+        echo "A Playwright container may already be running on port ${playr_port}"
+        playr_nr=$((${playr_nr}-1))
+      else
+        docker run --name="rsm-playwright${playr_nr}" --net ${NETWORK} -d -p 127.0.0.1:${playr_port}:3000 --platform linux/arm64 mcr.microsoft.com/playwright:latest
+      fi
+      echo "You can access playwright at ip: rsm-playwright${playr_nr}, port: 3000 from the"
+      echo "${LABEL} container (rsm-playwright${playr_nr}:3000) and ip: 127.0.0.1,"
+      echo "port: ${playr_port} (http://127.0.0.1:${playr_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY
       read continue
