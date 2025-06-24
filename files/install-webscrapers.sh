@@ -10,7 +10,7 @@ source .venv/bin/activate
 uv add beautifulsoup4 selenium
 
 # install crawl4ai
-uv add crawl4ai crawl4ai[torch]
+uv add crawl4ai # crawl4ai[torch]
 # finalize setup
 crawl4ai-setup
 # check if everything is installed correctly
