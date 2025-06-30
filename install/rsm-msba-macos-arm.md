@@ -1,7 +1,7 @@
 # Contents
 
 - [Contents](#contents)
-  - [Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3)](#installing-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip-eg-m3)
+  - [Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3 or M4)](#installing-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip-eg-m3-or-m4)
   - [Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip](#updating-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip)
   - [Using VS Code](#using-vs-code)
   - [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
@@ -13,7 +13,7 @@
   - [Trouble shooting](#trouble-shooting)
   - [Optional](#optional)
 
-## Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3)
+## Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3 or M4)
 
 Please follow the instructions below to install the rsm-msba-k8s-arm computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
@@ -21,27 +21,31 @@ Please follow the instructions below to install the rsm-msba-k8s-arm computing e
 
 ![docker](figures/docker-icon.png)
 
-[download docker for macOS with an ARM chip (e.g., M3)](https://desktop.docker.com/mac/stable/arm64/Docker.dmg)
+[download and install docker for macOS with an ARM chip (e.g., M3 or M4)](https://desktop.docker.com/mac/stable/arm64/Docker.dmg)
 
 You should change the (maximum) resources docker is allowed to use on your system. We recommend you set this to approximately 50% of the maximum available on your system.
 
-<img src="figures/docker-resources-mac.png" width="500px">
+<img src="figures/docker-resources-macos.png" width="500px">
 
+<!--
 You should also go to the "Advanced" tab and configure the installation of the Command Line Interface (CLI). Set it to "System" as shown in the screenshot below and click on the "Apply & Restart".
 
 <img src="figures/docker-system-mac.png" width="500px">
+-->
 
-Optional: If you are interested, the linked video gives a brief intro to what Docker is: <https://www.youtube.com/watch?v=YFl2mCHdv24>{target="_blank"}
+> Note: This video gives a brief intro (100 seconds) to what Docker is: <https://www.youtube.com/watch?v=Gjnup-PuquQ>{target="_blank"}
 
 **Step 2**: Open a terminal and copy-and-paste the code below
 
-You will need the macOS command line developer tools for the next steps. Follow the prompts until the software is installed.
+Get [iTerm2](https://iterm2.com/downloads.html){target="_blank"} and install it.
+
+You will need the macOS command line developer tools for the next steps. Open an iTerm2 terminal, run the code below, and follow the prompts until the software is installed.
 
 ```bash
 xcode-select --install;
 ```
 
-**Step 3**: Now copy-and-paste the code below
+**Step 3**: Setup RSM-MSBA computing environment by copy-and-pasting the code below into an iTerm2 terminal.
 
 ```bash
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
@@ -55,7 +59,7 @@ This step will clone and start up a script that will finalize the installation o
 
 The code above also copies the file `launch-rsm-msba-k8s-arm.sh` to `launch-rsm-msba.command` on your Desktop. You will be able to double-click this file to start the container again in the future.
 
-Run the command below to launch the docker container from a terminal (i.e., iTerm2).
+Alternatively, you can run the command below to launch the docker container from a terminal (i.e., iTerm2).
 
 ```bash
 ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh -v ~;
@@ -69,20 +73,21 @@ You will know that the installation was successful if you can start Radiant. If 
 
 <img src="figures/radiant-data-manage.png" width="500px">
 
-To finalize the setup, open a terminal inside the docker container by pressing `1` and `Enter` in the launch menu. Then run the command below:
+To finalize the setup, open a terminal inside the docker container by pressing `1` and `Enter` in the launch menu. Then run the command below and follow any prompts:
 
 ```bash
 setup;
-exit;
 ```
+
+When the setup process is done, type `exit` and press enter to return to the launch menu.
 
 ## Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip
 
-To update the container use the launch script and press 6 (+ Enter). To update the launch script itself, press 7 (+ Enter).
+To update the container press 3 (+ Enter) in the launch menu. To update the launch script itself, press 4 (+ Enter) in the launch menu.
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
-If for some reason you are having trouble updating either the container or the launch script open a terminal and copy-and-paste the code below. These commands will update the docker container, replace the old docker related scripts, and copy the latest version of the launch script to your Desktop.
+If for some reason you are having trouble updating either the container or the launch script, open a terminal and copy-and-paste the code below. These commands will update the docker container, replace the old docker related scripts, and copy the latest version of the launch script to your Desktop.
 
 ```bash
 docker pull vnijs/rsm-msba-k8s-arm;
@@ -93,9 +98,9 @@ cp -p ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh ~/Desktop/launch-rsm-msba.comm
 
 ## Using VS Code
 
-Microsoft's open-source integrated development environment (IDE), VS Code or Visual Studio Code, was the most popular development environment according to a [Stack Overflow developer survey](https://survey.stackoverflow.co/2022#section-most-popular-technologies-integrated-development-environment). VS Code is widely used by Google developers and is the [default development environment at Facebook](https://www.zdnet.com/article/facebook-microsofts-visual-studio-code-is-now-our-default-development-platform/).
+Microsoft's open-source Integrated Development Environment (IDE), VS Code or Visual Studio Code, is the most popular development environment according to a [Stack Overflow developer survey](https://survey.stackoverflow.co/2024/technology#most-popular-technologies-webframe). VS Code is widely used by Google developers and is the [default development environment at Facebook](https://www.zdnet.com/article/facebook-microsofts-visual-studio-code-is-now-our-default-development-platform/).
 
-VS Code can be installed from the link below and is an excellent, and very popular, editor for Python, R, and many other programming languages.
+VS Code can be installed from the link below and is an excellent editor for Python, SQL, Javascript, R, and many other programming languages.
 
 <a href="https://code.visualstudio.com/download" target="_blank">https://code.visualstudio.com/download</a>
 

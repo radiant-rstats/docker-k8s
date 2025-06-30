@@ -37,7 +37,7 @@ script_home () {
 }
 
 function launch_usage() {
-  echo "Usage: $0 [-t tag (version)] [-d directory]"
+  echo "Usage: $0 [-t tag (version)] [-v directory]"
   echo "  -t, --tag         Docker image tag (version) to use"
   echo "  -v, --volume      Volume to mount as home directory"
   echo "  -s, --show        Show all output generated on launch"
@@ -45,7 +45,9 @@ function launch_usage() {
   echo ""
   echo "Example: $0 --tag 1.3.0 --volume ~/project_1"
   echo ""
-  exit 1
+  if [ "$1" != "noexit" ]; then
+    exit 1
+  fi
 }
 
 LAUNCH_ARGS="${@:1}"
@@ -321,13 +323,13 @@ else
 
   BUILD_DATE=$(docker inspect -f '{{.Created}}' ${IMAGE}:${IMAGE_VERSION})
 
-  { 
+  {
     # check if network already exists
-    docker network inspect ${NETWORK} >/dev/null 2>&1 
-  } || { 
+    docker network inspect ${NETWORK} >/dev/null 2>&1
+  } || {
     # if network doesn't exist create it
     echo "--- Creating docker network: ${NETWORK} ---"
-    docker network create ${NETWORK} 
+    docker network create ${NETWORK}
   }
 
   echo $BOUNDARY
@@ -357,6 +359,10 @@ else
     read
   }
 
+    # echo "Press (6) to start a Selenium container, followed by [ENTER]:"
+    # echo "Press (7) to start a Crawl4AI container, followed by [ENTER]:"
+    # echo "Press (8) to start a Playwright container, followed by [ENTER]:"
+
   show_service () {
     echo $BOUNDARY
     echo "Starting the ${LABEL} computing environment on ${ostype} ${chip}"
@@ -370,8 +376,6 @@ else
     echo "Press (3) to update the ${LABEL} container, followed by [ENTER]:"
     echo "Press (4) to update the launch script, followed by [ENTER]:"
     echo "Press (5) to setup Git and GitHub, followed by [ENTER]:"
-    echo "Press (6) to start a Selenium container, followed by [ENTER]:"
-    echo "Press (7) to start a Crawl4AI container, followed by [ENTER]:"
     echo "Press (h) to show help in the terminal and browser, followed by [ENTER]:"
     echo "Press (c) to commit changes, followed by [ENTER]:"
     echo "Press (q) to stop the docker process, followed by [ENTER]:"
@@ -426,7 +430,7 @@ else
         if [ "${allow_report}" == "y" ]; then
           ## Windows does not reliably use newlines with printf
           sed_fun '/^options(radiant.maxRequestSize/d' "${RPROF}"
-          sed_fun '/^options(radiant.report/d' "${RPROF}" 
+          sed_fun '/^options(radiant.report/d' "${RPROF}"
           sed_fun '/^options(radiant.shinyFiles/d' "${RPROF}"
           sed_fun '/^options(radiant.ace_autoComplete/d' "${RPROF}"
           sed_fun '/^options(radiant.ace_theme/d' "${RPROF}"
@@ -572,6 +576,28 @@ else
       echo "Press any key to continue"
       echo $BOUNDARY
       read continue
+    elif [ "${menu_exec}" == 8 ]; then
+      if [ "${menu_arg}" != "" ]; then
+        playr_port=${menu_arg}
+      else
+        playr_port=11000
+      fi
+      CPORT=$(curl -s localhost:${playr_port} 2>/dev/null)
+      echo $BOUNDARY
+      crawl_nr=($(docker ps -a | awk "/rsm-playwright/" | awk '{print $1}'))
+      crawl_nr=${#crawl_nr[@]}
+      if [ "$CPORT" != "" ]; then
+        echo "A Playwright container may already be running on port ${playr_port}"
+        playr_nr=$((${playr_nr}-1))
+      else
+        docker run --name="rsm-playwright${playr_nr}" --net ${NETWORK} -d -p 127.0.0.1:${playr_port}:3000 --platform linux/arm64 mcr.microsoft.com/playwright:latest
+      fi
+      echo "You can access playwright at ip: rsm-playwright${playr_nr}, port: 3000 from the"
+      echo "${LABEL} container (rsm-playwright${playr_nr}:3000) and ip: 127.0.0.1,"
+      echo "port: ${playr_port} (http://127.0.0.1:${playr_port}) from the host OS"
+      echo "Press any key to continue"
+      echo $BOUNDARY
+      read continue
     elif [ "${menu_exec}" == "h" ]; then
       echo $BOUNDARY
       echo "Showing help for your OS in the default browser"
@@ -594,7 +620,7 @@ else
       else
         open_browser https://github.com/radiant-rstats/docker-k8s/blob/main/install/rsm-msba-linux.md
       fi
-      $0 --help
+      launch_usage noexit
       echo "Press any key to continue"
       echo $BOUNDARY
       read continue
@@ -610,7 +636,7 @@ else
           echo "Committing changes to ${IMAGE}"
           echo $BOUNDARY
           docker commit ${container_id[0]} ${IMAGE}:${IMAGE_VERSION}
-        else 
+        else
           return 1
         fi
         IMAGE_DHUB=${IMAGE}

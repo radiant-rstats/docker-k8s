@@ -68,3 +68,6 @@ if echo "$ssh_output" | grep -q "successfully authenticated"; then
 else
   echo -e "❌ SSH connection to GitHub failed. Please connect with your instructor or TA.\n"
 fi
+
+echo "Press any key to continue"
+read continue

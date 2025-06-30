@@ -18,7 +18,7 @@ uv add \
   --default-index https://download.pytorch.org/whl/cpu
 
 # Install core data science packages first
-# Issue with causlalml and scipy 1.16.0
+# Issue with scipy 1.16.0 and various packages
 uv add \
   pyrsm \
   "scipy==1.15.3" \
