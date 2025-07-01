@@ -1,6 +1,9 @@
 #!/bin/bash
 
 ## create lock file path in user's home directory
+if [ ! -d "${HOME}/.rsm-msba" ]; then
+  mkdir -p "${HOME}/.rsm-msba"
+fi
 LOCK_FILE="${HOME}/.rsm-msba-launch.lock"
 
 ## check if lock file exists
@@ -299,10 +302,6 @@ else
         rm -rf "${ARG_HOME}/.rsm-msba/R"
         rm -rf "${ARG_HOME}/.rsm-msba/bin"
         rm -rf "${ARG_HOME}/.rsm-msba/lib"
-        rm_list=$(ls "${ARG_HOME}/.rsm-msba/share" | grep -v jupyter)
-        for i in ${rm_list}; do
-           rm -rf "${ARG_HOME}/.rsm-msba/share/${i}"
-        done
       }
     fi
     SCRIPT_HOME="$(script_home)"
@@ -347,6 +346,7 @@ else
     docker run --name ${LABEL} --net ${NETWORK} -d \
       -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 \
       -e TZ=${TIMEZONE} \
+      -e SKIP_PERMISSIONS=true \
       -v "${HOMEDIR}":/home/${NB_USER} $MNT \
       -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
       ${IMAGE}:${IMAGE_VERSION}
@@ -456,6 +456,7 @@ else
         echo "Starting Radiant in the default browser on port ${menu_arg}"
         docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
           -p 127.0.0.1:${menu_arg}:${menu_arg} \
+          -e SKIP_PERMISSIONS=true \
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}
@@ -510,7 +511,7 @@ else
         echo "rm -rf ~/git/docker-k8s;\n"
         echo "git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;\n"
         echo "\nPress any key to continue"
-        read any_to_continue
+        read
       }
     elif [ ${menu_exec} == 5 ]; then
       echo $BOUNDARY
@@ -553,7 +554,7 @@ else
       echo "port: ${selenium_port} (http://127.0.0.1:${selenium_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == 7 ]; then
       if [ "${menu_arg}" != "" ]; then
         crawl_port=${menu_arg}
@@ -575,7 +576,7 @@ else
       echo "port: ${crawl_port} (http://127.0.0.1:${crawl_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == 8 ]; then
       if [ "${menu_arg}" != "" ]; then
         playr_port=${menu_arg}
@@ -597,7 +598,7 @@ else
       echo "port: ${playr_port} (http://127.0.0.1:${playr_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == "h" ]; then
       echo $BOUNDARY
       echo "Showing help for your OS in the default browser"
@@ -623,7 +624,7 @@ else
       launch_usage noexit
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == "c" ]; then
       container_id=($(docker ps -a | awk "/${ID}\/${LABEL}/" | awk '{print $1}'))
       if [ "${menu_arg}" == "" ]; then

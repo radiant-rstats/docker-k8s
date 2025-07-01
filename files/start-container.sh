@@ -3,7 +3,7 @@ set -e
 
 echo "Starting container initialization..."
 
-# If NB_UID/NB_GID are set, modify user/group accordingly
+# If NB_UID/NB_GID are set and SKIP_PERMISSIONS is not true, modify user/group accordingly
 if [ ! -z "$NB_UID" ] && [ ! -z "$NB_GID" ]; then
     # Create new group first if it doesn't exist
     echo "Creating group ${NB_GROUP:-${NB_USER}} with GID: $NB_GID"
@@ -14,26 +14,29 @@ if [ ! -z "$NB_UID" ] && [ ! -z "$NB_GID" ]; then
     sudo usermod -u $NB_UID -g $NB_GID ${NB_USER}
 
     # Only set ownership of essential directories
-    echo "Setting ownership of essential directories..."
-    sudo chown $NB_UID:$NB_GID /home/${NB_USER}
+    if [ "$SKIP_PERMISSIONS" != "true" ]; then
+        echo "Setting ownership of essential directories..."
+        sudo chown $NB_UID:$NB_GID /home/${NB_USER}
+    fi
 fi
 
-echo "Creating and setting permissions for PYBASE directories..."
 
-# Create PYBASE directory
-mkdir -p ${PYBASE}
-chmod -R 755 ${PYBASE}
-chmod g+s ${PYBASE}    # set the setgid bit
+if [ "$SKIP_PERMISSIONS" != "true" ]; then
+    # Create RSMBASE directory
+    echo "Creating and setting permissions for RSMBASE directories..."
+    if [ ! -d "${RSMBASE}" ]; then
+        mkdir -p "${RSMBASE}"
+    fi
+    mkdir -p ${RSMBASE}
+    chmod -R 755 ${RSMBASE}
+    chmod g+s ${RSMBASE}    # set the setgid bit
 
-# Create PYBASE directories if they don't exist
-mkdir -p ${PYBASE}/share/jupyter
-mkdir -p ${PYBASE}/jupyter
-mkdir -p ${PYBASE}/zsh
-mkdir -p /tmp/jupyter/runtime
-
-# Set proper permissions for PYBASE directories
-sudo chown -R ${NB_USER}:${NB_GID:-users} ${PYBASE}
-sudo chown -R ${NB_USER}:${NB_GID:-users} /tmp/jupyter
+    # Create RSMBASE directories if they don't exist
+    if [ ! -d "${RSMBASE}" ]; then
+        mkdir -p ${RSMBASE}/zsh
+    fi
+    sudo chown -R ${NB_USER}:${NB_GID:-users} ${RSMBASE}
+fi
 
 # Create and set permissions for log files
 echo "Creating and setting permissions for log files..."

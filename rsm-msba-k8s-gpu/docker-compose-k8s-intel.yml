@@ -7,10 +7,7 @@ services:
       USER: jovyan
       HOME: /home/jovyan
       SHELL: /bin/zsh
-      PYTHONUSERBASE: /home/jovyan/.rsm-msba
-      JUPYTER_PATH: /home/jovyan/.rsm-msba/share/jupyter
-      JUPYTER_RUNTIME_DIR: /tmp/jupyter/runtime
-      JUPYTER_CONFIG_DIR: /home/jovyan/.rsm-msba/jupyter
+      RSMBASE: /home/jovyan/.rsm-msba
     volumes:
       - ${HOME}:/home/jovyan
       - pg_data:/var/lib/postgresql/16/main

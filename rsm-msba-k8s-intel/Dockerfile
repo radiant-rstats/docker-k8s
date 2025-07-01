@@ -1,6 +1,6 @@
 # find all here: https://quay.io/repository/jupyter/pyspark-notebook?tab=tags
 # 2025-6-16
-# FROM quay.io/jupyter/pyspark-notebook@sha256:5f93a810a742783edbccb394c51baa5d3a653b64b333880146d7c8adc8ea7ad7 
+# FROM quay.io/jupyter/pyspark-notebook@sha256:5f93a810a742783edbccb394c51baa5d3a653b64b333880146d7c8adc8ea7ad7
 FROM quay.io/jupyter/pyspark-notebook@sha256:7446ab5b4af9a03652833b756251a70f4bb49369ca5af247f2e75f8f393dc6a3
 
 USER root
@@ -25,13 +25,8 @@ ENV POSTGRES_VERSION=16
 ENV PGPASSWORD=postgres
 
 # Jupyter and shell environment setup
-ARG PYBASE=/home/${NB_USER}/.rsm-msba
-ENV PYBASE=${PYBASE} \
-    PYTHONUSERBASE=${PYBASE} \
-    JUPYTER_PATH=${PYBASE}/share/jupyter \
-    JUPYTER_DATA_DIR=${PYBASE}/share/jupyter \
-    JUPYTER_CONFIG_DIR=${PYBASE}/jupyter \
-    JUPYTER_RUNTIME_DIR=/tmp/jupyter/runtime \
+ARG RSMBASE=/home/${NB_USER}/.rsm-msba
+ENV RSMBASE=${RSMBASE} \
     SHELL=/bin/zsh \
     ZDOTDIR=/home/${NB_USER}/.rsm-msba/zsh
 

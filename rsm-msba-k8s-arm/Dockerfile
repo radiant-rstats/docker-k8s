@@ -25,13 +25,8 @@ ENV POSTGRES_VERSION=16
 ENV PGPASSWORD=postgres
 
 # Jupyter and shell environment setup
-ARG PYBASE=/home/${NB_USER}/.rsm-msba
-ENV PYBASE=${PYBASE} \
-    PYTHONUSERBASE=${PYBASE} \
-    JUPYTER_PATH=${PYBASE}/share/jupyter \
-    JUPYTER_DATA_DIR=${PYBASE}/share/jupyter \
-    JUPYTER_CONFIG_DIR=${PYBASE}/jupyter \
-    JUPYTER_RUNTIME_DIR=/tmp/jupyter/runtime \
+ARG RSMBASE=/home/${NB_USER}/.rsm-msba
+ENV RSMBASE=${RSMBASE} \
     SHELL=/bin/zsh \
     ZDOTDIR=/home/${NB_USER}/.rsm-msba/zsh
 

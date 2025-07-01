@@ -1,6 +1,6 @@
 #!/bin/bash
 # script to use for SQL+ETL course
-# run from a terminal in JupyterLab
+# run from a terminal in VSCODE
 
 cd ~
 mkdir sql_data

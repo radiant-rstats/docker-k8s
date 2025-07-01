@@ -1,6 +1,9 @@
 #!/bin/bash
 
 ## create lock file path in user's home directory
+if [ ! -d "${HOME}/.rsm-msba" ]; then
+  mkdir -p "${HOME}/.rsm-msba"
+fi
 LOCK_FILE="${HOME}/.rsm-msba-launch.lock"
 
 ## check if lock file exists
@@ -37,7 +40,7 @@ script_home () {
 }
 
 function launch_usage() {
-  echo "Usage: $0 [-t tag (version)] [-v directory]"
+  echo "Usage: $0 [-t tag (version)] [-v volume]"
   echo "  -t, --tag         Docker image tag (version) to use"
   echo "  -v, --volume      Volume to mount as home directory"
   echo "  -s, --show        Show all output generated on launch"
@@ -299,10 +302,6 @@ else
         rm -rf "${ARG_HOME}/.rsm-msba/R"
         rm -rf "${ARG_HOME}/.rsm-msba/bin"
         rm -rf "${ARG_HOME}/.rsm-msba/lib"
-        rm_list=$(ls "${ARG_HOME}/.rsm-msba/share" | grep -v jupyter)
-        for i in ${rm_list}; do
-           rm -rf "${ARG_HOME}/.rsm-msba/share/${i}"
-        done
       }
     fi
     SCRIPT_HOME="$(script_home)"
@@ -510,7 +509,7 @@ else
         echo "rm -rf ~/git/docker-k8s;\n"
         echo "git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;\n"
         echo "\nPress any key to continue"
-        read any_to_continue
+        read
       }
     elif [ ${menu_exec} == 5 ]; then
       echo $BOUNDARY
@@ -553,7 +552,7 @@ else
       echo "port: ${selenium_port} (http://127.0.0.1:${selenium_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == 7 ]; then
       if [ "${menu_arg}" != "" ]; then
         crawl_port=${menu_arg}
@@ -575,7 +574,7 @@ else
       echo "port: ${crawl_port} (http://127.0.0.1:${crawl_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == 8 ]; then
       if [ "${menu_arg}" != "" ]; then
         playr_port=${menu_arg}
@@ -597,7 +596,7 @@ else
       echo "port: ${playr_port} (http://127.0.0.1:${playr_port}) from the host OS"
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == "h" ]; then
       echo $BOUNDARY
       echo "Showing help for your OS in the default browser"
@@ -623,7 +622,7 @@ else
       launch_usage noexit
       echo "Press any key to continue"
       echo $BOUNDARY
-      read continue
+      read
     elif [ "${menu_exec}" == "c" ]; then
       container_id=($(docker ps -a | awk "/${ID}\/${LABEL}/" | awk '{print $1}'))
       if [ "${menu_arg}" == "" ]; then

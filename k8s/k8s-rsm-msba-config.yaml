@@ -44,14 +44,8 @@ spec:
           value: "/bin/zsh"
         - name: ZDOTDIR
           value: /home/jovyan/.rsm-msba/zsh
-        - name: PYTHONUSERBASE
+        - name: RSMBASE
           value: "/home/jovyan/.rsm-msba"
-        - name: JUPYTER_PATH
-          value: "/home/jovyan/.rsm-msba/share/jupyter"
-        - name: JUPYTER_RUNTIME_DIR
-          value: "/tmp/jupyter/runtime"
-        - name: JUPYTER_CONFIG_DIR
-          value: "/home/jovyan/.rsm-msba/jupyter"
         - name: NB_UID
           valueFrom:
             fieldRef:
