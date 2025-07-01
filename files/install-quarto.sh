@@ -2,6 +2,12 @@
 
 set -e
 
+apt update -qq || { echo "Failed to update package list"; exit 1; }
+sudo apt install lmodern
+apt clean
+apt autoremove -y
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 mamba install --quiet --yes -c conda-forge \
   c-compiler \
   "r-base>=${R_VERSION}" \
@@ -13,7 +19,7 @@ mamba install --quiet --yes -c conda-forge \
   snappy \
   cmake
 mamba clean --all -f -y
- 
+
 ## build ARGs
 NCPUS=${NCPUS:--1}
 
