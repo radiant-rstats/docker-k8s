@@ -36,7 +36,7 @@ uv add \
 
 # Install web scraping and NLP packages
 uv add \
- spacy \
+  spacy \
   nltk \
   textblob \
   transformers[torch] \
@@ -58,6 +58,7 @@ uv add \
 # Install development and notebook packages
 uv add \
   IPython \
+  nbclient \
   jupytext \
   isort \
   xlrd \
