@@ -20,21 +20,14 @@ if [ ! -z "$NB_UID" ] && [ ! -z "$NB_GID" ]; then
     fi
 fi
 
-
 if [ "$SKIP_PERMISSIONS" != "true" ]; then
-    # Create RSMBASE directory
+    # Create RSMBASE directories if they don't exist
     echo "Creating and setting permissions for RSMBASE directories..."
-    if [ ! -d "${RSMBASE}" ]; then
-        mkdir -p "${RSMBASE}"
+    if [ ! -d "${RSMBASE}/zsh" ]; then
+        mkdir -p "${RSMBASE}/zsh"
     fi
-    mkdir -p ${RSMBASE}
     chmod -R 755 ${RSMBASE}
     chmod g+s ${RSMBASE}    # set the setgid bit
-
-    # Create RSMBASE directories if they don't exist
-    if [ ! -d "${RSMBASE}" ]; then
-        mkdir -p ${RSMBASE}/zsh
-    fi
     sudo chown -R ${NB_USER}:${NB_GID:-users} ${RSMBASE}
 fi
 

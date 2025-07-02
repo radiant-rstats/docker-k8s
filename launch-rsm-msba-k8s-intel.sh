@@ -346,6 +346,7 @@ else
     docker run --name ${LABEL} --net ${NETWORK} -d \
       -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 \
       -e TZ=${TIMEZONE} \
+      -e SKIP_PERMISSIONS="true" \
       -v "${HOMEDIR}":/home/${NB_USER} $MNT \
       -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
       ${IMAGE}:${IMAGE_VERSION}
@@ -455,6 +456,7 @@ else
         echo "Starting Radiant in the default browser on port ${menu_arg}"
         docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
           -p 127.0.0.1:${menu_arg}:${menu_arg} \
+          -e SKIP_PERMISSIONS="true" \
           -e TZ=${TIMEZONE} \
           -v "${HOMEDIR}":/home/${NB_USER} $MNT \
           ${IMAGE}:${IMAGE_VERSION}

@@ -16,7 +16,8 @@ apt -y install \
   lsb-release \
   wget \
   ca-certificates \
-  gdebi-core
+  gdebi-core \
+  locales
 
 # Shell and editors
 echo "Installing shell and editors..."
@@ -48,6 +49,12 @@ apt -y install \
 echo "Cleaning up after installation..."
 apt clean
 apt autoremove -y
+
+# Configure locales
+echo "Configuring locales..."
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen en_US.UTF-8
+update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 update-ca-certificates -f || { echo "Failed to update certificates"; exit 1; }
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -61,5 +68,3 @@ echo "Setting default shell to zsh..."
 usermod -s /bin/zsh jovyan || { echo "Failed to change shell"; exit 1; }
 
 echo "Installation completed successfully"
-
-
