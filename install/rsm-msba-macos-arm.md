@@ -4,7 +4,7 @@
   - [Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3 or M4)](#installing-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip-eg-m3-or-m4)
   - [Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip](#updating-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip)
   - [Using VS Code](#using-vs-code)
-  - [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
+  - [Installing Python packages locally](#installing-python-packages-locally)
     - [Using pip to install python packages](#using-pip-to-install-python-packages)
     - [Removing locally installed packages](#removing-locally-installed-packages)
   - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
@@ -27,13 +27,11 @@ You should change the (maximum) resources docker is allowed to use on your syste
 
 <img src="figures/docker-resources-macos.png" width="500px">
 
-<!--
 You should also go to the "Advanced" tab and configure the installation of the Command Line Interface (CLI). Set it to "System" as shown in the screenshot below and click on the "Apply & Restart".
 
 <img src="figures/docker-system-mac.png" width="500px">
--->
 
-> Note: This video gives a brief intro (100 seconds) to what Docker is: <https://www.youtube.com/watch?v=Gjnup-PuquQ>{target="_blank"}
+> Note: This video gives a brief (100 seconds) introduction to what Docker is: <https://www.youtube.com/watch?v=Gjnup-PuquQ>{target="_blank"}
 
 **Step 2**: Open a terminal and copy-and-paste the code below
 
@@ -48,12 +46,13 @@ xcode-select --install;
 **Step 3**: Setup RSM-MSBA computing environment by copy-and-pasting the code below into an iTerm2 terminal.
 
 ```bash
+mkdir ~/git;
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
 cp -p ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh ~/Desktop/launch-rsm-msba.command;
 ~/Desktop/launch-rsm-msba.command;
 ```
 
-This step will clone and start up a script that will finalize the installation of the computing environment. The first time you run this script it will download the latest version of the computing environment which can take some time. Wait for the container to download and follow any prompts. Once the download is complete you should see a menu as in the screenshot below.
+This step will clone and start up a script that will finalize the installation of the computing environment. The first time you run this script it will download the latest version of the computing environment which can take some time. Wait for the container to download and follow any prompts. Once the download is complete you should see the launch menu shown in the screenshot below.
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
@@ -67,19 +66,19 @@ Alternatively, you can run the command below to launch the docker container from
 
 **Step 4**: Check that you can launch Radiant
 
-You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) Radiant should start up in your default web browser.
-
-> Important: Always use q (+ Enter) to shutdown the computing environment
+You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) in the launch menu, Radiant should start up in your default web browser.
 
 <img src="figures/radiant-data-manage.png" width="500px">
 
-To finalize the setup, open a terminal inside the docker container by pressing `1` and `Enter` in the launch menu. Then run the command below and follow any prompts:
+> Important: Always use q (+ Enter) to shutdown the computing environment
+
+To finalize the setup, open a terminal inside the docker container by pressing 1 (+ Enter) in the launch menu. If you are asked about "Z shell configuration, press q + Enter and then run the command below:
 
 ```bash
 setup;
 ```
 
-When the setup process is done, type `exit` and press enter to return to the launch menu.
+When the setup process is done, type `exit` (+ Enter) to return to the launch menu.
 
 ## Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip
 
@@ -121,19 +120,7 @@ To learn more about using VS Code to write python code see the links and comment
 - <a href="https://code.visualstudio.com/docs/languages/python" target="_blank">Python in VS Code</a>
 - <a href="https://code.visualstudio.com/docs/python/python-tutorial#_create-a-python-hello-world-source-code-file" target="_blank">VS Code Python Tutorial</a>
 
-Note that you can use `Shift+Enter` to run the current line in a Python Interactive Window:
-
-- <a href="https://code.visualstudio.com/docs/python/jupyter-support-py" target="_blank">Executing Python Code in VS Code</a>
-
-When writing and editing python code you will have access to tools for auto-completion, etc. Your code will also be auto-formatted every time you save it using the "black" formatter.
-
-- <a href="https://code.visualstudio.com/docs/python/editing" target="_blank">Editing Python in VS Code Python</a>
-
-VS Code also gives you access to a debugger for your python code. For more information see the link below:
-
-- <a href="https://code.visualstudio.com/docs/python/debugging" target="_blank">Debugging Python in VS Code Python</a>
-
-You can even open and run Jupyter Notebooks in VS Code
+You can even create and run Jupyter Notebooks in VS Code:
 
 - <a href="https://code.visualstudio.com/docs/datascience/jupyter-notebooks" target="_blank">Jupyter Notebooks in VS Code</a>
 
@@ -141,73 +128,79 @@ A major new feature in VS Code is the ability to use AI to help you write code. 
 
 - <a href="https://code.visualstudio.com/docs/copilot/overview" target="_blank">VS Code Copilot</a>
 
-## Installing Python and R packages locally
+## Installing Python packages locally
 
-To install the latest version of R-packages you need, add the lines of code shown below to `~/.Rprofile`. You can edit the file by running `code ~/.Rprofile` in a VS Code terminal.
+The RSM-MSBA docker image uses UV for all python package management, virtual environments, and different python version. To learn more about UV click [here](https://docs.astral.sh/uv/).
 
-```r
-if (Sys.info()["sysname"] == "Linux") {
-  options(repos = c(
-    RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
-    CRAN = "https://cloud.r-project.org"
-  ))
-} else {
-  options(repos = c(
-    CRAN = "https://cloud.r-project.org"
-  ))
-}
-```
-
-This will be done for you automatically if you run the `setup` command from a terminal inside the docker container. To install R packages that will persist after restarting the docker container, enter code like the below in R and follow any prompts. After doing this once, you can use `install.packages("some-other-package")` to install packages locally in the future.
-
-```r
-fs::dir_create(Sys.getenv("R_LIBS_USER"), recurse = TRUE)
-install.packages("fortunes", lib = Sys.getenv("R_LIBS_USER"))
-```
-
-To install Python modules that will **not** persist after restarting the docker container, enter code like the below from a terminal in VS Code:
+To install Python packages that will **not** persist after restarting the docker container, enter code like the below from a terminal in VS Code:
 
 ```bash
-pip install pyasn1
+cd /opt/base-uv/;
+uv add mlxtend;
 ```
 
-After installing a module you will have to restart any running Python kernels to `import` the module in your code.
+After installing a package you may need to restart any running Python kernels so you can `import` the new package in a Jypyter notebook.
 
-### Using pip to install python packages
+### Using UV to create a virtual environment
 
-We recommend you use `pip` to install any additional packages you might need. For example, you can use the command below to install a new version of the `pyrsm` package that you will use regularly throughout the Rady MSBA program. Note that adding `--user` is important to ensure the package is still available after you restart the docker container
+Use UV to install any additional packages you might need. For example, you can use the sequence of commands below to install create a virtual (python) environment in a project folder and then install, for example, a specific version of the `polars` package.
+
+First create a new directory for your project
 
 ```bash
-pip install --user --upgrade pyrsm
+rm -rf ~/my_project; # for cleanup if you want to try this multiple times
+mkdir ~/my_project;
+cd ~/my_project;
 ```
 
-### Removing locally installed packages
+Make sure no other virtual environment is active for the project folder, initialize the project, create a virtual python environment, and `activate` it.
 
-To remove locally installed R packages press 6 (and Enter) in the launch menu and follow the prompts. To remove Python modules installed locally using `pip` press 7 (and Enter) in the launch menu
+```bash
+deactivate;
+uv init .;
+uv venv --python 3.12;
+source .venv/bin/activate;
+```
+
+Now we are ready to `add` python packages to the environment. In this case, we will install a specific version of polars and we will double check that this version was indeed installed.
+
+```bash
+uv add polars==1.1.0;
+python -c "import polars as pl; print(pl.__version__)";
+```
+
+> Note: The `-c` argument in the code block above allows a python program to be passed in as string. Use `python --help` to see all the python options.
+
+### Removing a virtual environment created using UV
+
+To remove a virtual environment from a project directory you can use the following code:
+
+```bash
+cd ~/my_project;
+rm -rf .venv
+rm README.md main.py pyproject.toml uv.lock
+rm -rf .git .gitignore .python-version
+```
+
+You could, of course, also delete the entire project folder using `rm -rf ~/my_project` is you don't need it anymore.
 
 ## Committing changes to the computing environment
 
-By default re-starting the docker computing environment will remove any changes you made. This allows you to experiment freely, without having to worry about "breaking" things. However, there are times when you might want to keep changes.
+By default re-starting the RSM-MSBA computing environment will remove any changes you made inside the container. This allows you to experiment freely, without having to worry about "breaking" things. However, there are times when you might want to keep changes.
 
-As shown in the previous section, you can install R and Python packages locally rather than in the container. These packages will still be available after a container restart.
+As shown in the previous section, you can install python packages locally rather than in the container. These packages will still be available after a container restart.
 
-To install binary R packages for Ubuntu Linux you can use the command below. These packages will *not* be installed locally and would normally not be available after a restart.
+Suppose you need to install binary packages for Ubuntu Linux, e.g., to work with the tesseract OCR library.  You could use the command below to do this. These packages will be installed inside the docker container and would normally not be available after a restart.
 
-```bash
-sudo apt update;
-sudo apt install r-cran-ada;
-```
-
-Similarly, some R-packages have requirements that need to be installed in the container (e.g., the `rgdal` package). The following two linux packages would need to be installed from a terminal in the container as follows:
+The following two linux packages would need to be installed from a terminal in the container as follows:
 
 ```bash
 sudo apt update;
-sudo apt install libgdal-dev libproj-dev;
+sudo apt-get install tesseract-ocr tesseract-ocr-eng;
+cd /opt/base-uv;
+uv add pytesseract;
+cd -;
 ```
-
-After completing the step above you can install the `rgdal` R-package locally using the following from R:
-
-`install.packages("rgdal", lib = Sys.getenv("R_LIBS_USER"))`
 
 To save (or commit) these changes so they *will* be present after a (container) restart type, for example, `c myimage` (+ Enter). This creates a new docker image with your changes and also a new launch script on your Desktop with the name `launch-rsm-msba-myimage.command` that you can use to launch your customized environment in the future.
 
@@ -228,11 +221,7 @@ For additional resources on developing docker images see the links below:
 
 ## Cleanup
 
-To remove any locally installed R-packages, press 6 (+ Enter) in the launch menu. To remove locally installed Python modules press 7 (+ Enter) in the launch menu.
-
-> Note: It is also possible initiate the process of removing locally installed packages and settings from within the container. Open a terminal by pressing 1 (+ Enter) in the launch menu and typing `clean`. Then follow the prompts to indicate what needs to be removed.
-
-You should always stop the `rsm-msba-k8s-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove local R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-k8s-arm):
+You should always stop the `rsm-msba-k8s-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to remove all docker images, networks, and (data) volumes, and 'pull' only the docker image you need (e.g., rsm-msba-k8s-arm):
 
 ```bash
 rm -rf ~/.rsm-msba;
@@ -244,9 +233,8 @@ docker pull vnijs/rsm-msba-k8s-arm;
 
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
-* `launch -t 3.0.0` ensures a specific version of the docker container is used. Suppose you used version 3.0.0 for a project. Running the launch script with `-t 3.0.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
+* `launch -t 1.3.0` ensures a specific version of the docker container is used. Suppose you used version 1.3.0 for a project. Running the launch script with `-t 1.3.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
 * `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to setup a particular directory that will house multiple projects
-* `launch -d ~/project_1` will treat the `project_1` directory on the host system (i.e., your macOS computer) as the project home directory in the docker container. This is an additional level of isolation that can help ensure your work is reproducible in the future. This can be particularly useful in combination with the `-t` option as this will make a copy of the launch script with the appropriate `tag` or `version` already set. Simply double-click the script in the `project_1` directory and you will be back in the development environment you used when you completed the project
 * `launch -s` show additional output in the terminal that can be useful to debug any problems
 * `launch -h` prints the help shown in the screenshot below
 
@@ -263,5 +251,3 @@ If you want to make your terminal look nicer and add syntax highlighting, auto-c
 <https://github.com/radiant-rstats/docker-k8s/blob/main/install/setup-ohmyzsh.md>
 
 <img src="figures/ohmyzsh-powerlevel10k-iterm.png" width="500px">
-
-To install a more feature-rich terminal for macOS see: <https://iterm2.com/>{target="_blank"}

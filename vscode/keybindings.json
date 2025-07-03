@@ -1,0 +1,29 @@
+[
+    {
+        "key": "cmd+enter",
+        "command": "runCommands",
+        "args": {
+          "commands": [
+            "workbench.action.terminal.runSelectedText",
+            "cursorDown"
+          ]
+        },
+        "when": "editorLangId matches /(shellscript|markdown|quarto|python)/"
+    },
+    {
+        "key": "ctrl+enter",
+        "command": "runCommands",
+        "args": {
+          "commands": [
+            "workbench.action.terminal.runSelectedText",
+            "cursorDown"
+          ]
+        },
+        "when": "editorLangId matches /(shellscript|markdown|quarto|python)/"
+    },
+    {
+        "key": "ctrl+enter",
+        "command": "notebook.cell.executeAndFocusContainer",
+        "when": "notebookCellListFocused || editorTextFocus && inputFocus && notebookEditorFocused"
+    }
+]

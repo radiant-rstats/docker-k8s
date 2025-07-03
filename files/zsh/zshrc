@@ -146,5 +146,5 @@ export RETICULATE_PYTHON="/opt/base-uv/.venv/bin/python"
 
 eval "$(uv generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
-
+export UV_LINK_MODE=copy
 source /opt/base-uv/.venv/bin/activate

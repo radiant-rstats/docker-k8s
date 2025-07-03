@@ -1,0 +1,94 @@
+{
+    "editor.bracketPairColorization.enabled": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.fontFamily": "Menlo, Monaco, 'Courier New', monospace",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.guides.bracketPairs": true,
+    "editor.guides.bracketPairsHorizontal": false,
+    "editor.inlineSuggest.enabled": true,
+    "editor.renderWhitespace": "all",
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "editor.wordWrap": "on",
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "window.confirmSaveUntitledWorkspace": false,
+    "workbench.editorAssociations": {
+        "file:/**/*.xls/*.xlsx": "jupyter-data-wrangler"
+    },
+
+    "explorer.confirmDelete": true,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmPasteNative": false,
+
+    "terminal.external.osxExec": "iTerm.app",
+    "terminal.external.windows": "wt.exe",
+    "terminal.integrated.allowChords": false,
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.defaultProfile.windows": "Ubuntu",
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
+    "terminal.integrated.fontFamily": "MesloLGS NF",
+    "terminal.integrated.fontLigatures.enabled": true,
+    "terminal.integrated.inheritEnv": false,
+    "terminal.integrated.suggest.enabled": true,
+
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "git.openRepositoryInParentFolders": "always",
+
+    "chat.agent.enabled": true,
+    "github.copilot.chat.agent.thinkingTool": true,
+    "github.copilot.chat.codesearch.enabled": true,
+    "github.copilot.enable": {
+        "*": true
+    },
+    "github.copilot.nextEditSuggestions.enabled": true,
+
+    "python.defaultInterpreterPath": "/opt/base-uv/.venv/bin/python",
+    "python.testing.pytestEnabled": true,
+
+    "interactiveWindow.collapseCellInputCode": "never",
+    "interactiveWindow.executeWithShiftEnter": true,
+    "ipynb.pasteImagesAsAttachments.enabled": false,
+    "jupyter.askForKernelRestart": false,
+    "jupyter.interactiveWindow.textEditor.autoMoveToNextCell": false,
+    "jupyter.interactiveWindow.textEditor.executeSelection": true,
+    "notebook.defaultFormatter": "charliermarsh.ruff",
+    "notebook.formatOnCellExecution": true,
+    "notebook.formatOnSave.enabled": true,
+    "notebook.lineNumbers": "on",
+
+    "quarto.render.renderOnSave": true,
+    "[quarto]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+
+    "cSpell.customDictionaries": {
+        "custom-dictionary-user": {
+            "name": "custom-dictionary-user",
+            "path": "~/.rsm-msba/cspell/custom-dictionary-user.txt",
+            "addWords": true,
+            "scope": "user"
+        }
+    },
+    "cSpell.ignoreWords": [],
+    "cSpell.userWords": [],
+
+    "code-eol.crlfCharacter": "¤¬",
+    "code-eol.decorateBeforeEol": true,
+    "code-eol.highlightExtraWhitespace": true,
+    "code-eol.highlightNonDefault": true,
+    "code-eol.newlineCharacter": "¬",
+    "code-eol.returnCharacter": "¤",
+
+    "dataWrangler.outputRenderer.enabled": false,
+    "projectManager.git.baseFolders": [
+        "~/git"
+    ],
+
+    "redhat.telemetry.enabled": false,
+    "remote.autoForwardPortsSource": "hybrid",
+    "security.workspace.trust.untrustedFiles": "open"
+}
