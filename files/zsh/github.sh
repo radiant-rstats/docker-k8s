@@ -63,8 +63,8 @@ if echo "$ssh_output" | grep -q "successfully authenticated"; then
   echo "✅ SSH connection to GitHub was successful! You are ready to use GitHub via SSH."
   echo -e "\nVisit: https://github.com/$user_name?tab=repositories to see your repositories."
   echo -e "\nIf you see a 404 page on GitHub you may have used an incorrect username."
-  echo -e "Your GitHub username for the Rady MSBA program should be 'rsm-xyz123'"
-  echo -e "where 'xyz123' is replaced by the first part of your @ucsd.edu email address\n"
+  echo -e "Your GitHub username for the Rady MSBA program should be 'rsm-aaa111'"
+  echo -e "where 'aaa111' is replaced by the first part of your @ucsd.edu email address\n"
 else
   echo -e "❌ SSH connection to GitHub failed. Please connect with your instructor or TA.\n"
 fi
