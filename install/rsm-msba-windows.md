@@ -1,55 +1,55 @@
 # Contents
 
-- [Installing the RSM-MSBA-K8S-INTEL computing environment on Windows](#installing-the-rsm-msba-k8s-intel-computing-environment-on-windows)
-- [Updating the RSM-MSBA-K8S-INTEL computing environment on Windows](#updating-the-rsm-msba-k8s-intel-computing-environment-on-windows)
-- [Using VS Code](#using-vs-code)
-- [Connecting to postgresql](#connecting-to-postgresql)
-- [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
-- [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-- [Cleanup](#cleanup)
-- [Getting help](#getting-help)
-- [Trouble shooting](#trouble-shooting)
-- [Optional](#optional)
+- [Contents](#contents)
+  - [Installing the RSM-MSBA-K8S-INTEL computing environment on Windows](#installing-the-rsm-msba-k8s-intel-computing-environment-on-windows)
+  - [Updating the RSM-MSBA-K8S-INTEL computing environment on Windows](#updating-the-rsm-msba-k8s-intel-computing-environment-on-windows)
+  - [Using VS Code](#using-vs-code)
+    - [Trouble shooting](#trouble-shooting)
+  - [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
+    - [Using pip to install python packages](#using-pip-to-install-python-packages)
+    - [Removing locally installed packages](#removing-locally-installed-packages)
+  - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
+  - [Cleanup](#cleanup)
+  - [Getting help](#getting-help)
+  - [Trouble shooting](#trouble-shooting-1)
+  - [Optional](#optional)
 
 ## Installing the RSM-MSBA-K8S-INTEL computing environment on Windows
 
-Please follow the instructions below to install the rsm-msba-k8s-intel computing environment. It has Python, R, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
+Please follow the instructions below to install the rsm-msba-k8s-intel computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
-**Step 1**: Upgrade Windows
+**Step 1**: Install Windows Subsystem for Linux (WSL2)
 
-Windows users must use Microsoft Windows 11, or Windows 10 Professional, Education, or Enterprise (64-bit). Check if there are any updates available for your system by clicking on the Start icon and typing "Check for Updates". After upgrading to the latest version of Windows, open PowerShell and type `winver`.
-
-**Step 2**: Install Windows Subsystem for Linux (WSL2)
-
-To activate WSL2, start PowerShell as an administrator and copy-and-paste the code below:
+To activate WSL2, open PowerShell as an administrator and copy-and-paste the code below:
 
 ```bash
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 ```
+
 Followed by:
 
 ```bash
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart;
 ```
 
-Next, restart your computer and re-open PowerShell to install Ubuntu. You will be asked to provide a username and password after install Ubuntu.
+Next, restart your computer and re-open PowerShell as a regular user to install Ubuntu.
+
+> IMPORTANT: You will be asked to provide a username and password during the install process. Your username should not have any spaces or special characters. If your @ucsd.edu email is, for example, aaa111@ucsd.edu you could use aaa111 as the username. Even though it may look like nothing is happening when you are asked for a password, the system will be tracking your key strokes.
 
 ```bash
 wsl --set-default-version 2
 wsl --install -d Ubuntu-24.04
 ```
 
-> Important: Make sure to enter the same username and password you use to login to your computer. The username should **not** have any spaces or special characters.
-
-Check your username for Windows and Ubuntu by executing the command below in both (1) a Windows PowerShell and (2) an Ubuntu terminal. The output in both cases should be the same.
+You can check your username for Windows and Ubuntu by executing the command below in both (1) a Windows PowerShell and (2) an Ubuntu terminal.
 
 ```bash
 whoami
 ```
 
-> Important: If you see `root` as the username please review the discussion in **step 4** below. You will need to reset your username for WSL2.
+> Important: If you see `root` as the username please review the discussion in **step 3** below. You will need to reset your username for WSL2.
 
-Next, restart your computer and re-open PowerShell to check that Ubuntu is set as the default linux distribution:
+Next, restart your computer and re-open PowerShell as a regular user to check that Ubuntu is set as the default linux distribution:
 
 ```bash
 wsl --list
@@ -72,26 +72,17 @@ wsl --setdefault Ubuntu-24.04
 wsl --list
 ```
 
-**Step 3**: Install Windows Tools
+**Step 2**: Install Docker Desktop
 
-Download and install the Microsoft <a href="https://www.microsoft.com/en-us/p/app-installer/9nblggh4nns1?activetab=pivot:overviewtab" target="_blank">App Installer</a>. After completing the install, open a new PowerShell terminal **as a regular user** and enter the commands below:
+Install Docker Desktop from the page linked below:
 
-```bash
-winget install -e Microsoft.VisualStudioCode;
-winget install -e Docker.DockerDesktop;
-```
+<https://docs.docker.com/desktop/setup/install/windows-install/>
 
-This will install VS Code and Docker Desktop. If you are using Windows 10, you should also install Windows Terminal using the command below. Windows Terminal is available by default on Windows 11. We recommend you pin Windows Terminal and VS Code to the taskbar as you will use these tools regularly.
-
-```bash
-winget install -e Microsoft.WindowsTerminal;
-```
-
-Next, logout and back into Windows and then start Docker by clicking on the Whale icon that was added to your desktop (see image below).
+You will be using VS Code and Windows Terminal extensively in the program so please pin Windows Terminal and VS Code to the taskbar. Next, logout and back into Windows and then start Docker by clicking on the Whale icon that was added to your desktop (see image below).
 
 ![docker](figures/docker-icon.png)
 
-You will know if Docker is running if you see the icon above in your system tray. If the containers shown in the image are moving up and down, docker hasn't finished starting up yet. Once the docker application is running, click on the docker icon in the system tray and select "Settings".
+You will know Docker is running if you see the icon above in your system tray. If the containers shown in the image are moving up and down, docker hasn't finished starting up yet. Once the docker application is running, click on the docker icon in the system tray and select "Settings".
 
 Start by clicking on _General_ to ensure "Use the WSL 2 based engine" is checked as in the screenshot below.
 
@@ -103,14 +94,14 @@ Next click on _Resources > WSL INTEGRATION_ and ensure integration with Ubuntu i
 
 Optional: If you are interested, this linked video gives a brief intro to what Docker is: https://www.youtube.com/watch?v=YFl2mCHdv24
 
-**Step 4**: Open an Ubuntu terminal to complete RSM-MSBA-K8S-INTEL computing environment setup
+**Step 3**: Open an Ubuntu terminal to complete RSM-MSBA-K8S-INTEL computing environment setup
 
 If you are using Windows Terminal you can click on the down-caret at the top of the window to start an Ubuntu terminal as shown in the screenshot below. Alternatively, you can click on the Windows Start icon and type "ubuntu" to start an Ubuntu terminal. Copy-and-paste the code below into the Ubuntu terminal and provide your password when prompted.
 
 <img src="figures/start-ubuntu-terminal.png" width="500px">
 
 ```bash
-cd ~; sudo -- sh -c 'apt -y update; apt -y upgrade; apt -y install xdg-utils wslu zsh ntpdate python-is-python3; ntpdate pool.ntp.org'
+cd ~; sudo -- sh -c 'apt -y update; apt -y upgrade; apt -y install xdg-utils wslu zsh ntpdate locale python-is-python3; ntpdate pool.ntp.org'
 ```
 
 Now Ubuntu should be up to date and ready to accept commands to clone the docker repo with documentation and launch scripts. Again, provide your password if prompted.
@@ -128,9 +119,9 @@ USERNAME=$(powershell.exe '$env:UserName'|tr -d '\r');
 echo $USERNAME;
 ```
 
-Finally, we will create and launch a script `launch-rsm-msba.bat` on your Desktop that you can double-click to start the container in the future. 
+Finally, we will create and launch a script `launch-rsm-msba.bat` on your Desktop that you can double-click to start the container in the future.
 
-The code below will try to determine if you have a Desktop folder that is Backed-Up to OneDrive. 
+The code below will try to determine if you have a Desktop folder that is Backed-Up to OneDrive.
 
 ```bash
 if [ -d "/mnt/c/Users/$USERNAME/OneDrive/Desktop/" ]; then
@@ -167,7 +158,7 @@ The created and launched script will finalize the installation of the computing 
 
 **Trouble shooting**
 
-If you see `Base dir.: /root` as shown in the image below there was an issue creating a new user at the beginning of Step 4. 
+If you see `Base dir.: /root` as shown in the image below there was an issue creating a new user at the beginning of Step 3.
 
 <img src="figures/ubuntu-root.png" width="500px">
 
@@ -178,10 +169,10 @@ adduser your-id
 sudo usermod -aG sudo your-id
 ```
 
-Now, from a Powershell terminal run the below where, again, you should replace "your-id" by the appropriate id:
+Now, from open Powershell as a regular user and run command below where, again, you should replace "your-id" by the appropriate id:
 
 ```powershell
-ubuntu2204 config --default-user your-id
+ubuntu2404 config --default-user your-id
 ```
 
 Next, re-run the code from Step 4 above, starting with the command:
@@ -197,7 +188,7 @@ wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~
 pause
 ```
 
-**Step 4**: Check that you can launch Radiant
+**Step 3**: Check that you can launch Radiant
 
 You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) Radiant should start up in your default web browser.
 
@@ -234,7 +225,7 @@ Microsoft's open-source integrated development environment (IDE), VS Code or Vis
 Run the code below from a PowerShell terminal after installing VS Code to install relevant extensions:
 
 ```powershell
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/radiant-rstats/docker-k8s/master/vscode/extensions.txt -OutFile extensions.txt; 
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/radiant-rstats/docker-k8s/master/vscode/extensions.txt -OutFile extensions.txt;
 cat extensions.txt |% { code --install-extension $_ --force};
 del extensions.txt;
 ```
