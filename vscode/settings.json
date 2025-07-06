@@ -37,6 +37,8 @@
     "git.confirmSync": false,
     "git.enableSmartCommit": true,
     "git.openRepositoryInParentFolders": "always",
+    "git.defaultCloneDirectory": "~/git",
+    "github.gitProtocol": "ssh",
 
     "chat.agent.enabled": true,
     "github.copilot.chat.agent.thinkingTool": true,
