@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+apt update -qq || { echo "Failed to update package list"; exit 1; }
+apt -y install libpq-dev libssl-dev
+apt clean
+apt autoremove -y
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="/usr/local/bin" sh
 
 curr_dir=$(pwd)
@@ -17,6 +23,9 @@ uv add \
   torchaudio \
   --default-index https://download.pytorch.org/whl/cpu
 
+uv add pyarrow==${PYARROW_VERSION} \
+  --default-index https://pypi.org/simple/
+
 # Install core data science packages first
 # Issue with scipy 1.16.0 and various packages
 uv add \
@@ -24,7 +33,7 @@ uv add \
   "scipy==1.15.3" \
   pandas \
   sqlalchemy \
-  psycopg2 \
+  psycopg2[binary] \
   ipython-sql \
   scikit-learn \
   mlxtend \
