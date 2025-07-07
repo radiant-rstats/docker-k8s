@@ -18,15 +18,17 @@
 
 Please follow the instructions below to install the rsm-msba-k8s-intel computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
+
 **Step 1**: Install Windows Subsystem for Linux (WSL2) and Ubuntu 24.04
 
-To install WSL2 and Ubuntu 24.04 open **PowerShell as Administrator** (right-click the Start menu, select "Windows PowerShell (Admin)"). Then run the following command to install WSL and Ubuntu 24.04:
+To install WSL2 and Ubuntu 24.04, open **PowerShell as Administrator** (right-click the Start menu, select "Windows PowerShell (Admin)"). Then run the following command to install WSL and Ubuntu 24.04:
 
 ```bash
 wsl --install -d Ubuntu-24.04
 ```
 
-Restart your computer if prompted. When the Ubuntu terminal opens for the first time, you will be asked to create a Linux username and password. Use your UCSD username (e.g., `aaa111` if your @ucsd.edu email is `aaa111@ucsd.edu`) and choose a password you can remember (you will not see any characters as you type).
+
+Restart your computer if prompted. When the Ubuntu terminal opens for the first time, you will be asked to create a Linux username and password. **Use your UCSD username** (e.g., `aaa111` if your @ucsd.edu email is `aaa111@ucsd.edu`) and choose a password you can remember (you will not see any characters as you type). Using your UCSD username helps ensure your files and settings are consistent across systems and makes it easier for instructors to help if you run into issues.
 
 To check the installed distributions, i.e., versions of Linux, and the WSL version, run:
 
@@ -40,20 +42,24 @@ If Ubuntu 24.04 is not set as the default, set it with:
 wsl --setdefault Ubuntu-24.04
 ```
 
-You can check your username for Windows and Ubuntu by running `whoami` in both a Windows PowerShell and an Ubuntu terminal.
+
+You can check your username for Windows and Ubuntu by running `whoami` in both a Windows PowerShell and an Ubuntu terminal. If you see `root` as your username in Ubuntu, follow the troubleshooting steps below to set your username correctly. This is important for file access and to avoid issues later.
+
 
 **Troubleshooting**
 
-> Important: If you see `root` as your username in Ubuntu you will need to  reset your username. If the username in Ubuntu is as expected, you can proceed to **Step 2** below
+> **Important:** If you see `root` as your username in Ubuntu, you will need to reset your username. If the username in Ubuntu is as expected, you can proceed to **Step 2** below.
 
-From an Ubuntu terminal run the below but replace “your-id” by the id you want to use.
+
+From an Ubuntu terminal, run the commands below (replace “your-id” with the username you want to use):
 
 ```bash
 adduser your-id
 sudo usermod -aG sudo your-id
 ```
 
-Now, from open Powershell as a regular user and run command below where, again, you should replace "your-id" by the appropriate id:
+
+Now, open PowerShell as a regular user and run the command below (again, replace "your-id" with your chosen username):
 
 ```powershell
 ubuntu2404 config --default-user your-id
@@ -61,24 +67,27 @@ ubuntu2404 config --default-user your-id
 
 **Step 2**: Install Docker Desktop
 
-If all went well in **Step 1** you can now install Docker Desktop from the page linked below:
+If all went well in **Step 1**, you can now install Docker Desktop from the page linked below:
 
 <https://docs.docker.com/desktop/setup/install/windows-install/>{target="_blank"}
 
-You will be using VS Code and Windows Terminal extensively in the Rady MSBA program so make sure to _pin_ both applications to the taskbar. Next, logout and back into Windows and then start Docker Desktop by clicking on the Whale icon that was added to your desktop (see image below).
+You will be using VS Code and Windows Terminal extensively in the Rady MSBA program, so make sure to _pin_ both applications to the taskbar for easy access. Next, logout and back into Windows and then start Docker Desktop by clicking on the Whale icon that was added to your desktop (see image below).
 
 ![docker](figures/docker-icon.png)
 
-You will know Docker Desktop is running if you see the icon above in your system tray. If the containers shown in the image are moving up and down, docker hasn't finished starting up yet. Once the Docker Desktop application is running, click on the docker icon in the system tray and select "Settings".
+You will know Docker Desktop is running if you see the icon above in your system tray. If the containers shown in the image are moving up and down, Docker hasn't finished starting up yet. Once the Docker Desktop application is running, click on the Docker icon in the system tray and select "Settings".
 
-Next click on _Resources > WSL INTEGRATION_ and ensure integration with Ubuntu is enabled as in the screenshot below
+Next, click on _Resources > WSL INTEGRATION_ and ensure integration with Ubuntu is enabled as in the screenshot below. This step is required so Docker can work with your Ubuntu environment.
 
 <img src="figures/docker-resources-wsl2-integration.png" width="500px">
 > Note: This video gives a brief (100 seconds) introduction to what Docker is: <https://www.youtube.com/watch?v=Gjnup-PuquQ>{target="_blank"}
 
+
 **Step 3**: Open an Ubuntu terminal to complete RSM-MSBA-K8S-INTEL computing environment setup
 
-If you are using Windows Terminal you can click on the down-caret at the top of the window to start an Ubuntu terminal as shown in the screenshot below. Alternatively, you can click on the Windows Start icon and type "ubuntu" to start an Ubuntu terminal. Copy-and-paste the code below into the Ubuntu terminal and provide your password when prompted.
+> **Summary:** In this step, you will update Ubuntu, clone the course repository, and create a shortcut to launch your computing environment. This ensures you always have the latest scripts and documentation.
+
+If you are using Windows Terminal, you can click on the down-caret at the top of the window to start an Ubuntu terminal as shown in the screenshot below. Alternatively, you can click on the Windows Start icon and type "ubuntu" to start an Ubuntu terminal. Copy-and-paste the code below into the Ubuntu terminal and provide your password when prompted.
 
 <img src="figures/start-ubuntu-terminal.png" width="500px">
 
@@ -92,18 +101,23 @@ Now Ubuntu should be up to date and ready to accept commands to clone the docker
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
 ```
 
-After running the commands above you will be able to start the docker container by typing `~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~` from an Ubuntu terminal.
 
-Next, determine your Windows username by running the code below from an Ubuntu terminal:
+After running the commands above, you will be able to start the docker container by typing `~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~` in an Ubuntu terminal. This will launch the RSM-MSBA computing environment.
+
+**Creating a Desktop Shortcut:**
+
+To make it easy to start the environment in the future, you will create a shortcut (`launch-rsm-msba.bat`) on your Windows Desktop. This shortcut can be double-clicked to launch the container without needing to open a terminal and type commands each time.
+
+First, determine your Windows username by running the code below from an Ubuntu terminal:
 
 ```bash
 USERNAME=$(powershell.exe '$env:UserName'|tr -d '\r');
 echo $USERNAME;
 ```
 
-Finally, we will create and launch a script `launch-rsm-msba.bat` on your Desktop that you can double-click to start the container in the future.
+In contrast to other operating systems, Windows can have the Desktop folder in a number of different locations making it difficult
 
-The code below will try to determine if you have a Desktop folder that is Backed-Up to OneDrive.
+The code below will try to determine if you have a Desktop folder that is backed up to OneDrive. If not, it will try to use a Desktop folder in your home directory. If that doesn't work either, then it will create a launch scrip in your home directory.
 
 ```bash
 if [ -d "/mnt/c/Users/$USERNAME/OneDrive/Desktop/" ]; then
@@ -123,7 +137,7 @@ if [ -n "$DTOP" ]; then
   /mnt/c/Users/"$USERNAME$DTOP"/launch-rsm-msba.bat;
 else
   echo "Unable to determine location of Desktop folder on your system" >&2
-  echo "The .bat file has been added to your home directory in Ubuntunu" >&2
+  echo "The .bat file has been added to your home directory in Ubuntu" >&2
   echo "wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~" > /mnt/c/Users/"$USERNAME"/launch-rsm-msba.bat;
   chmod 755 /mnt/c/Users/"$USERNAME"/launch-rsm-msba.bat;
 fi
@@ -134,32 +148,36 @@ ln -s /mnt/c/Users/"$USERNAME"/OneDrive ./OneDrive;
 ln -s /mnt/c/Users/"$USERNAME" ./win_home;
 ```
 
-The created and launched script will finalize the installation of the computing environment. The first time you run this script it will download the latest version of the computing environment which can take some time. Wait for the image to download and follow any prompts. Once the download is complete you should see a menu as in the screen shot below.
+
+The created and launched script will finalize the installation of the computing environment. The first time you run this script, it will download the latest version of the computing environment, which can take some time depending on your internet speed. Wait for the image to download and follow any prompts. Once the download is complete, you should see a menu as in the screenshot below.
 
 <img src="figures/rsm-launch-menu-wsl2.png" width="500px">
 
-**Trouble shooting**
 
-If you see `Base dir.: /root` as shown in the image below there was an issue creating a new user at the beginning of Step 3. Go back to the previous **Trouble shooting** section and continue from there.
+**Troubleshooting**
+
+If you see `Base dir.: /root` as shown in the image below, there was an issue creating a new user at the beginning of Step 3. Go back to the previous **Troubleshooting** section and continue from there. Having the correct username is important for file access and to avoid issues with saving your work.
 
 <img src="figures/ubuntu-root.png" width="500px">
 
-If you do **not** have a file called `launch-rsm-msba.bat` on your Desktop, you can create one by copy-and-pasting the code below in to a text file using notepad. The "pause" line can be removed later if all works well. Open VS Code or notepad, copy-and-paste the code below into the editor, and save the file as `launch-rsm-msba.bat`. After saving, double-click the file to start the docker container.
+
+If you do **not** have a file called `launch-rsm-msba.bat` on your Desktop, you can create one by copy-and-pasting the code below into a text file using Notepad. The "pause" line can be removed later if all works well. Open VS Code or Notepad, copy-and-paste the code below into the editor, and save the file as `launch-rsm-msba.bat`. After saving, double-click the file to start the docker container.
 
 ```bash
 wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~
 pause
 ```
 
+
 **Step 4**: Check that you can launch Radiant
 
-You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) Radiant should start up in your default web browser.
+You will know that the installation was successful if you can start Radiant. In the launch menu, press `2` (+ Enter) and Radiant should start up in your default web browser.
 
-> Important: Always use q (+ Enter) to shutdown the computing environment
+> **Important:** Always use `q` (+ Enter) to shut down the computing environment. This ensures your work is saved and the environment is properly closed.
 
 <img src="figures/radiant-data-manage.png" width="500px">
 
-To finalize the setup, open a terminal inside the docker container by pressing `1` and `Enter` in the launch menu. Then run the command below:
+To finalize the setup, open a terminal inside the docker container by pressing `1` (+ Enter) in the launch menu. If you are asked about Z shell configuration, you can press `q` (+ Enter) to skip, then run the command below:
 
 ```bash
 setup;
