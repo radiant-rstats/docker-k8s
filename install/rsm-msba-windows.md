@@ -1,23 +1,18 @@
-# Contents
+# RSM-MSBA on Windows (Intel)
 
-- [Contents](#contents)
-  - [Installing the RSM-MSBA-K8S-INTEL computing environment on Windows](#installing-the-rsm-msba-k8s-intel-computing-environment-on-windows)
-  - [Updating the RSM-MSBA-K8S-INTEL computing environment on Windows](#updating-the-rsm-msba-k8s-intel-computing-environment-on-windows)
-  - [Using VS Code](#using-vs-code)
-    - [Trouble shooting](#trouble-shooting)
-  - [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
-    - [Using pip to install python packages](#using-pip-to-install-python-packages)
-    - [Removing locally installed packages](#removing-locally-installed-packages)
-  - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-  - [Cleanup](#cleanup)
-  - [Getting help](#getting-help)
-  - [Trouble shooting](#trouble-shooting-1)
-  - [Optional](#optional)
+- [Installing the RSM-MSBA computing environment](#installing-the-rsm-msba-computing-environment)
+- [Updating the RSM-MSBA computing environment](#updating-the-rsm-msba-computing-environment)
+- [Using VS Code](#using-vs-code)
+- [Using UV](#using-uv)
+- [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
+- [Cleanup](#cleanup)
+- [Getting help](#getting-help)
+- [Trouble shooting](#trouble-shooting)
+- [Optional](#optional)
 
-## Installing the RSM-MSBA-K8S-INTEL computing environment on Windows
+## Installing the RSM-MSBA computing environment
 
-Please follow the instructions below to install the rsm-msba-k8s-intel computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
-
+Please follow the instructions below to install the RSM-MSBA computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
 **Step 1**: Install Windows Subsystem for Linux (WSL2) and Ubuntu 24.04
 
@@ -85,8 +80,6 @@ Next, click on _Resources > WSL INTEGRATION_ and ensure integration with Ubuntu 
 
 **Step 3**: Open an Ubuntu terminal to complete RSM-MSBA-K8S-INTEL computing environment setup
 
-> **Summary:** In this step, you will update Ubuntu, clone the course repository, and create a shortcut to launch your computing environment. This ensures you always have the latest scripts and documentation.
-
 If you are using Windows Terminal, you can click on the down-caret at the top of the window to start an Ubuntu terminal as shown in the screenshot below. Alternatively, you can click on the Windows Start icon and type "ubuntu" to start an Ubuntu terminal. Copy-and-paste the code below into the Ubuntu terminal and provide your password when prompted.
 
 <img src="figures/start-ubuntu-terminal.png" width="500px">
@@ -98,65 +91,42 @@ cd ~; sudo -- sh -c 'apt -y update; apt -y upgrade; apt -y install xdg-utils wsl
 Now Ubuntu should be up to date and ready to accept commands to clone the docker repo with documentation and launch scripts. Again, provide your password if prompted.
 
 ```bash
+mkdir ~/git;
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
 ```
 
 
-After running the commands above, you will be able to start the docker container by typing `~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~` in an Ubuntu terminal. This will launch the RSM-MSBA computing environment.
+After running the commands above, you will be able to start the docker container by typing `~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~` in an Ubuntu terminal.
 
 **Creating a Desktop Shortcut:**
 
-To make it easy to start the environment in the future, you will create a shortcut (`launch-rsm-msba.bat`) on your Windows Desktop. This shortcut can be double-clicked to launch the container without needing to open a terminal and type commands each time.
+To make it easy to start the environment in the future, we will try to create a shortcut (`launch-rsm-msba.bat`) on your Windows Desktop. This shortcut can be double-clicked to launch the container without needing to open a terminal and type commands each time.
 
-First, determine your Windows username by running the code below from an Ubuntu terminal:
-
-```bash
-USERNAME=$(powershell.exe '$env:UserName'|tr -d '\r');
-echo $USERNAME;
-```
-
-In contrast to other operating systems, Windows can have the Desktop folder in a number of different locations making it difficult
-
-The code below will try to determine if you have a Desktop folder that is backed up to OneDrive. If not, it will try to use a Desktop folder in your home directory. If that doesn't work either, then it will create a launch scrip in your home directory.
+Unfortunately, Windows can have the Desktop folder in a number of different locations. The code below will try to determine the correct location. If this fails, move on to the **Trouble shooting** section below.
 
 ```bash
-if [ -d "/mnt/c/Users/$USERNAME/OneDrive/Desktop/" ]; then
-  echo "Using Desktop backed up in OneDrive" >&2
-  DTOP="/OneDrive/Desktop";
-elif [ -d "/mnt/c/Users/$USERNAME/Desktop/" ]; then
-  echo "Using Desktop folder in user home directory" >&2
-  DTOP="/Desktop";
-else
-  DTOP="";
-fi
-if [ -n "$DTOP" ]; then
-  echo "wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~" > /mnt/c/Users/"$USERNAME$DTOP"/launch-rsm-msba.bat;
-  chmod 755 /mnt/c/Users/"$USERNAME$DTOP"/launch-rsm-msba.bat;
-  cd ~;
-  ln -s /mnt/c/Users/"$USERNAME$DTOP"/ ./Desktop;
-  /mnt/c/Users/"$USERNAME$DTOP"/launch-rsm-msba.bat;
-else
-  echo "Unable to determine location of Desktop folder on your system" >&2
-  echo "The .bat file has been added to your home directory in Ubuntu" >&2
-  echo "wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~" > /mnt/c/Users/"$USERNAME"/launch-rsm-msba.bat;
-  chmod 755 /mnt/c/Users/"$USERNAME"/launch-rsm-msba.bat;
-fi
+DESKTOP_PATH=$(powershell.exe '[Environment]::GetFolderPath("Desktop")' | tr -d '\r');
+DESKTOP_WSL=$(wslpath "$DESKTOP_PATH");
+echo "wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~" > "$DESKTOP_WSL/launch-rsm-msba.bat";
+chmod 755 "$DESKTOP_WSL/launch-rsm-msba.bat";
+cd ~;
+ln -s "$DESKTOP_WSL" ./Desktop;
 ln -s /mnt/c/Users/"$USERNAME"/Dropbox ./Dropbox;
 ln -s /mnt/c/Users/"$USERNAME"/Downloads ./Downloads;
 ln -s "/mnt/c/Users/$USERNAME/Google Drive" "./Google Drive";
 ln -s /mnt/c/Users/"$USERNAME"/OneDrive ./OneDrive;
 ln -s /mnt/c/Users/"$USERNAME" ./win_home;
+"$DESKTOP_WSL/launch-rsm-msba.bat"
 ```
 
-
-The created and launched script will finalize the installation of the computing environment. The first time you run this script, it will download the latest version of the computing environment, which can take some time depending on your internet speed. Wait for the image to download and follow any prompts. Once the download is complete, you should see a menu as in the screenshot below.
+The launch script will finalize the installation of the computing environment. The first time you run this script, it will download the latest version of the computing environment, which can take some time depending on the speed of your internet connection. Wait for the image to download and follow any prompts. Once the download is complete, you should see a menu as in the screenshot below.
 
 <img src="figures/rsm-launch-menu-wsl2.png" width="500px">
 
 
 **Troubleshooting**
 
-If you see `Base dir.: /root` as shown in the image below, there was an issue creating a new user at the beginning of Step 3. Go back to the previous **Troubleshooting** section and continue from there. Having the correct username is important for file access and to avoid issues with saving your work.
+If you see `Base dir.: /root` as shown in the image below, there was an issue creating a new user for Ubuntu. Go back to the previous **Troubleshooting** section and continue from there. Having the correct username is important for file access and to avoid permission issues saving your work.
 
 <img src="figures/ubuntu-root.png" width="500px">
 
@@ -169,28 +139,31 @@ pause
 ```
 
 
-**Step 4**: Check that you can launch Radiant
+**Step 4**: Check that you can launch Radiant-for-R
 
 You will know that the installation was successful if you can start Radiant. In the launch menu, press `2` (+ Enter) and Radiant should start up in your default web browser.
 
-> **Important:** Always use `q` (+ Enter) to shut down the computing environment. This ensures your work is saved and the environment is properly closed.
+You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) in the launch menu, Radiant should start up in your default web browser.
 
 <img src="figures/radiant-data-manage.png" width="500px">
 
-To finalize the setup, open a terminal inside the docker container by pressing `1` (+ Enter) in the launch menu. If you are asked about Z shell configuration, you can press `q` (+ Enter) to skip, then run the command below:
+> Important: Always use q (+ Enter) to shutdown the computing environment
+
+To finalize the setup, open a terminal inside the docker container by pressing 1 (+ Enter) in the launch menu. If you are asked about "Z shell configuration, press q + Enter and then run the command below:
 
 ```bash
 setup;
-exit;
 ```
 
-## Updating the RSM-MSBA-K8S-INTEL computing environment on Windows
+When the setup process is done, type `exit` (+ Enter) to return to the launch menu.
+
+## Updating the RSM-MSBA computing environment
 
 To update the container use the launch script and press 6 (and Enter). To update the launch script itself, press 7 (and Enter).
 
 <img src="figures/rsm-launch-menu-wsl2.png" width="500px">
 
-If for some reason you are having trouble updating either the container or the launch script open an Ubuntu terminal and copy-and-paste the code below. Note: You may have to right-click to get a copy-and-paste menu for the terminal. These commands will update the docker container, replace the old docker related scripts, and copy the latest version of the launch script to your Desktop.
+If for some reason you are having trouble updating either the container or the launch script, open an Ubuntu terminal and copy-and-paste the code below. Note: You may have to right-click to get a copy-and-paste menu for the terminal. These commands will update the docker container and replace the old docker related scripts.
 
 ```bash
 docker pull vnijs/rsm-msba-k8s-intel;
@@ -201,7 +174,7 @@ git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
 
 ## Using VS Code
 
-Microsoft's open-source integrated development environment (IDE), VS Code or Visual Studio Code, was the most popular development environment according to a [Stack Overflow developer survey](https://survey.stackoverflow.co/2022#section-most-popular-technologies-integrated-development-environment). VS Code is widely used by Google developers and is the [default development environment at Facebook](https://www.zdnet.com/article/facebook-microsofts-visual-studio-code-is-now-our-default-development-platform/).
+Microsoft's open-source Integrated Development Environment (IDE), VS Code or Visual Studio Code, is the most popular development environment according to a [Stack Overflow developer survey](https://survey.stackoverflow.co/2024/technology#most-popular-technologies-webframe). VS Code is widely used by Google developers and is the [default development environment at Facebook](https://www.zdnet.com/article/facebook-microsofts-visual-studio-code-is-now-our-default-development-platform/).
 
 Run the code below from a PowerShell terminal after installing VS Code to install relevant extensions:
 
@@ -216,102 +189,92 @@ To learn more about using VS Code to write python code see the links and comment
 - <a href="https://code.visualstudio.com/docs/languages/python" target="_blank">Python in VS Code</a>
 - <a href="https://code.visualstudio.com/docs/python/python-tutorial#_create-a-python-hello-world-source-code-file" target="_blank">VS Code Python Tutorial</a>
 
-Note that you can use `Shift+Enter` to run the current line in a Python Interactive Window:
-
-- <a href="https://code.visualstudio.com/docs/python/jupyter-support-py" target="_blank">Executing Python Code in VS Code</a>
-
-When writing and editing python code you will have access to tools for auto-completion, etc. Your code will also be auto-formatted every time you save it using the "black" formatter.
-
-- <a href="https://code.visualstudio.com/docs/python/editing" target="_blank">Editing Python in VS Code Python</a>
-
-VS Code also gives you access to a debugger for your python code. For more information see the link below:
-
-- <a href="https://code.visualstudio.com/docs/python/debugging" target="_blank">Debugging Python in VS Code Python</a>
-
-You can even open and run Jupyter Notebooks in VS Code
+You can even create and run Jupyter Notebooks in VS Code:
 
 - <a href="https://code.visualstudio.com/docs/datascience/jupyter-notebooks" target="_blank">Jupyter Notebooks in VS Code</a>
 
-A major new feature in VS Code is the ability to use AI to help you write code. For more information see the links below:
+A major feature in VS Code is the ability to use AI to help you write code. For more information see the link below:
 
-- <a href="https://code.visualstudio.com/blogs/2023/03/30/vscode-copilot" target="_blank">VS Code Copilot</a>
-- <a href="https://code.visualstudio.com/docs/editor/artificial-intelligence" target="_blank">VS Code AI</a>
+<a href="https://code.visualstudio.com/docs/copilot/overview" target="_blank">VS Code Copilot</a>
 
-### Trouble shooting
+## Using UV
 
-If you see `root` as the username when you type `whoami` in an Ubuntu terminal you will need to reset your username for WSL2. Please review step 4 in the install process for more guidance.
+The RSM-MSBA docker image uses UV for python package management, virtual environments, and installing different versions of Python. To learn more about UV see <https://docs.astral.sh/uv/>{target="_blank"}.
 
-## Installing Python and R packages locally
-
-To install the latest version of R-packages you need, add the lines of code shown below to `~/.Rprofile`. You can edit the file by running `code ~/.Rprofile` in a VS Code terminal.
-
-```r
-if (Sys.info()["sysname"] == "Linux") {
-  options(repos = c(
-    RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
-    CRAN = "https://cloud.r-project.org"
-  ))
-} else {
-  options(repos = c(
-    CRAN = "https://cloud.r-project.org"
-  ))
-}
-```
-
-This will be done for you automatically if you run the `setup` command from a terminal inside the docker container. To install R packages that will persist after restarting the docker container, enter code like the below in R and follow any prompts. After doing this once, you can use `install.packages("some-other-package")` to install packages locally in the future.
-
-```r
-fs::dir_create(Sys.getenv("R_LIBS_USER"), recurse = TRUE)
-install.packages("fortunes", lib = Sys.getenv("R_LIBS_USER"))
-```
-
-To install Python modules that will **not** persist after restarting the docker container, enter code like the below from a terminal in VS Code:
+An important to realize that the RSM-MSBA docker container will reset itself completely when it is restart (i.e., it always start from the same docker image). This means that we can install Python packages that will **not** persist after restarting the docker container which can be convenient if we want to experiment without worrying about "breaking" anything. To add to the main python environment inside the docker container we can enter code like the below from a terminal in VS Code:
 
 ```bash
-pip install pyasn1
+cd /opt/base-uv/;
+source .venv/bin/activate
+uv add mlxtend;
 ```
 
-After installing a module you will have to restart any running Python kernels to `import` the module in your code.
+> Note: After installing a package you may need to restart any running Python kernels so you can `import` the new package in a Jypyter Notebook, for example.
 
-### Using pip to install python packages
+### Creating a virtual environment
 
-We recommend you use `pip` to install any additional packages you might need. For example, you can use the command below to install a new version of the `pyrsm` package that you will use regularly throughout the Rady MSBA program. Note that adding `--user` is important to ensure the package is still available after you restart the docker container
+You can also UV to install packages you might need for a specific project or class in a way that **will** persist even if you restart the docker container. For example, you can use the sequence of commands below to create a virtual (python) environment in a project folder and install a specific version of the `polars` package.
+
+First create a new directory for your project
 
 ```bash
-pip install --user --upgrade pyrsm
+# rm -rf ~/my_project; # for cleanup if you want to try this multiple times
+mkdir ~/my_project;
+cd ~/my_project;
 ```
 
-### Removing locally installed packages
+Make sure no other virtual environment is active in the project folder, then initialize the project folder, create a virtual python environment, and `activate` it.
 
-To remove locally installed R packages press 8 (and Enter) in the launch menu and follow the prompts. To remove Python modules installed locally using `pip` press 9 (and Enter) in the launch menu
+```bash
+deactivate;
+uv init .;
+uv venv --python 3.12;
+source .venv/bin/activate;
+```
+
+Now we are ready to `add` python packages to the environment that are need for the project or class. In this case, we will install a specific version of polars and we will double check that this version was indeed installed.
+
+```bash
+uv add polars==1.1.0;
+python -c "import polars as pl; print(pl.__version__)";
+```
+
+> Note: The `-c` argument in the code block above allows a (small) python program to be passed in as string. Use `python --help` to see all the python options.
+
+### Removing a virtual environment
+
+To remove a virtual environment from a project directory you can use the following code:
+
+```bash
+cd ~/my_project;
+rm -rf .venv
+rm README.md main.py pyproject.toml uv.lock
+rm -rf .git .gitignore .python-version
+```
+
+You could, of course, also delete the entire project folder using `rm -rf ~/my_project` if you don't need it anymore.
 
 ## Committing changes to the computing environment
 
-By default re-starting the docker computing environment will remove any changes you made. This allows you to experiment freely, without having to worry about "breaking" things. However, there are times when you might want to keep changes.
+As mentioned above, re-starting the RSM-MSBA computing environment will remove any changes you made **inside** the container. This allows you to experiment freely, without having to worry about "breaking" things. However, there are times when you might want to make changes to the underlying docker image so they are always available when you restart the container.
 
-As shown in the previous section, you can install R and Python packages locally rather than in the container. These packages will still be available after a container restart.
+As shown in the previous section, you can install python packages locally rather than in the container. These packages will still be available after a container restart.
 
-To install binary R packages for Ubuntu Linux you can use the command below. These packages will *not* be installed locally and would normally not be available after a restart.
+Suppose you need to install binary packages for Ubuntu Linux, e.g., to work with the tesseract OCR library.  You could use the command below to do this. These packages will be installed inside the docker container and would normally not be available after a restart.
 
-```bash
-sudo apt update;
-sudo apt install r-cran-ada;
-```
-
-Similarly, some R-packages have requirements that need to be installed in the container (e.g., the `rgdal` package). The following two linux packages would need to be installed from a terminal in the container as follows:
+The following two linux packages would need to be installed from a terminal in the container as follows:
 
 ```bash
 sudo apt update;
-sudo apt install libgdal-dev libproj-dev;
+sudo apt-get install tesseract-ocr tesseract-ocr-eng;
+cd /opt/base-uv;
+uv add pytesseract;
+cd -;
 ```
 
-After completing the step above you can install the `rgdal` R-package locally using the following from R:
+To save (or commit) these changes so they *will* be present after a (container) restart type, for example, `c myimage` (+ Enter). This creates a new docker image with your changes and also a new launch script on your Desktop with the name `launch-rsm-msba-myimage.command` that you can use to launch your customized environment in the future.
 
-`install.packages("rgdal", lib = Sys.getenv("R_LIBS_USER"))`
-
-To save (or commit) these changes so they *will* be present after a (container) restart type, for example, `c myimage` (and Enter). This creates a new docker image with your changes and also a new launch script on your Desktop with the name `launch-rsm-msba-myimage.sh` that you can use to launch your customized environment in the future.
-
-If you want to share your customized version of the container with others (e.g., team members) you can push it is to Docker Hub <a href="https://hub.docker.com" target="_blank">https://hub.docker.com</a> by following the menu dialog after typing, e.g., `c myimage` (and Enter). To create an account on Docker Hub go to <a href="https://hub.docker.com/signup" target="_blank">https://hub.docker.com/signup</a>.
+If you want to share your customized version of the container with others (e.g., team members) you can push it is to Docker Hub <a href="https://hub.docker.com" target="_blank">https://hub.docker.com</a> by following the menu dialog after typing, e.g., `c myimage` (+ Enter). To create an account on Docker Hub go to <a href="https://hub.docker.com/signup" target="_blank">https://hub.docker.com/signup</a>.
 
 If you want to remove specific images from your computer run the commands below from a (bash) terminal. The first command generates a list of the images you have available.
 
@@ -328,11 +291,7 @@ For additional resources on developing docker images see the links below:
 
 ## Cleanup
 
-To remove any locally installed R-packages, press 6 (+ Enter) in the launch menu. To remove locally installed Python modules press 7 (+ Enter) in the launch menu.
-
-> Note: It is also possible initiate the process of removing locally installed packages and settings from within the container. Open a terminal in VS Code and type `clean`. Then follow the prompts to indicate what needs to be removed.
-
-You should always stop the `rsm-msba-k8s-intel` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove locally installed R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-k8s-intel):
+You should always stop the docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to remove all docker images, networks, and (data) volumes, and _pull_ only the specific docker image you need:
 
 ```bash
 rm -rf ~/.rsm-msba;
@@ -344,9 +303,8 @@ docker pull vnijs/rsm-msba-k8s-intel;
 
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
-* `launch -t 3.0.0` ensures a specific version of the docker container is used. Suppose you used version 3.0.0 for a project. Running the launch script with `-t 3.0.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
+* `launch -t 1.3.0` ensures a specific version of the docker container is used. Suppose you used version 1.3.0 for a project. Running the launch script with `-t 1.3.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
 * `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to setup a particular directory that will house multiple projects
-* `launch -d ~/project_1` will treat the `project_1` directory on the host system (i.e., your Windows computer) as the project home directory in the docker container. This is an additional level of isolation that can help ensure your work is reproducible in the future. This can be particularly useful in combination with the `-t` option as this will make a copy of the launch script with the appropriate `tag` or `version` already set. Simply double-click the script in the `project_1` directory and you will be back in the development environment you used when you completed the project
 * `launch -s` show additional output in the terminal that can be useful to debug any problems
 * `launch -h` prints the help shown in the screenshot below
 
@@ -354,14 +312,14 @@ Please bookmark this page in your browser for easy access in the future. You can
 
 ## Trouble shooting
 
-If there is an error related to the firewall, antivirus, or VPN, try turning them off to check if you can now start up the container. You should not be without a virus checker or firewall however! We recommend using **Windows Defender**. If you are not sure if Windows Defender is correctly configured, please check with IT.
+If there is an error related to the firewall, antivirus, or VPN, try turning them off to check if you can now start up the container. You should not be without a virus checker or firewall however! We recommend using **Windows Defender**. If you are not sure if Windows Defender is correctly configured, please check with Rady IT.
 
 Alternative "fixes" that have worked, are to restart docker by right-clicking on the "whale" icon in the system tray and/or restart your computer. It is best to quit any running process before you restart your computer (i.e., press q and Enter in the launch menu)
 
 ## Optional
 
-If you want to make your terminal look nicer and add syntax highlighting, auto-completion, etc. consider following the install instructions linked below:
+If you want to make your terminal look nicer and add syntax highlighting, auto-completion, etc. follow the install instructions linked below:
 
-<https://github.com/radiant-rstats/docker-k8s/blob/main/install/setup-ohmyzsh.md>
+<https://github.com/radiant-rstats/docker-k8s/blob/main/install/setup-ohmyzsh.md>{target="_blank"}
 
 <img src="figures/ohmyzsh-powerlevel10k.png" width="500px">

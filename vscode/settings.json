@@ -1,7 +1,7 @@
 {
     "editor.bracketPairColorization.enabled": true,
     "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.fontFamily": "Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontFamily": "MesloLGS NF, Menlo, Monaco, 'Courier New', monospace",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
     "editor.guides.bracketPairs": true,

@@ -1,21 +1,18 @@
-# Contents
+# RSM-MSBA on macOS (ARM)
 
-- [Contents](#contents)
-  - [Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3 or M4)](#installing-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip-eg-m3-or-m4)
-  - [Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip](#updating-the-rsm-msba-k8s-arm-computing-environment-on-macos-systems-with-an-arm-chip)
-  - [Using VS Code](#using-vs-code)
-  - [Installing Python packages](#installing-python-packages)
-    - [Using UV to create a virtual environment](#using-uv-to-create-a-virtual-environment)
-    - [Removing a virtual environment created using UV](#removing-a-virtual-environment-created-using-uv)
-  - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-  - [Cleanup](#cleanup)
-  - [Getting help](#getting-help)
-  - [Trouble shooting](#trouble-shooting)
-  - [Optional](#optional)
+- [Installing the RSM-MSBA computing environment](#installing-the-rsm-msba-computing-environment)
+- [Updating the RSM-MSBA computing environment](#updating-the-rsm-msba-computing-environment)
+- [Using VS Code](#using-vs-code)
+- [Using UV](#using-uv)
+- [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
+- [Cleanup](#cleanup)
+- [Getting help](#getting-help)
+- [Trouble shooting](#trouble-shooting)
+- [Optional](#optional)
 
-## Installing the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip (e.g., M3 or M4)
+## Installing the RSM-MSBA computing environment
 
-Please follow the instructions below to install the rsm-msba-k8s-arm computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
+Please follow the instructions below to install the RSM-MSBA computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
 **Step 1**: Install Docker Desktop from the link below and make sure it is running. You will know it is running if you see the icon below at the top-right of your screen. If the containers in the image are moving up and down docker hasn't finished starting up yet.
 
@@ -54,11 +51,11 @@ cp -p ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh ~/Desktop/launch-rsm-msba.comm
 ~/Desktop/launch-rsm-msba.command;
 ```
 
-This step will clone and start up a script that will finalize the installation of the computing environment. The first time you run this script it will download the latest version of the computing environment which can take some time. Wait for the `rsm-msba-k8s-arm` image to download and follow any prompts. Once the download is complete you should see the launch menu shown in the screenshot below.
+The launch script will finalize the installation of the computing environment. The first time you run this script, it will download the latest version of the computing environment, which can take some time depending on the speed of your internet connection. Wait for the image to download and follow any prompts. Once the download is complete, you should see a menu as in the screenshot below.
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
-The code above also copies the file `launch-rsm-msba-k8s-arm.sh` to `launch-rsm-msba.command` on your Desktop. You will be able to double-click this file to start the container again in the future. Alternatively, you can always run the command below to launch the docker container from an iTerm2 terminal.
+The code above also copies `launch-rsm-msba-k8s-arm.sh` to `launch-rsm-msba.command` to your Desktop. You can double-click this file to start the container again in the future. Alternatively, you can run the command below to launch the docker container from an iTerm2 terminal.
 
 ```bash
 ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh -v ~;
@@ -80,13 +77,13 @@ setup;
 
 When the setup process is done, type `exit` (+ Enter) to return to the launch menu.
 
-## Updating the RSM-MSBA-K8S-ARM computing environment on macOS systems with an ARM chip
+## Updating the RSM-MSBA computing environment
 
 To update the container press 3 (+ Enter) in the launch menu. To update the launch script itself, press 4 (+ Enter) in the launch menu.
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
-If for some reason you are having trouble updating either the container or the launch script, open a terminal and copy-and-paste the code below. These commands will update the docker container, replace the old docker related scripts, and copy the latest version of the launch script to your Desktop.
+If for some reason you are having trouble updating either the container or the launch script, open an iTerm2 terminal and copy-and-paste the code below. These commands will update the docker container, replace the old docker related scripts, and copy the latest version of the launch script to your Desktop.
 
 ```bash
 docker pull vnijs/rsm-msba-k8s-arm;
@@ -101,7 +98,7 @@ Microsoft's open-source Integrated Development Environment (IDE), VS Code or Vis
 
 VS Code can be installed from the link below and is an excellent editor for Python, SQL, Javascript, R, and many other programming languages.
 
-<a href="https://code.visualstudio.com/download" target="_blank">https://code.visualstudio.com/download</a>
+<a href="https://code.visualstudio.com/docs/?dv=darwinarm64" target="_blank">https://code.visualstudio.com/docs/?dv=darwinarm64</a>
 
 Run the code below from a terminal on macOS after installing VS Code to install relevant extensions:
 
@@ -124,11 +121,11 @@ You can even create and run Jupyter Notebooks in VS Code:
 
 - <a href="https://code.visualstudio.com/docs/datascience/jupyter-notebooks" target="_blank">Jupyter Notebooks in VS Code</a>
 
-A major new feature in VS Code is the ability to use AI to help you write code. For more information see the links below:
+A major feature in VS Code is the ability to use AI to help you write code. For more information see the link below:
 
-- <a href="https://code.visualstudio.com/docs/copilot/overview" target="_blank">VS Code Copilot</a>
+<a href="https://code.visualstudio.com/docs/copilot/overview" target="_blank">VS Code Copilot</a>
 
-## Installing Python packages
+## Using UV
 
 The RSM-MSBA docker image uses UV for python package management, virtual environments, and installing different versions of Python. To learn more about UV see <https://docs.astral.sh/uv/>{target="_blank"}.
 
@@ -142,7 +139,7 @@ uv add mlxtend;
 
 > Note: After installing a package you may need to restart any running Python kernels so you can `import` the new package in a Jypyter Notebook, for example.
 
-### Using UV to create a virtual environment
+### Creating a virtual environment
 
 You can also UV to install packages you might need for a specific project or class in a way that **will** persist even if you restart the docker container. For example, you can use the sequence of commands below to create a virtual (python) environment in a project folder and install a specific version of the `polars` package.
 
@@ -172,7 +169,7 @@ python -c "import polars as pl; print(pl.__version__)";
 
 > Note: The `-c` argument in the code block above allows a (small) python program to be passed in as string. Use `python --help` to see all the python options.
 
-### Removing a virtual environment created using UV
+### Removing a virtual environment
 
 To remove a virtual environment from a project directory you can use the following code:
 
@@ -222,7 +219,7 @@ For additional resources on developing docker images see the links below:
 
 ## Cleanup
 
-You should always stop the `rsm-msba-k8s-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to remove all docker images, networks, and (data) volumes, and _pull_ only the specific docker image you need (e.g., rsm-msba-k8s-arm):
+You should always stop the docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to remove all docker images, networks, and (data) volumes, and _pull_ only the specific docker image you need:
 
 ```bash
 rm -rf ~/.rsm-msba;
