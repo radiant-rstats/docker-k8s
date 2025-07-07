@@ -18,81 +18,63 @@
 
 Please follow the instructions below to install the rsm-msba-k8s-intel computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
-**Step 1**: Install Windows Subsystem for Linux (WSL2)
+**Step 1**: Install Windows Subsystem for Linux (WSL2) and Ubuntu 24.04
 
-To activate WSL2, open PowerShell as an administrator and copy-and-paste the code below:
-
-```bash
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-```
-
-Followed by:
+To install WSL2 and Ubuntu 24.04 open **PowerShell as Administrator** (right-click the Start menu, select "Windows PowerShell (Admin)"). Then run the following command to install WSL and Ubuntu 24.04:
 
 ```bash
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart;
-```
-
-Next, restart your computer and re-open PowerShell as a regular user to install Ubuntu.
-
-> IMPORTANT: You will be asked to provide a username and password during the install process. Your username should not have any spaces or special characters. If your @ucsd.edu email is, for example, aaa111@ucsd.edu you could use aaa111 as the username. Even though it may look like nothing is happening when you are asked for a password, the system will be tracking your key strokes.
-
-```bash
-wsl --set-default-version 2
 wsl --install -d Ubuntu-24.04
 ```
 
-You can check your username for Windows and Ubuntu by executing the command below in both (1) a Windows PowerShell and (2) an Ubuntu terminal.
+Restart your computer if prompted. When the Ubuntu terminal opens for the first time, you will be asked to create a Linux username and password. Use your UCSD username (e.g., `aaa111` if your @ucsd.edu email is `aaa111@ucsd.edu`) and choose a password you can remember (you will not see any characters as you type).
+
+To check the installed distributions, i.e., versions of Linux, and the WSL version, run:
 
 ```bash
-whoami
+wsl -l -v
 ```
 
-> Important: If you see `root` as the username please review the discussion in **step 3** below. You will need to reset your username for WSL2.
-
-Next, restart your computer and re-open PowerShell as a regular user to check that Ubuntu is set as the default linux distribution:
-
-```bash
-wsl --list
-```
-
-This should return the below:
-
-```bash
-PS C:\WINDOWS\system32> wsl --list
-Windows Subsystem for Linux Distributions:
-Ubuntu-24.04 (Default)
-docker-desktop-data
-docker-desktop
-```
-
-If Ubuntu is not set as the default linux distribution, update the default setting and double check that it is now correct
+If Ubuntu 24.04 is not set as the default, set it with:
 
 ```bash
 wsl --setdefault Ubuntu-24.04
-wsl --list
+```
+
+You can check your username for Windows and Ubuntu by running `whoami` in both a Windows PowerShell and an Ubuntu terminal.
+
+**Troubleshooting**
+
+> Important: If you see `root` as your username in Ubuntu you will need to  reset your username. If the username in Ubuntu is as expected, you can proceed to **Step 2** below
+
+From an Ubuntu terminal run the below but replace “your-id” by the id you want to use.
+
+```bash
+adduser your-id
+sudo usermod -aG sudo your-id
+```
+
+Now, from open Powershell as a regular user and run command below where, again, you should replace "your-id" by the appropriate id:
+
+```powershell
+ubuntu2404 config --default-user your-id
 ```
 
 **Step 2**: Install Docker Desktop
 
-Install Docker Desktop from the page linked below:
+If all went well in **Step 1** you can now install Docker Desktop from the page linked below:
 
-<https://docs.docker.com/desktop/setup/install/windows-install/>
+<https://docs.docker.com/desktop/setup/install/windows-install/>{target="_blank"}
 
-You will be using VS Code and Windows Terminal extensively in the program so please pin Windows Terminal and VS Code to the taskbar. Next, logout and back into Windows and then start Docker by clicking on the Whale icon that was added to your desktop (see image below).
+You will be using VS Code and Windows Terminal extensively in the Rady MSBA program so make sure to _pin_ both applications to the taskbar. Next, logout and back into Windows and then start Docker Desktop by clicking on the Whale icon that was added to your desktop (see image below).
 
 ![docker](figures/docker-icon.png)
 
-You will know Docker is running if you see the icon above in your system tray. If the containers shown in the image are moving up and down, docker hasn't finished starting up yet. Once the docker application is running, click on the docker icon in the system tray and select "Settings".
-
-Start by clicking on _General_ to ensure "Use the WSL 2 based engine" is checked as in the screenshot below.
-
-<img src="figures/docker-general-wsl2-based-engine.png" width="500px">
+You will know Docker Desktop is running if you see the icon above in your system tray. If the containers shown in the image are moving up and down, docker hasn't finished starting up yet. Once the Docker Desktop application is running, click on the docker icon in the system tray and select "Settings".
 
 Next click on _Resources > WSL INTEGRATION_ and ensure integration with Ubuntu is enabled as in the screenshot below
 
 <img src="figures/docker-resources-wsl2-integration.png" width="500px">
-
-Optional: If you are interested, this linked video gives a brief intro to what Docker is: https://www.youtube.com/watch?v=YFl2mCHdv24
+> Note: This video gives a brief (100 seconds) introduction to what Docker is: <https://www.youtube.com/watch?v=Gjnup-PuquQ>{target="_blank"}
 
 **Step 3**: Open an Ubuntu terminal to complete RSM-MSBA-K8S-INTEL computing environment setup
 
@@ -158,28 +140,9 @@ The created and launched script will finalize the installation of the computing 
 
 **Trouble shooting**
 
-If you see `Base dir.: /root` as shown in the image below there was an issue creating a new user at the beginning of Step 3.
+If you see `Base dir.: /root` as shown in the image below there was an issue creating a new user at the beginning of Step 3. Go back to the previous **Trouble shooting** section and continue from there.
 
 <img src="figures/ubuntu-root.png" width="500px">
-
-From an Ubuntu terminal run the below but replace “your-id” by the id you want to use.
-
-```bash
-adduser your-id
-sudo usermod -aG sudo your-id
-```
-
-Now, from open Powershell as a regular user and run command below where, again, you should replace "your-id" by the appropriate id:
-
-```powershell
-ubuntu2404 config --default-user your-id
-```
-
-Next, re-run the code from Step 4 above, starting with the command:
-
-```bash
-git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker;
-```
 
 If you do **not** have a file called `launch-rsm-msba.bat` on your Desktop, you can create one by copy-and-pasting the code below in to a text file using notepad. The "pause" line can be removed later if all works well. Open VS Code or notepad, copy-and-paste the code below into the editor, and save the file as `launch-rsm-msba.bat`. After saving, double-click the file to start the docker container.
 
@@ -188,7 +151,7 @@ wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~
 pause
 ```
 
-**Step 3**: Check that you can launch Radiant
+**Step 4**: Check that you can launch Radiant
 
 You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) Radiant should start up in your default web browser.
 
