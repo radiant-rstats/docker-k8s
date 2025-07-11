@@ -254,41 +254,6 @@ rm -rf .git .gitignore .python-version
 
 You could, of course, also delete the entire project folder using `rm -rf ~/my_project` if you don't need it anymore.
 
-## Committing changes to the computing environment
-
-As mentioned above, re-starting the RSM-MSBA computing environment will remove any changes you made **inside** the container. This allows you to experiment freely, without having to worry about "breaking" things. However, there are times when you might want to make changes to the underlying docker image so they are always available when you restart the container.
-
-As shown in the previous section, you can install python packages locally rather than in the container. These packages will still be available after a container restart.
-
-Suppose you need to install binary packages for Ubuntu Linux, e.g., to work with the tesseract OCR library.  You could use the command below to do this. These packages will be installed inside the docker container and would normally not be available after a restart.
-
-The following two linux packages would need to be installed from a terminal in the container as follows:
-
-```bash
-sudo apt update;
-sudo apt-get install tesseract-ocr tesseract-ocr-eng;
-cd /opt/base-uv;
-uv add pytesseract;
-cd -;
-```
-
-To save (or commit) these changes so they *will* be present after a (container) restart type, for example, `c myimage` (+ Enter). This creates a new docker image with your changes and also a new launch script on your Desktop with the name `launch-rsm-msba-myimage.command` that you can use to launch your customized environment in the future.
-
-If you want to share your customized version of the container with others (e.g., team members) you can push it is to Docker Hub <a href="https://hub.docker.com" target="_blank">https://hub.docker.com</a> by following the menu dialog after typing, e.g., `c myimage` (+ Enter). To create an account on Docker Hub go to <a href="https://hub.docker.com/signup" target="_blank">https://hub.docker.com/signup</a>.
-
-If you want to remove specific images from your computer run the commands below from a (bash) terminal. The first command generates a list of the images you have available.
-
-`docker image ls;`
-
-Select the IMAGE ID for the image you want to remove, e.g., `42b88eb6adf8`, and then run the following command with the correct image id:
-
-`docker rmi 42b88eb6adf8;`
-
-For additional resources on developing docker images see the links below:
-
-- <https://colinfay.me/docker-r-reproducibility>
-- <https://www.fullstackpython.com/docker.html>
-
 ## Cleanup
 
 You should always stop the docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to remove all docker images, networks, and (data) volumes, and _pull_ only the specific docker image you need:
@@ -323,3 +288,7 @@ If you want to make your terminal look nicer and add syntax highlighting, auto-c
 <https://github.com/radiant-rstats/docker-k8s/blob/main/install/setup-ohmyzsh.md>{target="_blank"}
 
 <img src="figures/ohmyzsh-powerlevel10k.png" width="500px">
+
+If you want to make changes to the docker image, follow the instructions linked below:
+
+<https://github.com/radiant-rstats/docker-k8s/blob/main/install/change-docker-image.md>{target="_blank"}
