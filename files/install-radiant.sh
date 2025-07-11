@@ -16,21 +16,13 @@ fi
 
 NCPUS=${NCPUS:--1}
 
-apt update -qq || { echo "Failed to update package list"; exit 1; }
-apt -y install libpq-dev libssl-dev
-apt clean
-apt autoremove -y
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-mamba install --yes -c conda-forge pyarrow=${PYARROW_VERSION} libgit2 sqlite libxml2 xz
+# mamba install --yes -c conda-forge pyarrow=${PYARROW_VERSION} libgit2 sqlite libxml2 xz
 
-R -e "install.packages('reticulate', repo='${CRAN}', Ncpus=${NCPUS})" \
-  -e "install.packages(c('shiny', 'png', 'miniUI', 'webshot', 'tinytex'), repo='${CRAN}', Ncpus=${NCPUS})" \
+R  -e "install.packages(c('shiny', 'png', 'miniUI', 'webshot'), repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "install.packages(c('remotes'), repo='${CRAN}', Ncpus=${NCPUS})" \
-  -e "install.packages(c('fs', 'dm', 'stringr'), repo='${CRAN}', Ncpus=${NCPUS})" \
-  -e "install.packages(c('httpgd', 'languageserver'), repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "Sys.setenv(ARROW_PARQUET = 'ON', ARROW_WITH_SNAPPY = 'ON', ARROW_R_DEV = TRUE); remotes::install_version('arrow', version='${PYARROW_VERSION}', repos='${CRAN}', Ncpus=${NCPUS})" \
-  -e "install.packages(c('radiant', 'dbplyr', 'DBI', 'RPostgres', 'RSQLite', 'pool', 'usethis'), repo='${CRAN}', Ncpus=${NCPUS})" \
+  -e "install.packages(c('radiant'), repo='${CRAN}', Ncpus=${NCPUS})" \
   -e "remotes::install_github('radiant-rstats/radiant.update', upgrade = 'never')" \
   -e "remotes::install_github('radiant-rstats/radiant.data', upgrade = 'never')" \
   -e "remotes::install_github('radiant-rstats/radiant.design', upgrade = 'never')" \

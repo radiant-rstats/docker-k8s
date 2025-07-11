@@ -44,12 +44,21 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
+# setting condarc for the container
+COPY files/conda/condarc /opt/conda/.condarc
+RUN fix-permissions "${CONDA_DIR}"
+
 COPY files/install-sshd.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
 COPY files/install-quarto.sh setup.sh
+RUN chmod +x setup.sh && \
+    ./setup.sh && \
+    rm setup.sh
+
+COPY files/install-uv.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
@@ -87,10 +96,6 @@ RUN wget -O pgweb.zip https://github.com/sosedoff/pgweb/releases/download/v0.11.
     mv pgweb_dir/* /usr/local/bin/pgweb0 && \
     rm -rf pgweb_dir pgweb.zip
 
-# setting condarc for the container
-COPY files/conda/condarc /opt/conda/.condarc
-RUN fix-permissions "${CONDA_DIR}"
-
 # Copy the launch script into the image
 COPY launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
 COPY files/zsh/setup.sh /usr/local/bin/setup
@@ -127,17 +132,11 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# setup UV
-COPY files/install-uv.sh setup.sh
-RUN chmod +x setup.sh && \
-    ./setup.sh && \
-    rm setup.sh
-
 # setup webscrapers
-COPY files/install-webscrapers.sh setup.sh
-RUN chmod +x setup.sh && \
-    ./setup.sh && \
-    rm setup.sh
+# COPY files/install-webscrapers.sh setup.sh
+# RUN chmod +x setup.sh && \
+#     ./setup.sh && \
+#     rm setup.sh
 
 EXPOSE 22 8765
 
