@@ -25,5 +25,15 @@
         "key": "ctrl+enter",
         "command": "notebook.cell.executeAndFocusContainer",
         "when": "notebookCellListFocused || editorTextFocus && inputFocus && notebookEditorFocused"
+    },
+    {
+        "key": "ctrl+alt+i",
+        "command": "quarto.insertCodeCell",
+        "when": "editorTextFocus && !findInputFocussed && !replaceInputFocussed && editorLangId == 'quarto'"
+    },
+    {
+        "key": "shift+cmd+i",
+        "command": "-quarto.insertCodeCell",
+        "when": "editorTextFocus && !findInputFocussed && !replaceInputFocussed && editorLangId == 'quarto'"
     }
 ]
