@@ -35,5 +35,9 @@
         "key": "shift+cmd+i",
         "command": "-quarto.insertCodeCell",
         "when": "editorTextFocus && !findInputFocussed && !replaceInputFocussed && editorLangId == 'quarto'"
+    },
+    {
+      "key": "ctrl+shift+a",
+      "command": "-cursorLineStartSelect",
     }
 ]
