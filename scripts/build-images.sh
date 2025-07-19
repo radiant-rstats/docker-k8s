@@ -5,6 +5,28 @@ DOCKERHUB_USERNAME=vnijs
 UPLOAD="NO"
 UPLOAD="YES"
 
+# Docker authentication function
+docker_login() {
+  if [ -n "$DOCKER_PASSWORD" ] && [ -n "$DOCKER_USERNAME" ]; then
+    echo "Logging in to Docker Hub using environment variables..."
+    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+  elif [ -n "$DOCKER_TOKEN" ]; then
+    echo "Logging in to Docker Hub using access token..."
+    echo "$DOCKER_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+  else
+    # Test if already authenticated
+    if ! docker search --limit 1 hello-world &>/dev/null; then
+      echo "Docker Hub authentication required."
+      echo "Either:"
+      echo "1. Run 'docker login' manually, or"
+      echo "2. Set DOCKER_USERNAME and DOCKER_PASSWORD environment variables, or"
+      echo "3. Set DOCKER_TOKEN environment variable with your access token"
+      exit 1
+    fi
+    echo "Using existing Docker authentication..."
+  fi
+}
+
 if [ "$(uname -m)" = "arm64" ]; then
   ARCH="linux/arm64"
 else
@@ -41,10 +63,23 @@ build () {
     exit 1
   }
   if [ "${UPLOAD}" == "YES" ] && [ "${LABEL}" != "connectorx" ]; then
-    docker login
-    docker tag $USER/${LABEL}:latest $USER/${LABEL}:${DOCKERHUB_VERSION}
-    docker push $USER/${LABEL}:${DOCKERHUB_VERSION}
-    docker push $USER/${LABEL}:latest
+    echo "Preparing to upload ${LABEL} to Docker Hub..."
+
+    # Ensure Docker is available
+    if ! docker info &>/dev/null; then
+      echo "Docker not available"
+      exit 1
+    fi
+
+    # Ensure authentication
+    docker_login
+
+    echo "Tagging and pushing ${LABEL}..."
+    docker tag $DOCKERHUB_USERNAME/${LABEL}:latest $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}
+    docker push $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}
+    docker push $DOCKERHUB_USERNAME/${LABEL}:latest
+
+    echo "Successfully pushed ${LABEL} images to Docker Hub"
   fi
 }
 
