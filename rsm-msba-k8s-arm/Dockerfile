@@ -96,14 +96,6 @@ RUN wget -O pgweb.zip https://github.com/sosedoff/pgweb/releases/download/v0.11.
     mv pgweb_dir/* /usr/local/bin/pgweb0 && \
     rm -rf pgweb_dir pgweb.zip
 
-# Copy the launch script into the image
-COPY launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
-COPY files/zsh/setup.sh /usr/local/bin/setup
-COPY files/zsh/menu.sh /usr/local/bin/menu
-RUN fix-permissions /etc/skel && \
-    fix-permissions /usr/local/bin && \
-    chmod 755 /usr/local/bin/*
-
 # Create log directories with proper permissions
 RUN mkdir -p /var/log/postgresql /var/log/sshd && \
     chown postgres:postgres /var/log/postgresql && \
@@ -115,12 +107,19 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
+# copying over CLI scripts
+COPY launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
 COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh
 COPY files/zsh/usethis /usr/local/bin/usethis
+COPY files/zsh/interative_usethis.sh /usr/local/bin/iusethis
 COPY files/zsh/github.sh /usr/local/bin/github
 COPY files/zsh/scripts/radiant.sh /usr/local/bin/radiant
-RUN chmod +x /usr/local/bin/radiant
+COPY files/zsh/setup.sh /usr/local/bin/setup
+COPY files/zsh/menu.sh /usr/local/bin/menu
+RUN fix-permissions /etc/skel && \
+    fix-permissions /usr/local/bin && \
+    chmod 755 /usr/local/bin/*
 
 # startup script that starts sshd and postgres and manages permissions
 COPY files/start-container.sh /usr/local/bin/

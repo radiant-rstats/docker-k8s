@@ -23,21 +23,22 @@ while true; do
             read
             ;;
         2)
-            echo "Starting PGWeb..."
+            echo "Starting PGWeb (CTRL+C to stop)..."
             /usr/local/bin/pgweb0 --bind=0.0.0.0 --listen=8282
+            ;;
+        4)
+            echo "Download from Dropbox..."
+            /usr/local/bin/iusethis
             ;;
         3)
             echo "Setting up GitHub..."
-            # Run the VS Code command from terminal
             /usr/local/bin/github
             ;;
         4)
             echo "Setting up Container..."
-            # Run the VS Code command from terminal
             /usr/local/bin/setup
             ;;
         q)
-            echo "Exiting..."
             exit 0
             ;;
         *)

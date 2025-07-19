@@ -6,35 +6,102 @@ import os
 import shutil
 import argparse
 
+# Try to import tqdm for progress bars, fallback if not available
+try:
+    from tqdm import tqdm
 
-def download_zip(url, output_folder, file_or_folder_name):
-    local_filename = "__temp_download__.zip"
+    HAS_TQDM = True
+except ImportError:
+    HAS_TQDM = False
+
+
+def download_and_process(url, output_folder, file_or_folder_name):
+    local_filename = "__temp_download__"
     local_filepath = os.path.join(output_folder, local_filename)
 
+    # Download the file with progress bar
+    print("Downloading...")
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
+        total_size = int(r.headers.get("content-length", 0))
+
         with open(local_filepath, "wb") as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
+            if HAS_TQDM and total_size > 0:
+                with tqdm(
+                    total=total_size, unit="B", unit_scale=True, desc="Download"
+                ) as pbar:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                        pbar.update(len(chunk))
+            else:
+                # Fallback without progress bar or if content-length is not available
+                downloaded = 0
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    if total_size > 0:
+                        percent = (downloaded / total_size) * 100
+                        downloaded_mb = downloaded / (1024 * 1024)
+                        total_mb = total_size / (1024 * 1024)
+                        print(
+                            f"\rDownloading... {percent:.1f}% ({downloaded_mb:.1f}/{total_mb:.1f} MB)",
+                            end="",
+                            flush=True,
+                        )
+                print("\nDownload completed")
 
-    temp_extract_path = os.path.join(output_folder, "temp_extracted")
-    with zipfile.ZipFile(local_filepath, "r") as zip_ref:
-        zip_ref.extractall(temp_extract_path)
+    # Check if it's a ZIP file
+    if zipfile.is_zipfile(local_filepath):
+        print("Extracting ZIP file...")
+        # Process as ZIP file
+        temp_extract_path = os.path.join(output_folder, "temp_extracted")
+        with zipfile.ZipFile(local_filepath, "r") as zip_ref:
+            # Get list of files for progress tracking
+            file_list = zip_ref.namelist()
+            if HAS_TQDM:
+                with tqdm(total=len(file_list), desc="Extracting") as pbar:
+                    for file in file_list:
+                        zip_ref.extract(file, temp_extract_path)
+                        pbar.update(1)
+            else:
+                # Fallback without progress bar
+                for i, file in enumerate(file_list, 1):
+                    zip_ref.extract(file, temp_extract_path)
+                    print(
+                        f"\rExtracting... {i}/{len(file_list)} files",
+                        end="",
+                        flush=True,
+                    )
+                print("\nExtraction completed")
 
-    extracted_content = os.listdir(temp_extract_path)
-    if len(extracted_content) == 1:
-        extracted_path = os.path.join(temp_extract_path, extracted_content[0])
+        extracted_content = os.listdir(temp_extract_path)
+        if len(extracted_content) == 1:
+            extracted_path = os.path.join(temp_extract_path, extracted_content[0])
+        else:
+            extracted_path = temp_extract_path
+
+        final_destination = os.path.join(output_folder, file_or_folder_name)
+        if os.path.exists(final_destination):
+            if os.path.isdir(final_destination):
+                shutil.rmtree(final_destination)
+            else:
+                os.remove(final_destination)
+
+        shutil.move(extracted_path, final_destination)
+        os.remove(local_filepath)
+        if os.path.exists(temp_extract_path):
+            shutil.rmtree(temp_extract_path)
     else:
-        extracted_path = temp_extract_path
+        # Process as regular file
+        print("Processing file...")
+        final_destination = os.path.join(output_folder, file_or_folder_name)
+        if os.path.exists(final_destination):
+            if os.path.isdir(final_destination):
+                shutil.rmtree(final_destination)
+            else:
+                os.remove(final_destination)
 
-    final_destination = os.path.join(output_folder, file_or_folder_name)
-    if os.path.exists(final_destination):
-        shutil.rmtree(final_destination)
-
-    shutil.move(extracted_path, final_destination)
-    os.remove(local_filepath)
-    if os.path.exists(temp_extract_path):
-        shutil.rmtree(temp_extract_path)
+        shutil.move(local_filepath, final_destination)
 
 
 def validate_path(path):
@@ -50,7 +117,7 @@ def validate_path(path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Download and extract a ZIP file (e.g., from Dropbox)"
+        description="Download and extract a ZIP file or download a regular file (e.g., from Dropbox)"
     )
     parser.add_argument(
         "--name",
@@ -68,7 +135,7 @@ if __name__ == "__main__":
         "--url",
         type=str,
         required=True,
-        help="The URL of the ZIP file to download. When using Dropbox, make sure the url ends with ?dl=1",
+        help="The URL of the ZIP file or regular file to download. When using Dropbox, make sure the url ends with ?dl=1",
     )
 
     args = parser.parse_args()
@@ -77,7 +144,7 @@ if __name__ == "__main__":
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    download_zip(args.url, output_folder, args.name)
+    download_and_process(args.url, output_folder, args.name)
     print(
-        f"Downloaded and extracted ZIP file from {args.url} to {os.path.join(output_folder, args.name)}"
+        f"Downloaded and processed file from {args.url} to {os.path.join(output_folder, args.name)}"
     )
