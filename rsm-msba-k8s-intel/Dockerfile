@@ -112,7 +112,7 @@ COPY launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
 COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh
 COPY files/zsh/usethis /usr/local/bin/usethis
-COPY files/zsh/interative_usethis.sh /usr/local/bin/iusethis
+COPY files/zsh/interactive_usethis.sh /usr/local/bin/iusethis
 COPY files/zsh/github.sh /usr/local/bin/github
 COPY files/zsh/scripts/radiant.sh /usr/local/bin/radiant
 COPY files/zsh/setup.sh /usr/local/bin/setup
