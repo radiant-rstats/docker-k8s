@@ -99,6 +99,7 @@ RUN wget -O pgweb.zip https://github.com/sosedoff/pgweb/releases/download/v0.11.
 # Copy the launch script into the image
 COPY launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
 COPY files/zsh/setup.sh /usr/local/bin/setup
+COPY files/zsh/menu.sh /usr/local/bin/menu
 RUN fix-permissions /etc/skel && \
     fix-permissions /usr/local/bin && \
     chmod 755 /usr/local/bin/*
