@@ -3,7 +3,9 @@ alexcvzz.vscode-sqlite
 charliermarsh.ruff
 christian-kohler.path-intellisense
 ckolkman.vscode-postgres
+batisteo.vscode-django
 eamodio.gitlens
+esbenp.prettier-vscode
 GitHub.copilot
 GitHub.copilot-chat
 mechatroner.rainbow-csv
@@ -13,6 +15,7 @@ ms-python.python
 ms-toolsai.jupyter
 ms-toolsai.jupyter-keymap
 ms-toolsai.jupyter-renderers
+ms-toolsai.datawrangler
 ms-vscode-remote.remote-containers
 ms-vscode-remote.remote-ssh
 ms-vscode-remote.remote-ssh-edit
@@ -25,8 +28,6 @@ ms-vsliveshare.vsliveshare
 Posit.shiny-python
 quarto.quarto
 RandomFractalsInc.duckdb-sql-tools
-RDebugger.r-debugger
-REditorSupport.r
 streetsidesoftware.code-spell-checker
 tomoki1207.pdf
 vnijs.rsm-vscode
