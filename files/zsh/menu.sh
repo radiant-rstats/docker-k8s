@@ -8,11 +8,12 @@ while true; do
     echo "================================"
     echo "1. Start Radiant (radiant)"
     echo "2. Start PGWeb (pgweb)"
-    echo "3. Setup GitHub (github)"
-    echo "4. Setup Container (setup)"
+    echo "3. Download from Dropbox (iusethis)"
+    echo "4. Setup GitHub (github)"
+    echo "5. Setup Container (setup)"
     echo "q. Quit"
     echo "================================"
-    echo -n "Enter your choice (1-4 or q): "
+    echo -n "Enter your choice (1-5 or q): "
     read choice
 
     case $choice in
@@ -26,15 +27,15 @@ while true; do
             echo "Starting PGWeb (CTRL+C to stop)..."
             /usr/local/bin/pgweb0 --bind=0.0.0.0 --listen=8282
             ;;
-        4)
+        3)
             echo "Download from Dropbox..."
             /usr/local/bin/iusethis
             ;;
-        3)
+        4)
             echo "Setting up GitHub..."
             /usr/local/bin/github
             ;;
-        4)
+        5)
             echo "Setting up Container..."
             /usr/local/bin/setup
             ;;
