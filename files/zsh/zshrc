@@ -133,6 +133,8 @@ alias ka="k -ha"
 alias zc="code ~/.rsm-msba/zsh/.zshrc"
 alias om="code ~/.rsm-msba/zsh/.oh-my-zsh"
 alias zp="code ~/.rsm-msba/zsh/.p10k.zsh"
+alias sbase="source /opt/base-uv/.venv/bin/activate"
+alias sp="source .venv/bin/activate"
 
 # Enable completions
 fpath+=~/.zfunc
