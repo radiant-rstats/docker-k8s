@@ -30,7 +30,7 @@
     "terminal.integrated.enableMultiLinePasteWarning": "never",
     "terminal.integrated.fontFamily": "MesloLGS NF",
     "terminal.integrated.fontLigatures.enabled": true,
-    "terminal.integrated.inheritEnv": false,
+    "terminal.integrated.inheritEnv": true,
     "terminal.integrated.suggest.enabled": true,
 
     "git.autofetch": true,
@@ -92,5 +92,9 @@
 
     "redhat.telemetry.enabled": false,
     "remote.autoForwardPortsSource": "hybrid",
-    "security.workspace.trust.untrustedFiles": "open"
+    "security.workspace.trust.untrustedFiles": "open",
+
+  	"workbench.colorTheme": "Default Light Modern"
+	// "workbench.colorTheme": "Default Dark Modern",
+
 }

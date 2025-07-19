@@ -38,6 +38,6 @@
     },
     {
       "key": "ctrl+shift+a",
-      "command": "-cursorLineStartSelect",
+      "command": "-cursorLineStartSelect"
     }
 ]
