@@ -1,16 +1,47 @@
-# find all here: https://quay.io/repository/jupyter/pyspark-notebook?tab=tags
-# 2025-6-16
-# FROM quay.io/jupyter/pyspark-notebook@sha256:5f93a810a742783edbccb394c51baa5d3a653b64b333880146d7c8adc8ea7ad7
-FROM quay.io/jupyter/pyspark-notebook@sha256:7446ab5b4af9a03652833b756251a70f4bb49369ca5af247f2e75f8f393dc6a3
+# Multi-platform Dockerfile for rsm-msba-k8s
+# Supports both ARM64 and AMD64 architectures
+# Build with: docker buildx build --platform linux/amd64,linux/arm64 -t your-image:tag .
+
+# Use the latest tag and let Docker buildx handle platform selection automatically
+FROM quay.io/jupyter/pyspark-notebook:2024-12-02
 
 USER root
 
 # Define build argument and set it as an environment variable in one step
 ARG DOCKERHUB_VERSION
 ENV DOCKERHUB_VERSION=${DOCKERHUB_VERSION}
-ENV DOCKERHUB_NAME="rsm-msba-k8s-intel"
 
-# python env variables
+# Get platform info for conditional logic
+ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
+# Set platform-specific environment variables using RUN with shell conditions
+RUN case "${TARGETARCH}" in \
+    "arm64") \
+    echo "rsm-msba-k8s-arm" > /tmp/dockerhub_name && \
+    echo "/usr/lib/jvm/java-17-openjdk-arm64/" > /tmp/java_home && \
+    echo "pgweb_linux_arm64_v7.zip" > /tmp/pgweb_file \
+    ;; \
+    "amd64") \
+    echo "rsm-msba-k8s-intel" > /tmp/dockerhub_name && \
+    echo "/usr/lib/jvm/java-17-openjdk-amd64/" > /tmp/java_home && \
+    echo "pgweb_linux_amd64.zip" > /tmp/pgweb_file \
+    ;; \
+    *) \
+    echo "Unsupported architecture: ${TARGETARCH}" && exit 1 \
+    ;; \
+    esac
+
+# Set environment variables from the temp files
+RUN export DOCKERHUB_NAME=$(cat /tmp/dockerhub_name) && \
+    export JAVA_HOME=$(cat /tmp/java_home) && \
+    export PGWEB_FILE=$(cat /tmp/pgweb_file) && \
+    echo "DOCKERHUB_NAME=$DOCKERHUB_NAME" >> /etc/environment && \
+    echo "JAVA_HOME=$JAVA_HOME" >> /etc/environment && \
+    echo "PGWEB_FILE=$PGWEB_FILE" >> /etc/environment
+
+# Python env variables
 ENV PYARROW_VERSION="20.0.0"
 
 # R and Posit related env variables
@@ -20,7 +51,7 @@ ENV TERM=xterm
 ENV R_HOME=/opt/conda/lib/R
 ENV PATH="/usr/local/bin:$PATH"
 
-# postgres env variables
+# Postgres env variables
 ENV POSTGRES_VERSION=16
 ENV PGPASSWORD=postgres
 
@@ -36,15 +67,17 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-COPY files/postgres/postgresql.conf /etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf
-COPY files/postgres/pg_hba.conf /etc/postgresql/${POSTGRES_VERSION}/main/pg_hba.conf
-
-COPY files/postgres/install-postgres.sh setup.sh
+# Install PostgreSQL FIRST (with fixed script that cleans data directory)
+COPY files/postgres/install-postgres-fixed.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# setting condarc for the container
+# THEN copy config files (after directories exist)
+COPY files/postgres/postgresql.conf /etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf
+COPY files/postgres/pg_hba.conf /etc/postgresql/${POSTGRES_VERSION}/main/pg_hba.conf
+
+# Setting condarc for the container
 COPY files/conda/condarc /opt/conda/.condarc
 RUN fix-permissions "${CONDA_DIR}"
 
@@ -68,8 +101,8 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# setup hadoop
-ENV JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64/"
+# Setup hadoop with platform-specific Java path
+# Java path is set via platform detection above
 ENV HADOOP_VERSION=3.3.4
 ENV HADOOP_HOME=/opt/hadoop
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
@@ -78,7 +111,7 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# hadoop configuration
+# Hadoop configuration
 ADD files/scalable_analytics/core-site.xml $HADOOP_HOME/etc/hadoop/
 ADD files/scalable_analytics/hdfs-site.xml $HADOOP_HOME/etc/hadoop/
 ADD files/scalable_analytics/init-dfs.sh /opt/hadoop/
@@ -89,9 +122,11 @@ RUN chown -R ${NB_USER} ${HADOOP_HOME} && \
     chmod 755 /usr/bin/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin
 
-# run pgweb from the terminal use pgweb --bind=0.0.0.0 --listen=8000
-# once setup has been run inside the container there should be an alias pgw
-RUN wget -O pgweb.zip https://github.com/sosedoff/pgweb/releases/download/v0.11.11/pgweb_linux_amd64.zip && \
+# Install pgweb with platform-specific binary
+# Run pgweb from the terminal use pgweb --bind=0.0.0.0 --listen=8000
+# Once setup has been run inside the container there should be an alias pgw
+RUN . /etc/environment && \
+    wget -O pgweb.zip https://github.com/sosedoff/pgweb/releases/download/v0.11.11/$PGWEB_FILE && \
     unzip pgweb.zip -d pgweb_dir && \
     mv pgweb_dir/* /usr/local/bin/pgweb0 && \
     rm -rf pgweb_dir pgweb.zip
@@ -107,8 +142,9 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# copying over CLI scripts
-COPY launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
+# Copying over CLI scripts (platform-specific launch script)
+RUN . /etc/environment && \
+    cp launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
 COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh
 COPY files/zsh/usethis /usr/local/bin/usethis
@@ -121,18 +157,18 @@ RUN fix-permissions /etc/skel && \
     fix-permissions /usr/local/bin && \
     chmod 755 /usr/local/bin/*
 
-# startup script that starts sshd and postgres and manages permissions
+# Startup script that starts sshd and postgres and manages permissions
 COPY files/start-container.sh /usr/local/bin/
 COPY files/sshd/sshd_config /etc/ssh/sshd_config
 RUN chmod +x /usr/local/bin/start-container.sh
 
-# setup the GitHub CLI
+# Setup the GitHub CLI
 COPY files/install-gh.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# setup webscrapers
+# Setup webscrapers (commented out in original)
 # COPY files/install-webscrapers.sh setup.sh
 # RUN chmod +x setup.sh && \
 #     ./setup.sh && \

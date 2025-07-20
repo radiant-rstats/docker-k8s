@@ -21,3 +21,4 @@ build-images.md
 docker-auth-examples.sh
 setup-docker-auth.sh
 setup-server-prompt.md
+prompts/
