@@ -25,7 +25,7 @@ while true; do
             ;;
         2)
             echo "Starting PGWeb (CTRL+C to stop)..."
-            /usr/local/bin/pgweb0 --bind=0.0.0.0 --listen=8282
+            /usr/local/bin/pgweb_binary --listen=8282 --port=8765 --db="rsm-docker"
             ;;
         3)
             echo "Download from Dropbox..."
