@@ -7,23 +7,51 @@ UPLOAD="YES"
 
 # Docker authentication function
 docker_login() {
+  echo "Checking Docker Hub authentication..."
+
   if [ -n "$DOCKER_PASSWORD" ] && [ -n "$DOCKER_USERNAME" ]; then
     echo "Logging in to Docker Hub using environment variables..."
-    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+    if echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin; then
+      echo "Successfully authenticated with username/password"
+      return 0
+    else
+      echo "Failed to authenticate with username/password"
+      return 1
+    fi
   elif [ -n "$DOCKER_TOKEN" ]; then
     echo "Logging in to Docker Hub using access token..."
-    echo "$DOCKER_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-  else
-    # Test if already authenticated
-    if ! docker search --limit 1 hello-world &>/dev/null; then
-      echo "Docker Hub authentication required."
-      echo "Either:"
-      echo "1. Run 'docker login' manually, or"
-      echo "2. Set DOCKER_USERNAME and DOCKER_PASSWORD environment variables, or"
-      echo "3. Set DOCKER_TOKEN environment variable with your access token"
-      exit 1
+    if echo "$DOCKER_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin; then
+      echo "Successfully authenticated with access token"
+      return 0
+    else
+      echo "Failed to authenticate with access token"
+      return 1
     fi
-    echo "Using existing Docker authentication..."
+  else
+    # Test if already authenticated by trying to access user info
+    echo "Testing existing Docker authentication..."
+    if docker info 2>/dev/null | grep -q "Username:"; then
+      username=$(docker info 2>/dev/null | grep "Username:" | awk '{print $2}')
+      echo "Already authenticated as: $username"
+
+      # Double-check by trying to search (this requires auth)
+      if docker search --limit 1 hello-world &>/dev/null; then
+        echo "Authentication confirmed - can access Docker Hub"
+        return 0
+      else
+        echo "Authentication appears stale - re-authentication needed"
+      fi
+    fi
+
+    echo "Docker Hub authentication required."
+    echo "Please choose one of the following options:"
+    echo "1. Run 'docker login' manually"
+    echo "2. Set DOCKER_USERNAME and DOCKER_PASSWORD environment variables"
+    echo "3. Set DOCKER_TOKEN environment variable with your access token"
+    echo ""
+    echo "For option 1, run: docker login"
+    echo "Then re-run this script."
+    return 1
   fi
 }
 
@@ -67,17 +95,38 @@ build () {
 
     # Ensure Docker is available
     if ! docker info &>/dev/null; then
-      echo "Docker not available"
+      echo "ERROR: Docker not available"
       exit 1
     fi
 
-    # Ensure authentication
-    docker_login
+    # Ensure authentication BEFORE attempting push
+    if ! docker_login; then
+      echo "ERROR: Docker Hub authentication failed"
+      echo "Please run 'docker login' manually and try again"
+      exit 1
+    fi
 
     echo "Tagging and pushing ${LABEL}..."
-    docker tag $DOCKERHUB_USERNAME/${LABEL}:latest $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}
-    docker push $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}
-    docker push $DOCKERHUB_USERNAME/${LABEL}:latest
+
+    # Tag the images
+    if ! docker tag $DOCKERHUB_USERNAME/${LABEL}:latest $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}; then
+      echo "ERROR: Failed to tag image"
+      exit 1
+    fi
+
+    # Push versioned image
+    echo "Pushing ${LABEL}:${DOCKERHUB_VERSION}..."
+    if ! docker push $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}; then
+      echo "ERROR: Failed to push versioned image"
+      exit 1
+    fi
+
+    # Push latest image
+    echo "Pushing ${LABEL}:latest..."
+    if ! docker push $DOCKERHUB_USERNAME/${LABEL}:latest; then
+      echo "ERROR: Failed to push latest image"
+      exit 1
+    fi
 
     echo "Successfully pushed ${LABEL} images to Docker Hub"
   fi
