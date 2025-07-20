@@ -93,7 +93,7 @@ ENV PATH=$PATH:$HADOOP_HOME/bin
 # once setup has been run inside the container there should be an alias pgw
 RUN wget -O pgweb.zip https://github.com/sosedoff/pgweb/releases/download/v0.11.11/pgweb_linux_amd64.zip && \
     unzip pgweb.zip -d pgweb_dir && \
-    mv pgweb_dir/* /usr/local/bin/pgweb0 && \
+    mv pgweb_dir/* /usr/local/bin/pgweb_binary && \
     rm -rf pgweb_dir pgweb.zip
 
 # Create log directories with proper permissions
