@@ -100,7 +100,7 @@
     "remote.autoForwardPortsSource": "hybrid",
     "security.workspace.trust.untrustedFiles": "open",
 
+	"workbench.colorTheme": "Default Dark Modern",
   	"workbench.colorTheme": "Default Light Modern"
-	// "workbench.colorTheme": "Default Dark Modern",
 
 }
