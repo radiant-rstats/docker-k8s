@@ -45,6 +45,8 @@
     },
     "github.copilot.nextEditSuggestions.enabled": true,
     "python.defaultInterpreterPath": "/opt/base-uv/.venv/bin/python",
+    "python.terminal.activateEnvironment": false,
+    "python.terminal.activateEnvInCurrentTerminal": false,
     "python.testing.pytestEnabled": true,
     "interactiveWindow.collapseCellInputCode": "never",
     "interactiveWindow.executeWithShiftEnter": true,

@@ -7,6 +7,7 @@
 __pycache__
 *.pyc
 build.log
+build-mp.log
 build-full.log
 devcontainer/
 connectorx/logs/
@@ -18,7 +19,15 @@ causalml/wheels/
 
 build-out.md
 build-images.md
+build-logs/
+
 docker-auth-examples.sh
 setup-docker-auth.sh
 setup-server-prompt.md
 prompts/
+
+build-and-monitor.sh
+build-multiplatform.sh
+test-auth.sh
+validate-auth.sh
+validate-setup.sh

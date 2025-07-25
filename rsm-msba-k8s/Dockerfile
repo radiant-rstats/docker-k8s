@@ -3,7 +3,8 @@
 # Build with: docker buildx build --platform linux/amd64,linux/arm64 -t your-image:tag .
 
 # Use the latest tag and let Docker buildx handle platform selection automatically
-FROM quay.io/jupyter/pyspark-notebook:2024-12-02
+# Updated to match the latest versions from individual Dockerfiles
+FROM quay.io/jupyter/pyspark-notebook:2025-06-16
 
 USER root
 
@@ -16,30 +17,11 @@ ARG TARGETPLATFORM
 ARG TARGETOS
 ARG TARGETARCH
 
-# Set platform-specific environment variables using RUN with shell conditions
-RUN case "${TARGETARCH}" in \
-    "arm64") \
-    echo "rsm-msba-k8s-arm" > /tmp/dockerhub_name && \
-    echo "/usr/lib/jvm/java-17-openjdk-arm64/" > /tmp/java_home && \
-    echo "pgweb_linux_arm64_v7.zip" > /tmp/pgweb_file \
-    ;; \
-    "amd64") \
-    echo "rsm-msba-k8s-intel" > /tmp/dockerhub_name && \
-    echo "/usr/lib/jvm/java-17-openjdk-amd64/" > /tmp/java_home && \
-    echo "pgweb_linux_amd64.zip" > /tmp/pgweb_file \
-    ;; \
-    *) \
-    echo "Unsupported architecture: ${TARGETARCH}" && exit 1 \
-    ;; \
-    esac
+# Set platform-specific environment variables
+# Note: DOCKERHUB_NAME and platform-specific vars will be set dynamically below
 
-# Set environment variables from the temp files
-RUN export DOCKERHUB_NAME=$(cat /tmp/dockerhub_name) && \
-    export JAVA_HOME=$(cat /tmp/java_home) && \
-    export PGWEB_FILE=$(cat /tmp/pgweb_file) && \
-    echo "DOCKERHUB_NAME=$DOCKERHUB_NAME" >> /etc/environment && \
-    echo "JAVA_HOME=$JAVA_HOME" >> /etc/environment && \
-    echo "PGWEB_FILE=$PGWEB_FILE" >> /etc/environment
+# Ensure NB_USER is set (some base images might not have it)
+ENV NB_USER=${NB_USER:-jovyan}
 
 # Python env variables
 ENV PYARROW_VERSION="20.0.0"
@@ -61,21 +43,35 @@ ENV RSMBASE=${RSMBASE} \
     SHELL=/bin/zsh \
     ZDOTDIR=/home/${NB_USER}/.rsm-msba/zsh
 
+# Set platform-specific variables based on architecture
+RUN if [ "${TARGETARCH}" = "arm64" ]; then \
+    echo "export DOCKERHUB_NAME=rsm-msba-k8s-arm" >> /etc/environment && \
+    echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64/" >> /etc/environment && \
+    echo "export PGWEB_FILE=pgweb_linux_arm64_v7.zip" >> /etc/environment; \
+    elif [ "${TARGETARCH}" = "amd64" ]; then \
+    echo "export DOCKERHUB_NAME=rsm-msba-k8s-intel" >> /etc/environment && \
+    echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/" >> /etc/environment && \
+    echo "export PGWEB_FILE=pgweb_linux_amd64.zip" >> /etc/environment; \
+    else \
+    echo "Unsupported architecture: ${TARGETARCH}" && exit 1; \
+    fi
+
+# Source the environment file to make variables available in current build
+RUN . /etc/environment
+
 # Add autojump to initial package installation
 COPY files/init-apt.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# Install PostgreSQL FIRST (with fixed script that cleans data directory)
-COPY files/postgres/install-postgres-fixed.sh setup.sh
+COPY files/postgres/postgresql.conf /etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf
+COPY files/postgres/pg_hba.conf /etc/postgresql/${POSTGRES_VERSION}/main/pg_hba.conf
+
+COPY files/postgres/install-postgres-mp.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
-
-# THEN copy config files (after directories exist)
-COPY files/postgres/postgresql.conf /etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf
-COPY files/postgres/pg_hba.conf /etc/postgresql/${POSTGRES_VERSION}/main/pg_hba.conf
 
 # Setting condarc for the container
 COPY files/conda/condarc /opt/conda/.condarc
@@ -101,8 +97,8 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# Setup hadoop with platform-specific Java path
-# Java path is set via platform detection above
+# Setup hadoop
+# JAVA_HOME is set via platform detection above
 ENV HADOOP_VERSION=3.3.4
 ENV HADOOP_HOME=/opt/hadoop
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
@@ -128,7 +124,7 @@ ENV PATH=$PATH:$HADOOP_HOME/bin
 RUN . /etc/environment && \
     wget -O pgweb.zip https://github.com/sosedoff/pgweb/releases/download/v0.11.11/$PGWEB_FILE && \
     unzip pgweb.zip -d pgweb_dir && \
-    mv pgweb_dir/* /usr/local/bin/pgweb0 && \
+    mv pgweb_dir/* /usr/local/bin/pgweb_binary && \
     rm -rf pgweb_dir pgweb.zip
 
 # Create log directories with proper permissions
@@ -142,9 +138,7 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# Copying over CLI scripts (platform-specific launch script)
-RUN . /etc/environment && \
-    cp launch-${DOCKERHUB_NAME}.sh /opt/launch.sh
+# Copying over CLI scripts
 COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh
 COPY files/zsh/usethis /usr/local/bin/usethis
@@ -153,6 +147,16 @@ COPY files/zsh/github.sh /usr/local/bin/github
 COPY files/zsh/scripts/radiant.sh /usr/local/bin/radiant
 COPY files/zsh/setup.sh /usr/local/bin/setup
 COPY files/zsh/menu.sh /usr/local/bin/menu
+
+# Copy platform-specific launch script
+# We need to copy both and then select the right one
+COPY launch-rsm-msba-k8s-arm.sh /tmp/
+COPY launch-rsm-msba-k8s-intel.sh /tmp/
+RUN . /etc/environment && \
+    cp "/tmp/launch-${DOCKERHUB_NAME}.sh" /opt/launch.sh && \
+    rm -f /tmp/launch-*.sh && \
+    chmod 755 /opt/launch.sh
+
 RUN fix-permissions /etc/skel && \
     fix-permissions /usr/local/bin && \
     chmod 755 /usr/local/bin/*

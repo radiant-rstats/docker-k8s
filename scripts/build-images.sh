@@ -3,7 +3,7 @@
 DOCKERHUB_VERSION=1.3.0
 DOCKERHUB_USERNAME=vnijs
 UPLOAD="NO"
-UPLOAD="YES"
+# UPLOAD="YES"
 
 # Docker authentication function
 docker_login() {

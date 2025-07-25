@@ -27,13 +27,13 @@ The unified Dockerfile automatically handles these platform-specific differences
 ## Files
 
 ```
-multiplatform/
-├── Dockerfile                    # Unified multi-platform Dockerfile
-├── scripts/
+scripts-mp/
 │   ├── build-multiplatform.sh   # Main build script
 │   ├── test-build.sh            # Local test build (no push)
 │   ├── test-auth.sh             # Authentication test
 │   ├── validate-setup.sh        # Pre-build validation
+rsm-msba-k8s/
+├── Dockerfile                    # Unified multi-platform Dockerfile
 └── README.md                    # This file
 ```
 
@@ -53,8 +53,8 @@ multiplatform/
 Before building, run the validation script to check your environment:
 
 ```bash
-cd multiplatform
-./scripts/validate-setup.sh
+cd scripts-mp
+./validate-setup.sh
 ```
 
 This will check:
@@ -101,21 +101,21 @@ docker login
 ### 4. Build and Push
 
 ```bash
-cd multiplatform
-./scripts/build-multiplatform.sh [version]
+cd scripts-mp
+./build-multiplatform.sh [version]
 ```
 
 Examples:
 
 ```bash
 # Build with 'latest' tag
-./scripts/build-multiplatform.sh
+./build-multiplatform.sh
 
 # Build with specific version
-./scripts/build-multiplatform.sh v2.0.0
+./build-multiplatform.sh v2.0.0
 
 # Build with date-based version
-./scripts/build-multiplatform.sh 2025-01-19
+./build-multiplatform.sh 2025-01-19
 ```
 
 ## Build Process

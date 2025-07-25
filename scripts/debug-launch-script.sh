@@ -15,17 +15,17 @@ PGPASSWORD=postgres
 MNT=""
 NB_USER=jovyan
 
-{ 
+{
     # check if network already exists
-    docker network inspect ${NETWORK} >/dev/null 2>&1 
-} || { 
+    docker network inspect ${NETWORK} >/dev/null 2>&1
+} || {
     # if network doesn't exist create it
     echo "--- Creating docker network: ${NETWORK} ---"
-    docker network create ${NETWORK} 
+    docker network create ${NETWORK}
 }
 
 docker run --name ${LABEL} --net ${NETWORK} \
-    -p 127.0.0.1:2222:22 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 -p 127.0.0.1:8000:8000 \
+    -p 127.0.0.1:2222:22 -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 -p 127.0.0.1:8282:8282 \
     -e TZ=${TIMEZONE} \
     -v "${HOMEDIR}":/home/${NB_USER} $MNT \
     -v pg_data:/var/lib/postgresql/${POSTGRES_VERSION}/main \
