@@ -14,7 +14,7 @@
 
 ## Installing the RSM-MSBA computing environment
 
-Please follow the instructions below to install the RSM-MSBA computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
+Please follow the instructions below to install the RSM-MSBA computing environment. It has Python, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will _not_ be dozens of pieces of software littered all over your computer).
 
 **Step 1**: Install Docker Desktop from the link below and make sure it is running. You will know it is running if you see the icon below at the top-right of your screen. If the containers in the image are moving up and down docker hasn't finished starting up yet.
 
@@ -30,11 +30,11 @@ You should also go to the "Advanced" tab in _Docker Desktop > Settings_ and conf
 
 <img src="figures/docker-system-mac.png" width="500px">
 
-> Note: This video gives a brief (100 seconds) introduction to what Docker is: <https://www.youtube.com/watch?v=Gjnup-PuquQ>{target="_blank"}
+> Note: This video gives a brief (100 seconds) introduction to what Docker is: [https://www.youtube.com/watch?v=Gjnup-PuquQ](https://www.youtube.com/watch?v=Gjnup-PuquQ){target="\_blank"}
 
 **Step 2**: Get iTerm2 and open a terminal and copy-and-paste the code below
 
-Download the stable release of [iTerm2](https://iterm2.com/downloads.html){target="_blank"}. To install the software, unzip the file you downloaded and move **iTerm.app** to your Applications folder.
+Download the stable release of [iTerm2](https://iterm2.com/downloads.html){target="\_blank"}. To install the software, unzip the file you downloaded and move **iTerm.app** to your Applications folder.
 
 **Step 3**: Install macOS command line developer tools
 
@@ -112,7 +112,7 @@ cd -;
 
 If you get a "code: command not found" error when trying to launch VS Code from a terminal, follow the instructions below to add VS Code to your path:
 
-<https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line>
+[https://code.visualstudio.com/docs/setup/mac#\_launching-from-the-command-line](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line)
 
 To learn more about using VS Code to write Python code, see the links and comments below.
 
@@ -129,8 +129,7 @@ A major feature in VS Code is the ability to use AI to help you write code. For 
 
 ## Using UV
 
-The RSM-MSBA docker image uses UV for Python package management, virtual environments, and installing different versions of Python. To learn more about UV see <https://docs.astral.sh/uv/>{target="_blank"}.
-
+The RSM-MSBA docker image uses UV for Python package management, virtual environments, and installing different versions of Python. To learn more about UV see <a href="https://docs.astral.sh/uv/" target="_blank">https://docs.astral.sh/uv/</a>.
 It is important to realize that the RSM-MSBA docker container will reset itself completely when it is restarted (i.e., it always starts from the same docker image). This means that we can install Python packages that will **not** persist after restarting the docker container, which can be convenient if we want to experiment without worrying about "breaking" anything. To add to the main Python environment inside the docker container, we can enter code like the below from a terminal in VS Code:
 
 ```bash
@@ -198,10 +197,10 @@ docker pull vnijs/rsm-msba-k8s;
 
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
-* `launch -t 1.3.0` ensures a specific version of the docker container is used. Suppose you used version 1.3.0 for a project. Running the launch script with `-t 1.3.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
-* `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to set up a particular directory that will house multiple projects
-* `launch -s` show additional output in the terminal that can be useful to debug any problems
-* `launch -h` prints the help shown in the screenshot below
+- `launch -t 1.3.0` ensures a specific version of the docker container is used. Suppose you used version 1.3.0 for a project. Running the launch script with `-t 1.3.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
+- `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to set up a particular directory that will house multiple projects
+- `launch -s` show additional output in the terminal that can be useful to debug any problems
+- `launch -h` prints the help shown in the screenshot below
 
 <img src="figures/docker-help.png" width="500px">
 
@@ -213,10 +212,10 @@ The only issues we have seen on macOS so far can be addressed by restarting Dock
 
 If you want to make your terminal look nicer and add syntax highlighting, auto-completion, etc. follow the install instructions linked below:
 
-<https://github.com/radiant-rstats/docker-k8s/blob/main/install/setup-ohmyzsh.md>{target="_blank"}
+<a href="https://github.com/radiant-rstats/docker-k8s/blob/main/install/setup-ohmyzsh.md" target="_blank">https://github.com/radiant-rstats/docker-k8s/blob/main/install/setup-ohmyzsh.md</a>
 
 <img src="figures/ohmyzsh-powerlevel10k-iterm.png" width="500px">
 
 If you want to make changes to the docker image, follow the instructions linked below:
 
-<https://github.com/radiant-rstats/docker-k8s/blob/main/install/change-docker-image.md>{target="_blank"}
+<a href="https://github.com/radiant-rstats/docker-k8s/blob/main/install/change-docker-image.md" target="_blank">https://github.com/radiant-rstats/docker-k8s/blob/main/install/change-docker-image.md</a>

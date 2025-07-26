@@ -15,9 +15,6 @@
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "window.confirmSaveUntitledWorkspace": false,
-    "workbench.editorAssociations": {
-      "file:/**/*.xls/*.xlsx": "jupyter-data-wrangler"
-    },
     "explorer.confirmDelete": true,
     "explorer.confirmDragAndDrop": false,
     "explorer.confirmPasteNative": false,
@@ -88,10 +85,9 @@
     "projectManager.git.baseFolders": [
       "~/git"
     ],
-    "redhat.telemetry.enabled": false,
     "remote.autoForwardPortsSource": "hybrid",
     "security.workspace.trust.untrustedFiles": "open",
-    "workbench.colorTheme": "Default Light Modern",
+    "workbench.colorTheme": "Default Dark Modern",
     "security.allowedUNCHosts": [
       "wsl.localhost"
     ],

@@ -30,4 +30,5 @@ quarto.quarto
 RandomFractalsInc.duckdb-sql-tools
 streetsidesoftware.code-spell-checker
 tomoki1207.pdf
+cweijan.vscode-office
 vnijs.rsm-vscode
