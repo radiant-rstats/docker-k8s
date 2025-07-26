@@ -1,14 +1,16 @@
 # RSM-MSBA on Windows (Intel)
 
-- [Installing the RSM-MSBA computing environment](#installing-the-rsm-msba-computing-environment)
-- [Updating the RSM-MSBA computing environment](#updating-the-rsm-msba-computing-environment)
-- [Using VS Code](#using-vs-code)
-- [Using UV](#using-uv)
-- [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-- [Cleanup](#cleanup)
-- [Getting help](#getting-help)
-- [Trouble shooting](#trouble-shooting)
-- [Optional](#optional)
+- [RSM-MSBA on Windows (Intel)](#rsm-msba-on-windows-intel)
+  - [Installing the RSM-MSBA computing environment](#installing-the-rsm-msba-computing-environment)
+  - [Updating the RSM-MSBA computing environment](#updating-the-rsm-msba-computing-environment)
+  - [Using VS Code](#using-vs-code)
+  - [Using UV](#using-uv)
+    - [Creating a virtual environment](#creating-a-virtual-environment)
+    - [Removing a virtual environment](#removing-a-virtual-environment)
+  - [Cleanup](#cleanup)
+  - [Getting help](#getting-help)
+  - [Trouble shooting](#trouble-shooting)
+  - [Optional](#optional)
 
 ## Installing the RSM-MSBA computing environment
 
@@ -96,7 +98,7 @@ git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
 ```
 
 
-After running the commands above, you will be able to start the docker container by typing `~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~` in an Ubuntu terminal.
+After running the commands above, you will be able to start the docker container by typing `~/git/docker-k8s/launch-rsm-msba-k8s.sh -v ~` in an Ubuntu terminal.
 
 **Creating a Desktop Shortcut:**
 
@@ -107,7 +109,7 @@ Unfortunately, Windows can have the Desktop folder in a number of different loca
 ```bash
 DESKTOP_PATH=$(powershell.exe '[Environment]::GetFolderPath("Desktop")' | tr -d '\r');
 DESKTOP_WSL=$(wslpath "$DESKTOP_PATH");
-echo "wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~" > "$DESKTOP_WSL/launch-rsm-msba.bat";
+echo "wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s.sh -v ~" > "$DESKTOP_WSL/launch-rsm-msba.bat";
 chmod 755 "$DESKTOP_WSL/launch-rsm-msba.bat";
 cd ~;
 ln -s "$DESKTOP_WSL" ./Desktop;
@@ -134,7 +136,7 @@ If you see `Base dir.: /root` as shown in the image below, there was an issue cr
 If you do **not** have a file called `launch-rsm-msba.bat` on your Desktop, you can create one by copy-and-pasting the code below into a text file using Notepad. The "pause" line can be removed later if all works well. Open VS Code or Notepad, copy-and-paste the code below into the editor, and save the file as `launch-rsm-msba.bat`. After saving, double-click the file to start the docker container.
 
 ```bash
-wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~
+wt.exe wsl.exe ~/git/docker-k8s/launch-rsm-msba-k8s.sh -v ~
 pause
 ```
 
@@ -166,10 +168,10 @@ To update the container use the launch script and press 6 (and Enter). To update
 If for some reason you are having trouble updating either the container or the launch script, open an Ubuntu terminal and copy-and-paste the code below. Note: You may have to right-click to get a copy-and-paste menu for the terminal. These commands will update the docker container and replace the old docker related scripts.
 
 ```bash
-docker pull vnijs/rsm-msba-k8s-intel;
+docker pull vnijs/rsm-msba-k8s;
 rm -rf ~/git/docker*;
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
-~/git/docker-k8s/launch-rsm-msba-k8s-intel.sh -v ~;
+~/git/docker-k8s/launch-rsm-msba-k8s.sh -v ~;
 ```
 
 ## Using VS Code
@@ -261,7 +263,7 @@ You should always stop the docker container using `q` (+ Enter) in the launch me
 ```bash
 rm -rf ~/.rsm-msba;
 docker system prune --all --volumes --force;
-docker pull vnijs/rsm-msba-k8s-intel;
+docker pull vnijs/rsm-msba-k8s;
 ```
 
 ## Getting help

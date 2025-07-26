@@ -1,4 +1,4 @@
-FROM vnijs/rsm-msba-k8s-intel:1.1.0
+FROM vnijs/rsm-msba-k8s:2.0.0
 USER root
 
 # Install CUDA repository and keys

@@ -1,14 +1,16 @@
 # RSM-MSBA on macOS (ARM)
 
-- [Installing the RSM-MSBA computing environment](#installing-the-rsm-msba-computing-environment)
-- [Updating the RSM-MSBA computing environment](#updating-the-rsm-msba-computing-environment)
-- [Using VS Code](#using-vs-code)
-- [Using UV](#using-uv)
-- [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-- [Cleanup](#cleanup)
-- [Getting help](#getting-help)
-- [Trouble shooting](#trouble-shooting)
-- [Optional](#optional)
+- [RSM-MSBA on macOS (ARM)](#rsm-msba-on-macos-arm)
+  - [Installing the RSM-MSBA computing environment](#installing-the-rsm-msba-computing-environment)
+  - [Updating the RSM-MSBA computing environment](#updating-the-rsm-msba-computing-environment)
+  - [Using VS Code](#using-vs-code)
+  - [Using UV](#using-uv)
+    - [Creating a virtual environment](#creating-a-virtual-environment)
+    - [Removing a virtual environment](#removing-a-virtual-environment)
+  - [Cleanup](#cleanup)
+  - [Getting help](#getting-help)
+  - [Troubleshooting](#troubleshooting)
+  - [Optional](#optional)
 
 ## Installing the RSM-MSBA computing environment
 
@@ -47,7 +49,7 @@ xcode-select --install;
 ```bash
 mkdir ~/git;
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
-cp -p ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh ~/Desktop/launch-rsm-msba.command;
+cp -p ~/git/docker-k8s/launch-rsm-msba-k8s.sh ~/Desktop/launch-rsm-msba.command;
 ~/Desktop/launch-rsm-msba.command;
 ```
 
@@ -55,10 +57,10 @@ The launch script will finalize the installation of the computing environment. T
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
-The code above also copies `launch-rsm-msba-k8s-arm.sh` to `launch-rsm-msba.command` to your Desktop. You can double-click this file to start the container again in the future. Alternatively, you can run the command below to launch the docker container from an iTerm2 terminal.
+The code above also copies `launch-rsm-msba-k8s.sh` to `launch-rsm-msba.command` to your Desktop. You can double-click this file to start the container again in the future. Alternatively, you can run the command below to launch the docker container from an iTerm2 terminal.
 
 ```bash
-~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh -v ~;
+~/git/docker-k8s/launch-rsm-msba-k8s.sh -v ~;
 ```
 
 **Step 5**: Check that you can launch Radiant-for-R
@@ -86,10 +88,10 @@ To update the container press 3 (+ Enter) in the launch menu. To update the laun
 If for some reason you are having trouble updating either the container or the launch script, open an iTerm2 terminal and copy-and-paste the code below. These commands will update the docker container, replace the old docker related scripts, and copy the latest version of the launch script to your Desktop.
 
 ```bash
-docker pull vnijs/rsm-msba-k8s-arm;
+docker pull vnijs/rsm-msba-k8s;
 rm -rf ~/git/docker*;
 git clone https://github.com/radiant-rstats/docker-k8s.git ~/git/docker-k8s;
-cp -p ~/git/docker-k8s/launch-rsm-msba-k8s-arm.sh ~/Desktop/launch-rsm-msba.command;
+cp -p ~/git/docker-k8s/launch-rsm-msba-k8s.sh ~/Desktop/launch-rsm-msba.command;
 ```
 
 ## Using VS Code
@@ -189,7 +191,7 @@ You should always stop the docker container using `q` (+ Enter) in the launch me
 ```bash
 rm -rf ~/.rsm-msba;
 docker system prune --all --volumes --force;
-docker pull vnijs/rsm-msba-k8s-arm;
+docker pull vnijs/rsm-msba-k8s;
 ```
 
 ## Getting help

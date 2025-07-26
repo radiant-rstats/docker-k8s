@@ -1,10 +1,7 @@
-version: '3.8'
-
 services:
   # Playwright service - similar to rsm-selenium containers
   rsm-playwright:
     image: mcr.microsoft.com/playwright:v1.40.0-jammy
-    platform: linux/arm64
     container_name: rsm-playwright
     networks:
       - rsm-docker
@@ -24,9 +21,9 @@ services:
       const { chromium } = require('playwright');
       const app = express();
       app.use(express.json());
-      
+
       app.get('/health', (req, res) => res.json({ status: 'ok' }));
-      
+
       app.post('/execute', async (req, res) => {
         const browser = await chromium.launch({ headless: true });
         const page = await browser.newPage();
@@ -39,7 +36,7 @@ services:
           res.status(500).json({ error: error.message });
         }
       });
-      
+
       app.listen(3000, '0.0.0.0', () => console.log('Playwright server ready on port 3000'));
       \"
       "

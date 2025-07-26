@@ -1,7 +1,6 @@
 services:
   selenium:
     image: selenium/standalone-firefox:latest
-    platform: linux/amd64
     container_name: rsm-selenium
     environment:
       - SELENIUM_PORT=4444

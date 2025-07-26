@@ -124,7 +124,7 @@ export PATH=$HOME/.local/bin:$PATH
 #
 alias c="clear"
 alias r="radian"
-alias pgweb="/usr/local/bin/pgweb_binary --bind=0.0.0.0 --listen=8282 --port=8765 --db='rsm-docker'"
+alias pgweb="/usr/local/bin/pgweb_binary --bind=0.0.0.0 --listen=8282 --port=8765"
 
 alias kh="k -h"
 alias ks="k -hS"
@@ -148,5 +148,7 @@ export RETICULATE_PYTHON="/opt/base-uv/.venv/bin/python"
 
 eval "$(uv generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
+
 export UV_LINK_MODE=copy
-source /opt/base-uv/.venv/bin/activate
+
+{ source /opt/base-uv/.venv/bin/activate; } 2>/dev/null
