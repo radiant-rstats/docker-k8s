@@ -72,6 +72,7 @@ IMAGE_VERSION="latest"
 NB_USER="jovyan"
 ID="vnijs"
 LABEL="rsm-msba-k8s"
+HOSTNAME="${LABEL}"
 NETWORK="rsm-docker"
 IMAGE=${ID}/${LABEL}
 # Choose your timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -343,7 +344,7 @@ else
     docker volume create --name=pg_data
   fi
   {
-    docker run --name ${LABEL} --net ${NETWORK} -d \
+    docker run --name ${LABEL} --hostname ${HOSTNAME} --net ${NETWORK} -d \
       -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 \
       -e TZ=${TIMEZONE} \
       -e SKIP_PERMISSIONS="true" \
@@ -454,7 +455,7 @@ else
         open_browser http://localhost:8181
       else
         echo "Starting Radiant in the default browser on port ${menu_arg}"
-        docker run --net ${NETWORK} --name "${LABEL}-${menu_arg}" -d \
+        docker run --net ${NETWORK} --hostname ${HOSTNAME} --name "${LABEL}-${menu_arg}" -d \
           -p 127.0.0.1:${menu_arg}:${menu_arg} \
           -e SKIP_PERMISSIONS="true" \
           -e TZ=${TIMEZONE} \
@@ -569,7 +570,7 @@ else
         echo "A Crawl4AI container may already be running on port ${crawl_port}"
         crawl_nr=$((${crawl_nr}-1))
       else
-        docker run --name="rsm-crawl${crawl_nr}" --net ${NETWORK} -d -p 127.0.0.1:${crawl_port}:11235 --platform linux/arm64 unclecode/crawl4ai:latest
+        docker run --name="rsm-crawl${crawl_nr}" --hostname ${HOSTNAME} --net ${NETWORK} -d -p 127.0.0.1:${crawl_port}:11235 --platform linux/arm64 unclecode/crawl4ai:latest
       fi
       echo "You can access crawl4ai at ip: rsm-crawl${crawl_nr}, port: 11235 from the"
       echo "${LABEL} container (rsm-crawl${crawl_nr}:11235) and ip: 127.0.0.1,"
@@ -591,7 +592,7 @@ else
         echo "A Playwright container may already be running on port ${playr_port}"
         playr_nr=$((${playr_nr}-1))
       else
-        docker run --name="rsm-playwright${playr_nr}" --net ${NETWORK} -d -p 127.0.0.1:${playr_port}:3000 --platform linux/arm64 mcr.microsoft.com/playwright:latest
+        docker run --name="rsm-playwright${playr_nr}" --hostname ${HOSTNAME} --net ${NETWORK} -d -p 127.0.0.1:${playr_port}:3000 --platform linux/arm64 mcr.microsoft.com/playwright:latest
       fi
       echo "You can access playwright at ip: rsm-playwright${playr_nr}, port: 3000 from the"
       echo "${LABEL} container (rsm-playwright${playr_nr}:3000) and ip: 127.0.0.1,"
