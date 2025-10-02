@@ -45,6 +45,7 @@ uv add \
 
 # Install web scraping and NLP packages
 uv add \
+  bs4 \
   spacy \
   nltk \
   textblob \
@@ -59,6 +60,7 @@ uv add \
   graphviz \
   seaborn \
   plotnine \
+  folium \
   plotly \
   networkx \
   matplotlib \
