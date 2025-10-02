@@ -148,15 +148,6 @@ COPY files/zsh/scripts/radiant.sh /usr/local/bin/radiant
 COPY files/zsh/setup.sh /usr/local/bin/setup
 COPY files/zsh/menu.sh /usr/local/bin/menu
 
-# Copy platform-specific launch script
-# We need to copy both and then select the right one
-COPY launch-rsm-msba-k8s-arm.sh /tmp/
-COPY launch-rsm-msba-k8s-intel.sh /tmp/
-RUN . /etc/environment && \
-    cp "/tmp/launch-${DOCKERHUB_NAME}.sh" /opt/launch.sh && \
-    rm -f /tmp/launch-*.sh && \
-    chmod 755 /opt/launch.sh
-
 RUN fix-permissions /etc/skel && \
     fix-permissions /usr/local/bin && \
     chmod 755 /usr/local/bin/*

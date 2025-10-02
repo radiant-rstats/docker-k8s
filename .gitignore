@@ -18,6 +18,7 @@ causalml/wheels/
 .devcontainer.json
 
 build-out.md
+build-output.md
 build-images.md
 build-logs/
 

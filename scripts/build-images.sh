@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKERHUB_VERSION=1.3.0
+DOCKERHUB_VERSION=2.1.0
 DOCKERHUB_USERNAME=vnijs
 UPLOAD="NO"
 # UPLOAD="YES"
@@ -150,7 +150,7 @@ if [ "$(uname -m)" = "arm64" ]; then
   # build
   # exit
 
-  LABEL=rsm-msba-k8s-arm
+  LABEL=rsm-msba-k8s
   build
 else
   # if [[ $(hostname -I) == *"132.249.225.85"* ]]; then
@@ -158,7 +158,7 @@ else
   #   echo $LABEL
   #   build
   # else
-    LABEL=rsm-msba-k8s-intel
+    LABEL=rsm-msba-k8s
     echo $LABEL
     build
   # fi
