@@ -3,8 +3,8 @@
 export USER=$(whoami)
 export USER_UID=$(id -u)
 export USER_GID=$(id -g)
-export INTEL_VERSION="1.1.0"
-export GPU_VERSION="1.1.0"
+export VERSION="2.1.0"
+export GPU_VERSION="2.1.0"
 
 APP="rsm-msba"
 CALC="$1"  # Use $1 if provided, empty string if not
@@ -37,7 +37,7 @@ if [ "$POD_STATUS" = "Running" ]; then
     echo "Pod already running for user $USER"
 elif [ "$POD_STATUS" = "ContainerCreating" ]; then
     echo "Pod is being created for user $USER. This could take a few minutes"
-    while [[ $(microk8s kubectl get pods -l user=$USER,app=$APP -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do 
+    while [[ $(microk8s kubectl get pods -l user=$USER,app=$APP -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
         echo "Waiting for pod creation to complete ..." && sleep 1;
     done
 else
@@ -58,7 +58,7 @@ else
 
     # Wait for pod to be ready
     echo "Waiting for pod ..."
-    while [[ $(microk8s kubectl get pods -l user=$USER,app=$APP -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do 
+    while [[ $(microk8s kubectl get pods -l user=$USER,app=$APP -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
         echo "Waiting for pod ..." && sleep 1;
     done
     rm "/opt/k8s/tmp/$USER-k8s-$APP-config.yaml"

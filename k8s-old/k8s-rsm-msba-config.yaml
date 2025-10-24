@@ -25,7 +25,7 @@ spec:
         fsGroup: ${USER_GID}
       containers:
       - name: rsm-msba-container
-        image: vnijs/rsm-msba-k8s-intel:${INTEL_VERSION}
+        image: vnijs/rsm-msba-k8s:${VERSION}
         resources:
           requests:
             memory: "16Gi"

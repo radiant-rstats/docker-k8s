@@ -1,0 +1,43 @@
+# connect to MSBA server
+Host sc2
+    HostName rsm-compute-02.ucsd.edu
+    User vnijs
+
+
+# connecting to pods on sc2
+Host sc2p
+    HostName rsm-compute-02.ucsd.edu
+    User jovyan
+    Port 30976
+    ProxyCommand ssh sc2 "zsh -c '/opt/k8s/bin/start-pod.sh >/dev/null 2>&1 && sleep 3 && nc localhost %p'"
+    StrictHostKeyChecking accept-new
+
+Host sc2p-gpu
+    HostName rsm-compute-02.ucsd.edu
+    User jovyan
+    Port 30673
+    ProxyCommand ssh sc2 "zsh -c '/opt/k8s/bin/start-pod.sh -gpu >/dev/null 2>&1 && sleep 3 && nc localhost %p'"
+    StrictHostKeyChecking accept-new
+
+Host rsm-msba2
+    User jovyan
+    Port 30976
+    ProxyCommand ssh sc2 "zsh -c '/opt/k8s/bin/start-pod.sh >/dev/null 2>&1 && sleep 3 && nc localhost %p'"
+    StrictHostKeyChecking accept-new
+
+Host rsm-msba2-gpu
+    User jovyan
+    Port 30673
+    ProxyCommand ssh sc2 "zsh -c '/opt/k8s/bin/start-pod.sh -gpu >/dev/null 2>&1 && sleep 3 && nc localhost %p'"
+    StrictHostKeyChecking accept-new
+
+
+# datahub connection
+Host dhp
+    User vnijs
+    HostName dsmlp-login.ucsd.edu
+    ProxyCommand ssh -i ~/.ssh/id_rsa vnijs@dsmlp-login.ucsd.edu /opt/launch-sh/bin/launch-rsm-msba.sh -H -j -c 4 -m 8
+    StrictHostKeyChecking no
+Host dh
+    User vnijs
+    HostName dsmlp-login.ucsd.edu
