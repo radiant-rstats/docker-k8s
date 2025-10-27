@@ -7,6 +7,18 @@ echo "=========================================="
 echo ""
 
 # Set essential environment variables
+# Write to jovyan's shell profile so they persist for SSH sessions
+cat >> /home/jovyan/.bashrc << 'ENVEOF'
+
+# RSM environment variables (set by start-rootless.sh)
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export SPARK_HOME=/usr/local/spark
+export PYTHONPATH=${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.9.9-src.zip:${PYTHONPATH}
+export HADOOP_HOME=/opt/hadoop
+export PATH=${HADOOP_HOME}/bin:${SPARK_HOME}/bin:${PATH}
+ENVEOF
+
+# Also export for current script context
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 export SPARK_HOME=/usr/local/spark
 export PYTHONPATH=${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.9.9-src.zip:${PYTHONPATH}
