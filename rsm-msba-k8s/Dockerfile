@@ -152,10 +152,12 @@ RUN fix-permissions /etc/skel && \
     fix-permissions /usr/local/bin && \
     chmod 755 /usr/local/bin/*
 
-# Startup script that starts sshd and postgres and manages permissions
+# Startup scripts - both rootful and rootless modes supported
 COPY files/start-container.sh /usr/local/bin/
+COPY files/start-rootless.sh /usr/local/bin/
 COPY files/sshd/sshd_config /etc/ssh/sshd_config
-RUN chmod +x /usr/local/bin/start-container.sh
+RUN chmod +x /usr/local/bin/start-container.sh && \
+    chmod +x /usr/local/bin/start-rootless.sh
 
 # Setup the GitHub CLI
 COPY files/install-gh.sh setup.sh
