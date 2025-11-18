@@ -39,9 +39,7 @@ VS Code can be installed from the link below and is an excellent editor for Pyth
 Run the code below from a terminal on macOS after installing VS Code to install relevant extensions:
 
 ```bash
-cd ~/git/docker-k8s/vscode;
-./extension-install.sh;
-cd -;
+source <(curl -s https://raw.githubusercontent.com/radiant-rstats/docker-k8s/refs/heads/main/vscode/extension-install.sh)
 ```
 
 If you get a "code: command not found" error when trying to launch VS Code from a terminal, follow the instructions below to add VS Code to your path:
@@ -64,6 +62,23 @@ A major feature in VS Code is the ability to use AI to help you write code. For 
 ## Use the RSM-VSCODE extension
 
 - Press `CMD-Shift-P` to open the command palette in VS Code. Then type "RSM: " to see the different tools that are available through this VS Code extension
+
+## Setup the computing environment
+
+In a terminal run the following command:
+
+```bash
+docker pull vnijs/rsm-msba-k8s:latest
+```
+
+After that first run, you will be able to use `RSM: Update Docker Image` in the VS Code Command Palette.
+
+Now connect VS Code to the docker container for a specific workspace by using "RSM: Change Workspace". When you have selected the folder (workspace) you want to work in, use "RSM: Attach to Container" to attached VS Code to the docker container.
+
+The final steps are:
+
+- Run the `setup` and `github`commands in a VS Code terminal.
+- In the command pallette use "RSM: Merge Keybindings" and "RSM: Merge Settings"
 
 ## Using UV
 
