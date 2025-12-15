@@ -21,7 +21,8 @@ uv add \
   torch \
   torchvision \
   torchaudio \
-  --default-index https://download.pytorch.org/whl/cpu
+  --default-index https://pypi.org/simple/
+  # --default-index https://download.pytorch.org/whl/cpu
 
 uv add pyarrow==${PYARROW_VERSION} \
   --default-index https://pypi.org/simple/
