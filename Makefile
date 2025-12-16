@@ -80,13 +80,13 @@ test: setup-builder ## Build local test image for current platform (no push)
 	@mkdir -p build-logs
 	@docker buildx build \
 		--platform linux/$(CURRENT_PLATFORM) \
-		--tag $(IMAGE_NAME):test-build \
+		--tag $(IMAGE_NAME):latest \
 		--build-arg IMAGE_VERSION=test \
 		--load \
 		--progress=plain \
 		-f $(DOCKERFILE) \
-		. 2>&1 | tee build-logs/test-build_$$(date +%Y%m%d_%H%M%S).log
-	@echo "$(GREEN)✓ Test build complete: $(IMAGE_NAME):test-build$(NC)"
+		. 2>&1 | tee build-logs/latest_$$(date +%Y%m%d_%H%M%S).log
+	@echo "$(GREEN)✓ Test build complete: $(IMAGE_NAME):latest$(NC)"
 
 .PHONY: build
 build: setup-builder test-auth ## Build and push multi-platform image
@@ -147,7 +147,7 @@ clean-logs: ## Clean up build log files
 .PHONY: clean-test-images
 clean-test-images: ## Remove local test images
 	@echo "$(YELLOW)Removing test images...$(NC)"
-	@docker rmi $(IMAGE_NAME):test-build 2>/dev/null || true
+	@docker rmi $(IMAGE_NAME):latest 2>/dev/null || true
 	@echo "$(GREEN)✓ Test images removed$(NC)"
 
 .PHONY: clean

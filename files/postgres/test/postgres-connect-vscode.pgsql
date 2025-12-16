@@ -32,7 +32,7 @@ Standard connection
 
 /*
 click on "Select Postgres Server" at the bottom of your VS Code window
-and choose rsm-docker and check if any of the below statements work
+and choose rsm-msba and check if any of the below statements work
 all queries below are commented out. remove the "--" in front of a
 SELECT statement to make it available to run
 

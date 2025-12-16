@@ -6,7 +6,7 @@ if [ "$(uname -m)" = "arm64" ]; then
 else
     LABEL="rsm-msba-k8s-intel"
 fi
-NETWORK="rsm-docker"
+NETWORK="rsm-network"
 IMAGE=${ID}/${LABEL}
 HOMEDIR=/Users/vnijs
 TIMEZONE=America/Los_Angeles

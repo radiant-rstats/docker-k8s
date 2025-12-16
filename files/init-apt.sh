@@ -12,6 +12,7 @@ apt -y install \
   liblzma5 \
   liblzma-dev \
   sudo \
+  gosu \
   curl \
   lsb-release \
   wget \

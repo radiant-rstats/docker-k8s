@@ -9,15 +9,13 @@ mkdir /var/run/sshd
 # Generate host keys
 ssh-keygen -A
 
+# Make host keys readable by jovyan for rootless operation
+chown jovyan:users /etc/ssh/ssh_host_*_key
+
 # Configure SSH
 # echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 # echo "UsePAM yes" >> /etc/ssh/sshd_config
 # replaced by new default config
-
-# run sshd on port 2222 to avoid needing sudo to start
-RUN sed -i 's/^#Port 22/Port 2222/' /etc/ssh/sshd_config && \
-    sed -i 's/^Port 22/Port 2222/' /etc/ssh/sshd_config
-
 
 echo "Cleaning up after installation..."
 apt clean

@@ -55,15 +55,24 @@ sed -i 's/__version__/'"$POSTGRES_VERSION"'/g' /etc/postgresql/${POSTGRES_VERSIO
 # Start PostgreSQL service
 /etc/init.d/postgresql start
 
-# Create user and database using the same password file
+# Create user and databases using the same password file
 su - postgres -c "PGPASSWORD=$(cat /tmp/pwfile) psql -h localhost -p 8765 --command \"CREATE USER ${NB_USER} WITH SUPERUSER PASSWORD '${PGPASSWORD}';\" && \
-                 PGPASSWORD=$(cat /tmp/pwfile) createdb -h localhost -p 8765 -O ${NB_USER} rsm-docker"
+                 PGPASSWORD=$(cat /tmp/pwfile) createdb -h localhost -p 8765 -O ${NB_USER} ${NB_USER} && \
+                 PGPASSWORD=$(cat /tmp/pwfile) createdb -h localhost -p 8765 -O ${NB_USER} rsm-msba"
 
 # Clean up the password file
 rm /tmp/pwfile
 
 # Stop PostgreSQL (it will be started again by the container's start script)
 /etc/init.d/postgresql stop
+
+# Change ownership to jovyan for rootless container operation
+# This allows the container to run postgres as jovyan in both Docker and Podman rootless
+echo "Changing PostgreSQL ownership to jovyan for rootless operation..."
+chown -R jovyan:users /var/lib/postgresql/${POSTGRES_VERSION}/main/
+chown -R jovyan:users /etc/postgresql/${POSTGRES_VERSION}/main/
+chown -R jovyan:users /var/log/postgresql/
+chown -R jovyan:users /var/run/postgresql/
 
 # Clean up
 echo "Cleaning up..."

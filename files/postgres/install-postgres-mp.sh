@@ -99,11 +99,12 @@ else
 fi
 
 # Create user and database
-echo "Creating PostgreSQL user and database..."
+echo "Creating PostgreSQL user and databases..."
 su - postgres -c "PGPASSWORD=$(cat /tmp/pwfile) /usr/lib/postgresql/${POSTGRES_VERSION}/bin/psql -p 8765 --command \"CREATE USER ${NB_USER} WITH SUPERUSER PASSWORD '${PGPASSWORD}';\""
-su - postgres -c "PGPASSWORD=$(cat /tmp/pwfile) /usr/lib/postgresql/${POSTGRES_VERSION}/bin/createdb -p 8765 -O ${NB_USER} rsm-docker"
+su - postgres -c "PGPASSWORD=$(cat /tmp/pwfile) /usr/lib/postgresql/${POSTGRES_VERSION}/bin/createdb -p 8765 -O ${NB_USER} ${NB_USER}"
+su - postgres -c "PGPASSWORD=$(cat /tmp/pwfile) /usr/lib/postgresql/${POSTGRES_VERSION}/bin/createdb -p 8765 -O ${NB_USER} rsm-msba"
 
-echo "Database and user created successfully"
+echo "User and databases created successfully"
 
 # Stop PostgreSQL (it will be started again by the container's start script)
 echo "Stopping PostgreSQL..."
@@ -113,6 +114,14 @@ su - postgres -c "/usr/lib/postgresql/${POSTGRES_VERSION}/bin/pg_ctl \
 
 # Clean up the password file
 rm /tmp/pwfile
+
+# Change ownership to jovyan for rootless container operation
+# This allows the container to run postgres as jovyan in both Docker and Podman rootless
+echo "Changing PostgreSQL ownership to jovyan for rootless operation..."
+chown -R jovyan:users /var/lib/postgresql/${POSTGRES_VERSION}/main/
+chown -R jovyan:users /etc/postgresql/${POSTGRES_VERSION}/main/
+chown -R jovyan:users /var/log/postgresql/
+chown -R jovyan:users /var/run/postgresql/
 
 # Clean up
 echo "Cleaning up..."

@@ -71,19 +71,22 @@ ARG_HOME=""
 IMAGE_VERSION="latest"
 NB_USER="jovyan"
 ID="vnijs"
-LABEL="rsm-msba-k8s"
+LABEL="rsm-podman"
 HOSTNAME="${LABEL}"
-NETWORK="rsm-docker"
+NETWORK="rsm-network"
 IMAGE=${ID}/${LABEL}
 # Choose your timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 TIMEZONE="America/Los_Angeles"
 if [ "$ARG_TAG" != "" ]; then
   IMAGE_VERSION="$ARG_TAG"
-  IMAGE_VERSION=${IMAGE_VERSION}
 else
   ## see https://stackoverflow.com/questions/34051747/get-environment-variable-from-docker-container
-  IMAGE_VERSION=$(docker inspect -f '{{range $index, $value := .Config.Env}}{{println $value}} {{end}}' ${IMAGE}:${IMAGE_VERSION} | grep IMAGE_VERSION)
-  IMAGE_VERSION="${IMAGE_VERSION#*=}"
+  EXTRACTED_VERSION=$(docker inspect -f '{{range $index, $value := .Config.Env}}{{println $value}} {{end}}' ${IMAGE}:${IMAGE_VERSION} 2>/dev/null | grep IMAGE_VERSION)
+  EXTRACTED_VERSION="${EXTRACTED_VERSION#*=}"
+  ## only use extracted version if that tag exists locally
+  if [ "${EXTRACTED_VERSION}" != "" ] && [ "$(docker images -q ${IMAGE}:${EXTRACTED_VERSION} 2>/dev/null)" != "" ]; then
+    IMAGE_VERSION="${EXTRACTED_VERSION}"
+  fi
 fi
 POSTGRES_VERSION=16
 
@@ -159,7 +162,7 @@ else
     echo $BOUNDARY
     echo "Downloading the ${LABEL}:${IMAGE_VERSION} computing environment"
     echo $BOUNDARY
-    docker logout
+    docker logout 2>/dev/null
     docker pull ${IMAGE}:${IMAGE_VERSION}
   fi
 
@@ -328,7 +331,7 @@ else
     docker network inspect ${NETWORK} >/dev/null 2>&1
   } || {
     # if network doesn't exist create it
-    echo "--- Creating docker network: ${NETWORK} ---"
+    echo "--- Creating network: ${NETWORK} ---"
     docker network create ${NETWORK}
   }
 
@@ -345,7 +348,9 @@ else
   fi
   {
     docker run --name ${LABEL} --hostname ${HOSTNAME} --net ${NETWORK} -d \
-      -p 127.0.0.1:8765:8765 -p 127.0.0.1:8181:8181 \
+      -p 127.0.0.1:2222:2222 \
+      -p 127.0.0.1:8282:8282 \
+      -p 127.0.0.1:8765:8765 \
       -e TZ=${TIMEZONE} \
       -e SKIP_PERMISSIONS="true" \
       -v "${HOMEDIR}":/home/${NB_USER} $MNT \
@@ -373,16 +378,14 @@ else
     echo "Cont. name: ${LABEL}"
     echo $BOUNDARY
     echo "Press (1) to show a (ZSH) terminal, followed by [ENTER]:"
-    echo "Press (2) to show Radiant, followed by [ENTER]:"
-    echo "Press (3) to update the ${LABEL} container, followed by [ENTER]:"
-    echo "Press (4) to update the launch script, followed by [ENTER]:"
-    echo "Press (5) to setup Git and GitHub, followed by [ENTER]:"
+    echo "Press (2) to update the ${LABEL} container, followed by [ENTER]:"
+    echo "Press (3) to update the launch script, followed by [ENTER]:"
+    echo "Press (4) to setup Git and GitHub, followed by [ENTER]:"
     echo "Press (h) to show help in the terminal and browser, followed by [ENTER]:"
     echo "Press (c) to commit changes, followed by [ENTER]:"
     echo "Press (q) to stop the docker process, followed by [ENTER]:"
     echo $BOUNDARY
-    echo "Note: To start, e.g., Radiant on a different port type 2 8182 [ENTER]"
-    echo "Note: To start a specific container version type, e.g., 4 ${IMAGE_VERSION} [ENTER]"
+    echo "Note: To start a specific container version type, e.g., 2 ${IMAGE_VERSION} [ENTER]"
     echo "Note: To commit changes to the container type, e.g., c myversion [ENTER]"
     echo $BOUNDARY
     read menu_exec menu_arg
@@ -418,54 +421,7 @@ else
       else
         docker exec -it --user ${NB_USER} ${zsh_lab} /bin/zsh
       fi
-    elif [ ${menu_exec} == 2 ]; then
-      RPROF="${HOMEDIR}/.Rprofile"
-      touch "${RPROF}"
-      if ! grep -q 'radiant.report = TRUE' ${RPROF} || ! grep -q 'radiant.shinyFiles = TRUE' ${RPROF}; then
-        echo "Your setup does not allow report generation in Radiant."
-        echo "Would you like to add relevant code to .Rprofile?"
-        echo "Press y or n, followed by [ENTER]:"
-        echo ""
-        read allow_report
-
-        if [ "${allow_report}" == "y" ]; then
-          ## Windows does not reliably use newlines with printf
-          sed_fun '/^options(radiant.maxRequestSize/d' "${RPROF}"
-          sed_fun '/^options(radiant.report/d' "${RPROF}"
-          sed_fun '/^options(radiant.shinyFiles/d' "${RPROF}"
-          sed_fun '/^options(radiant.ace_autoComplete/d' "${RPROF}"
-          sed_fun '/^options(radiant.ace_theme/d' "${RPROF}"
-          sed_fun '/^#.*List.*specific.*directories.*you.*want.*to.*use.*with.*radiant/d' "${RPROF}"
-          sed_fun '/^#.*options(radiant\.sf_volumes.*=.*c(Git.*=.*"\/home\/jovyan\/git"))/d' "${RPROF}"
-          echo 'options(radiant.maxRequestSize = -1)' >> "${RPROF}"
-          echo 'options(radiant.report = TRUE)' >> "${RPROF}"
-          echo 'options(radiant.shinyFiles = TRUE)' >> "${RPROF}"
-          echo 'options(radiant.ace_autoComplete = "live")' >> "${RPROF}"
-          echo 'options(radiant.ace_theme = "tomorrow")' >> "${RPROF}"
-          echo '# List specific directories you want to use with radiant' >> "${RPROF}"
-          echo '# options(radiant.sf_volumes = c(Git = "/home/jovyan/git"))' >> "${RPROF}"
-          echo '' >> "${RPROF}"
-          sed_fun '/^[\s]*$/d' "${RPROF}"
-        fi
-      fi
-      if [ "${menu_arg}" == "" ]; then
-        echo "Starting Radiant in the default browser on port 8181"
-        docker exec -d ${LABEL} /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=8181, run=FALSE)"
-        sleep 2
-        open_browser http://localhost:8181
-      else
-        echo "Starting Radiant in the default browser on port ${menu_arg}"
-        docker run --net ${NETWORK} --hostname ${HOSTNAME} --name "${LABEL}-${menu_arg}" -d \
-          -p 127.0.0.1:${menu_arg}:${menu_arg} \
-          -e SKIP_PERMISSIONS="true" \
-          -e TZ=${TIMEZONE} \
-          -v "${HOMEDIR}":/home/${NB_USER} $MNT \
-          ${IMAGE}:${IMAGE_VERSION}
-        docker exec -d "${LABEL}-${menu_arg}" /opt/conda/bin/R -e "radiant.data:::launch(package='radiant', host='0.0.0.0', port=${menu_arg}, run=FALSE)"
-        sleep 2
-        open_browser http://localhost:${menu_arg}
-      fi
-   elif [ ${menu_exec} == 3 ]; then
+   elif [ ${menu_exec} == 2 ]; then
       echo $BOUNDARY
       echo "Updating the ${LABEL} computing environment"
       clean_rsm_containers
@@ -488,7 +444,7 @@ else
       fi
       $CMD
       exit 1
-    elif [ ${menu_exec} == 4 ]; then
+    elif [ ${menu_exec} == 3 ]; then
       echo "Updating ${IMAGE} launch script"
       clean_rsm_containers
       if [ -d "${HOMEDIR}/Desktop" ]; then
@@ -514,7 +470,7 @@ else
         echo "\nPress any key to continue"
         read
       }
-    elif [ ${menu_exec} == 5 ]; then
+    elif [ ${menu_exec} == 4 ]; then
       echo $BOUNDARY
       echo "Setup Git and Github (y/n)?"
       echo $BOUNDARY
