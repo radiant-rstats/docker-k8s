@@ -22,7 +22,7 @@ The unified Dockerfile automatically handles these platform-specific differences
    - ARM64: `/usr/lib/jvm/java-17-openjdk-arm64/`
    - AMD64: `/usr/lib/jvm/java-17-openjdk-amd64/`
 3. **Binary Downloads**: Downloads correct pgweb binary for each platform
-4. **Image Names**: Sets appropriate `DOCKERHUB_NAME` environment variable
+4. **Image Names**: Sets appropriate `IMAGE_NAME` environment variable
 
 ## Files
 

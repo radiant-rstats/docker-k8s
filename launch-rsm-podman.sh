@@ -79,11 +79,11 @@ IMAGE=${ID}/${LABEL}
 TIMEZONE="America/Los_Angeles"
 if [ "$ARG_TAG" != "" ]; then
   IMAGE_VERSION="$ARG_TAG"
-  DOCKERHUB_VERSION=${IMAGE_VERSION}
+  IMAGE_VERSION=${IMAGE_VERSION}
 else
   ## see https://stackoverflow.com/questions/34051747/get-environment-variable-from-docker-container
-  DOCKERHUB_VERSION=$(docker inspect -f '{{range $index, $value := .Config.Env}}{{println $value}} {{end}}' ${IMAGE}:${IMAGE_VERSION} | grep DOCKERHUB_VERSION)
-  DOCKERHUB_VERSION="${DOCKERHUB_VERSION#*=}"
+  IMAGE_VERSION=$(docker inspect -f '{{range $index, $value := .Config.Env}}{{println $value}} {{end}}' ${IMAGE}:${IMAGE_VERSION} | grep IMAGE_VERSION)
+  IMAGE_VERSION="${IMAGE_VERSION#*=}"
 fi
 POSTGRES_VERSION=16
 
@@ -334,7 +334,7 @@ else
 
   echo $BOUNDARY
   echo "Starting the ${LABEL} computing environment on ${ostype} ${chip}"
-  echo "Version   : ${DOCKERHUB_VERSION}"
+  echo "Version   : ${IMAGE_VERSION}"
   echo "Build date: ${BUILD_DATE//T*/}"
   echo "Base dir. : ${HOMEDIR}"
   echo $BOUNDARY
@@ -367,7 +367,7 @@ else
   show_service () {
     echo $BOUNDARY
     echo "Starting the ${LABEL} computing environment on ${ostype} ${chip}"
-    echo "Version   : ${DOCKERHUB_VERSION}"
+    echo "Version   : ${IMAGE_VERSION}"
     echo "Build date: ${BUILD_DATE//T*/}"
     echo "Base dir. : ${HOMEDIR}"
     echo "Cont. name: ${LABEL}"
@@ -382,7 +382,7 @@ else
     echo "Press (q) to stop the docker process, followed by [ENTER]:"
     echo $BOUNDARY
     echo "Note: To start, e.g., Radiant on a different port type 2 8182 [ENTER]"
-    echo "Note: To start a specific container version type, e.g., 4 ${DOCKERHUB_VERSION} [ENTER]"
+    echo "Note: To start a specific container version type, e.g., 4 ${IMAGE_VERSION} [ENTER]"
     echo "Note: To commit changes to the container type, e.g., c myversion [ENTER]"
     echo $BOUNDARY
     read menu_exec menu_arg
@@ -680,14 +680,13 @@ else
             else
               sed_fun "s/^IMAGE_VERSION=\".*\"/IMAGE_VERSION=\"${menu_tag}\"/" "${SCRIPT_COPY}/launch-${menu_arg}.${EXT}"
             fi
-            # echo 'docker commit --change "ENV DOCKERHUB_VERSION=${menu_tag}" ${container_id[0]} ${IMAGE_DHUB}:${menu_tag}'
-            docker commit --change "ENV DOCKERHUB_VERSION=${menu_tag}" ${container_id[0]} ${IMAGE_DHUB}:${menu_tag}
+            # echo 'docker commit --change "ENV IMAGE_VERSION=${menu_tag}" ${container_id[0]} ${IMAGE_DHUB}:${menu_tag}'
+            docker commit --change "ENV IMAGE_VERSION=${menu_tag}" ${container_id[0]} ${IMAGE_DHUB}:${menu_tag}
             docker push ${IMAGE_DHUB}:${menu_tag}
           fi
         } || {
           echo $BOUNDARY
-          echo "It seems there was a problem with login or pushing to Dockerhub"
-          echo "Please make sure you have an account at https://hub.docker.com/"
+          echo "It seems there was a problem with login or pushing to image repository"
           echo $BOUNDARY
           sleep 3s
         }

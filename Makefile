@@ -1,11 +1,11 @@
 # Makefile for rsm-msba-k8s Docker multi-platform builds
 
 # Configuration
-IMAGE_NAME := vnijs/rsm-msba-k8s
+IMAGE_NAME := vnijs/rsm-podman
 PLATFORMS := linux/amd64,linux/arm64
 BUILDER_NAME := multiplatform-builder
 VERSION ?= latest
-DOCKERFILE := rsm-msba-k8s/Dockerfile
+DOCKERFILE := rsm-podman/Dockerfile
 
 # Detect current platform
 CURRENT_PLATFORM := $(shell uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
@@ -81,7 +81,7 @@ test: setup-builder ## Build local test image for current platform (no push)
 	@docker buildx build \
 		--platform linux/$(CURRENT_PLATFORM) \
 		--tag $(IMAGE_NAME):test-build \
-		--build-arg DOCKERHUB_VERSION=test \
+		--build-arg IMAGE_VERSION=test \
 		--load \
 		--progress=plain \
 		-f $(DOCKERFILE) \
@@ -98,7 +98,7 @@ build: setup-builder test-auth ## Build and push multi-platform image
 		--platform $(PLATFORMS) \
 		--tag $(IMAGE_NAME):$(VERSION) \
 		--tag $(IMAGE_NAME):latest \
-		--build-arg DOCKERHUB_VERSION=$(VERSION) \
+		--build-arg IMAGE_VERSION=$(VERSION) \
 		--push \
 		--progress=plain \
 		-f $(DOCKERFILE) \
@@ -117,7 +117,7 @@ build-no-cache: setup-builder test-auth ## Build and push multi-platform image w
 		--platform $(PLATFORMS) \
 		--tag $(IMAGE_NAME):$(VERSION) \
 		--tag $(IMAGE_NAME):latest \
-		--build-arg DOCKERHUB_VERSION=$(VERSION) \
+		--build-arg IMAGE_VERSION=$(VERSION) \
 		--no-cache \
 		--push \
 		--progress=plain \

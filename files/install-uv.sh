@@ -13,7 +13,7 @@ curr_dir=$(pwd)
 python_version=$(/opt/conda/bin/python --version | awk '{print $2}' | cut -d'.' -f1-2)
 mkdir /opt/base-uv
 cd /opt/base-uv
-uv init --python ">=${python_version},<3.13"
+uv init --python ">=${python_version},<3.14"
 uv venv
 source .venv/bin/activate
 
@@ -24,18 +24,15 @@ uv add \
   --default-index https://pypi.org/simple/
   # --default-index https://download.pytorch.org/whl/cpu
 
-uv add pyarrow==${PYARROW_VERSION} \
+uv add pyarrow \
   --default-index https://pypi.org/simple/
 
 # Install core data science packages first
-# Issue with scipy 1.16.0 and various packages
 uv add \
   pyrsm \
-  "scipy==1.15.3" \
-  pandas \
+  scipy \
   sqlalchemy \
   psycopg2[binary] \
-  ipython-sql \
   scikit-learn \
   mlxtend \
   xgboost \
@@ -52,19 +49,14 @@ uv add \
   textblob \
   transformers[torch] \
   huggingface_hub \
-  gensim \
-  vadersentiment \
   --default-index https://pypi.org/simple/
 
 # Install visualization and utility packages
 uv add \
   graphviz \
-  seaborn \
   plotnine \
   folium \
-  plotly \
   networkx \
-  matplotlib \
   --default-index https://pypi.org/simple/
 
 # Install development and notebook packages
@@ -76,19 +68,13 @@ uv add \
   xlrd \
   openpyxl \
   xlsx2csv \
-  jupysql \
   markdown \
-  radian \
-  shiny \
-  shinywidgets \
   --default-index https://pypi.org/simple/
 
 # Install database and file handling packages
 uv add \
-  duckdb \
-  duckdb-engine \
-  fastexcel \
   polars \
+  fastexcel \
   connectorx \
   --default-index https://pypi.org/simple/
 

@@ -4,13 +4,13 @@
 
 # Use the latest tag and let Docker buildx handle platform selection automatically
 # Updated to match the latest versions from individual Dockerfiles
-FROM quay.io/jupyter/pyspark-notebook:2025-06-16
+FROM quay.io/jupyter/pyspark-notebook:2025-12-15
 
 USER root
 
 # Define build argument and set it as an environment variable in one step
-ARG DOCKERHUB_VERSION
-ENV DOCKERHUB_VERSION=${DOCKERHUB_VERSION}
+ARG IMAGE_VERSION
+ENV IMAGE_VERSION=${IMAGE_VERSION}
 
 # Get platform info for conditional logic
 ARG TARGETPLATFORM
@@ -18,19 +18,18 @@ ARG TARGETOS
 ARG TARGETARCH
 
 # Set platform-specific environment variables
-# Note: DOCKERHUB_NAME and platform-specific vars will be set dynamically below
+# Note: IMAGE_NAME and platform-specific vars will be set dynamically below
 
 # Ensure NB_USER is set (some base images might not have it)
 ENV NB_USER=${NB_USER:-jovyan}
 
 # Python env variables
-ENV PYARROW_VERSION="20.0.0"
+# ENV PYARROW_VERSION="20.0.0"
 
 # R and Posit related env variables
-ENV QUARTO_VERSION="1.7.32"
-ENV R_VERSION=4.4.3
-ENV TERM=xterm
-ENV R_HOME=/opt/conda/lib/R
+# ENV QUARTO_VERSION="1.7.32"
+# ENV R_VERSION=4.4.3
+# ENV TERM=xterm
 ENV PATH="/usr/local/bin:$PATH"
 
 # Postgres env variables
@@ -45,16 +44,16 @@ ENV RSMBASE=${RSMBASE} \
 
 # Set platform-specific variables based on architecture
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
-    echo "export DOCKERHUB_NAME=rsm-msba-k8s-arm" >> /etc/environment && \
+    echo "export IMAGE_NAME=rsm-podman-arm" >> /etc/environment && \
     echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64/" >> /etc/environment && \
     echo "export PGWEB_FILE=pgweb_linux_arm64_v7.zip" >> /etc/environment; \
-    elif [ "${TARGETARCH}" = "amd64" ]; then \
-    echo "export DOCKERHUB_NAME=rsm-msba-k8s-intel" >> /etc/environment && \
+  elif [ "${TARGETARCH}" = "amd64" ]; then \
+    echo "export IMAGE_NAME=rsm-podman-intel" >> /etc/environment && \
     echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/" >> /etc/environment && \
     echo "export PGWEB_FILE=pgweb_linux_amd64.zip" >> /etc/environment; \
-    else \
+  else \
     echo "Unsupported architecture: ${TARGETARCH}" && exit 1; \
-    fi
+  fi
 
 # Source the environment file to make variables available in current build
 RUN . /etc/environment
@@ -73,10 +72,6 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
-# Setting condarc for the container
-COPY files/conda/condarc /opt/conda/.condarc
-RUN fix-permissions "${CONDA_DIR}"
-
 COPY files/install-sshd.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
@@ -88,11 +83,6 @@ RUN chmod +x setup.sh && \
     rm setup.sh
 
 COPY files/install-uv.sh setup.sh
-RUN chmod +x setup.sh && \
-    ./setup.sh && \
-    rm setup.sh
-
-COPY files/install-radiant.sh setup.sh
 RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
@@ -138,6 +128,12 @@ RUN chmod +x setup.sh && \
     ./setup.sh && \
     rm setup.sh
 
+# Setup the GitHub CLI
+COPY files/install-gh.sh setup.sh
+RUN chmod +x setup.sh && \
+    ./setup.sh && \
+    rm setup.sh
+
 # Copying over CLI scripts
 COPY files/zsh/zshrc /etc/skel/.zshrc
 COPY files/zsh/p10k.zsh /etc/skel/.p10k.zsh
@@ -152,30 +148,20 @@ RUN fix-permissions /etc/skel && \
     fix-permissions /usr/local/bin && \
     chmod 755 /usr/local/bin/*
 
-# Startup scripts - both rootful and rootless modes supported
+# Startup script
 COPY files/start-container.sh /usr/local/bin/
-COPY files/start-rootless.sh /usr/local/bin/
 COPY files/sshd/sshd_config /etc/ssh/sshd_config
-RUN chmod +x /usr/local/bin/start-container.sh && \
-    chmod +x /usr/local/bin/start-rootless.sh
+RUN chmod +x /usr/local/bin/start-container.sh
 
-# Setup the GitHub CLI
-COPY files/install-gh.sh setup.sh
-RUN chmod +x setup.sh && \
-    ./setup.sh && \
-    rm setup.sh
-
-# Setup webscrapers (commented out in original)
-# COPY files/install-webscrapers.sh setup.sh
-# RUN chmod +x setup.sh && \
-#     ./setup.sh && \
-#     rm setup.sh
+RUN touch /var/log/sshd/sshd.log && \
+    chown ${NB_USER}:${NB_GID:-users} /var/log/sshd/sshd.log && \
+    chmod 640 /var/log/sshd/sshd.log
 
 EXPOSE 22 8765
 
 CMD ["/usr/local/bin/start-container.sh"]
 
 # Switch back to jovyan to avoid accidental container runs as root
-USER ${NB_UID}
+# USER ${NB_UID}
 ENV HOME=/home/${NB_USER}
-WORKDIR "${HOME}"
+# WORKDIR "${HOME}"

@@ -32,3 +32,5 @@ build-multiplatform.sh
 test-auth.sh
 validate-auth.sh
 validate-setup.sh
+web-scraping/
+old/

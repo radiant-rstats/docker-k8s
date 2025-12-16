@@ -10,7 +10,7 @@ This guide walks you through building and deploying multi-platform (AMD64 and AR
 
 ## Quick Start
 
-### Using Make (Recommended)
+### Using Make
 
 The simplest way to build and deploy is using the provided Makefile:
 
@@ -21,13 +21,14 @@ security -v unlock-keychain ~/Library/Keychains/login.keychain-db
 
 ```bash
 # View all available commands
+IMAGE_VERSION="2.3.0"
 make help
 
 # Build and push multi-platform image (version: latest)
 #make build
 
 # Build and push with a specific version
-make build VERSION="2.2.0"
+make build VERSION=$IMAGE_VERSION
 
 # Test build locally without pushing
 make test
@@ -90,8 +91,6 @@ This creates a builder instance that can build for multiple platforms simultaneo
 
 ### 5. Build and Push
 
-#### Option A: Using Make
-
 Build and push the multi-platform image:
 
 ```bash
@@ -99,60 +98,22 @@ Build and push the multi-platform image:
 make build
 
 # With specific version
-make build VERSION="2.2.0"
+make build VERSION=$IMAGE_VERSION
 ```
 
 This will:
 
 - Build for both `linux/amd64` and `linux/arm64`
-- Tag as both `vnijs/rsm-msba-k8s:VERSION` and `vnijs/rsm-msba-k8s:latest`
+- Tag as both `vnijs/rsm-podman:$IMAGE_VERSION` and `vnijs/rsm-podman:latest`
 - Push to Docker Hub
 - Create detailed build logs in `build-logs/`
-
-#### Option B: Using the Shell Script
-
-```bash
-# Build and push latest
-./scripts-mp/build-multiplatform.sh
-
-# Build and push specific version
-./scripts-mp/build-multiplatform.sh v1.5.0
-
-# Test build locally without pushing
-./scripts-mp/build-multiplatform.sh --test
-```
-
-#### Option C: Manual Docker Buildx
-
-```bash
-# Setup builder
-docker buildx create --name multiplatform-builder --driver docker-container --use
-docker buildx inspect --bootstrap
-
-# Build and push
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  --tag vnijs/rsm-msba-k8s:latest \
-  --tag vnijs/rsm-msba-k8s:v1.5.0 \
-  --build-arg DOCKERHUB_VERSION=v1.5.0 \
-  --push \
-  --progress=plain \
-  -f rsm-msba-k8s/Dockerfile \
-  .
-```
 
 ### 6. Verify the Build
 
 Inspect the multi-platform manifest:
 
 ```bash
-make inspect VERSION=v1.5.0
-```
-
-Or manually:
-
-```bash
-docker buildx imagetools inspect vnijs/rsm-msba-k8s:v1.5.0
+make inspect VERSION=$IMAGE_VERSION
 ```
 
 You should see both `linux/amd64` and `linux/arm64` platforms listed.
@@ -166,7 +127,7 @@ Before pushing to Docker Hub, test the build locally:
 make test
 
 # Run the test image
-docker run --rm -it vnijs/rsm-msba-k8s:test-build /bin/bash
+./launch-rsm-podman.sh
 ```
 
 ## Build Without Cache
@@ -174,7 +135,7 @@ docker run --rm -it vnijs/rsm-msba-k8s:test-build /bin/bash
 If you need a completely fresh build:
 
 ```bash
-make build-no-cache VERSION=v1.5.0
+make build-no-cache VERSION=$IMAGE_VERSION
 ```
 
 ## Build Logs
@@ -191,17 +152,14 @@ All builds create detailed logs in the `build-logs/` directory:
 ### Build a New Release
 
 ```bash
-# Set version
-VERSION=v1.6.0
-
 # Login if needed
 make login
 
 # Build and push
-make build VERSION=$VERSION
+make build VERSION=$IMAGE_VERSION
 
 # Verify
-make inspect VERSION=$VERSION
+make inspect VERSION=$IMAGE_VERSION
 ```
 
 ### Clean Up
@@ -252,28 +210,6 @@ If you see authentication errors:
    make test
    ```
 
-### Platform-Specific Issues
-
-To build for a specific platform only:
-
-```bash
-# AMD64 only
-docker buildx build \
-  --platform linux/amd64 \
-  --tag vnijs/rsm-msba-k8s:amd64-test \
-  --load \
-  -f rsm-msba-k8s/Dockerfile \
-  .
-
-# ARM64 only
-docker buildx build \
-  --platform linux/arm64 \
-  --tag vnijs/rsm-msba-k8s:arm64-test \
-  --load \
-  -f rsm-msba-k8s/Dockerfile \
-  .
-```
-
 ## Performance Notes
 
 - Multi-platform builds take 30-60 minutes
@@ -293,4 +229,4 @@ docker buildx build \
 - [Docker Buildx Documentation](https://docs.docker.com/buildx/working-with-buildx/)
 - [Multi-platform Images Guide](https://docs.docker.com/build/building/multi-platform/)
 - Build scripts: `scripts-mp/`
-- Main Dockerfile: `rsm-msba-k8s/Dockerfile`
+- Main Dockerfile: `rsm-podman/Dockerfile`

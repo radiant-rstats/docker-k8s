@@ -32,8 +32,7 @@ echo "Installing development tools..."
 apt -y install \
   git \
   git-lfs \
-  rsync \
-  pipx
+  rsync
 
 # System monitoring
 echo "Installing monitoring tools..."

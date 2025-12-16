@@ -95,5 +95,6 @@
       "WSL": {
         "path": "C:\\Windows\\System32\\wsl.exe"
       }
-    }
+    },
+    "terminal.integrated.enableImages": true
 }

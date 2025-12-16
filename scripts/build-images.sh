@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOCKERHUB_VERSION=2.1.0
-DOCKERHUB_USERNAME=vnijs
+IMAGE_VERSION=2.1.0
+IMAGE_USERNAME=vnijs
 UPLOAD="NO"
 # UPLOAD="YES"
 
@@ -20,7 +20,7 @@ docker_login() {
     fi
   elif [ -n "$DOCKER_TOKEN" ]; then
     echo "Logging in to Docker Hub using access token..."
-    if echo "$DOCKER_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin; then
+    if echo "$DOCKER_TOKEN" | docker login --username "$IMAGE_USERNAME" --password-stdin; then
       echo "Successfully authenticated with access token"
       return 0
     else
@@ -69,19 +69,19 @@ build () {
         --progress=plain \
         --load \
         --platform ${ARCH} \
-        --build-arg DOCKERHUB_VERSION="${DOCKERHUB_VERSION}" \
+        --build-arg IMAGE_VERSION="${IMAGE_VERSION}" \
         --no-cache \
-        --tag $DOCKERHUB_USERNAME/${LABEL}:latest \
-        --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION .
+        --tag $IMAGE_USERNAME/${LABEL}:latest \
+        --tag $IMAGE_USERNAME/${LABEL}:$IMAGE_VERSION .
     else
       # build with cache
       docker buildx build -f "${LABEL}/Dockerfile" \
         --progress=plain \
         --load \
         --platform ${ARCH} \
-        --build-arg DOCKERHUB_VERSION="${DOCKERHUB_VERSION}" \
-        --tag $DOCKERHUB_USERNAME/${LABEL}:latest \
-        --tag $DOCKERHUB_USERNAME/${LABEL}:$DOCKERHUB_VERSION .
+        --build-arg IMAGE_VERSION="${IMAGE_VERSION}" \
+        --tag $IMAGE_USERNAME/${LABEL}:latest \
+        --tag $IMAGE_USERNAME/${LABEL}:$IMAGE_VERSION .
     fi
   } || {
     echo "-----------------------------------------------------------------------"
@@ -109,21 +109,21 @@ build () {
     echo "Tagging and pushing ${LABEL}..."
 
     # Tag the images
-    if ! docker tag $DOCKERHUB_USERNAME/${LABEL}:latest $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}; then
+    if ! docker tag $IMAGE_USERNAME/${LABEL}:latest $IMAGE_USERNAME/${LABEL}:${IMAGE_VERSION}; then
       echo "ERROR: Failed to tag image"
       exit 1
     fi
 
     # Push versioned image
-    echo "Pushing ${LABEL}:${DOCKERHUB_VERSION}..."
-    if ! docker push $DOCKERHUB_USERNAME/${LABEL}:${DOCKERHUB_VERSION}; then
+    echo "Pushing ${LABEL}:${IMAGE_VERSION}..."
+    if ! docker push $IMAGE_USERNAME/${LABEL}:${IMAGE_VERSION}; then
       echo "ERROR: Failed to push versioned image"
       exit 1
     fi
 
     # Push latest image
     echo "Pushing ${LABEL}:latest..."
-    if ! docker push $DOCKERHUB_USERNAME/${LABEL}:latest; then
+    if ! docker push $IMAGE_USERNAME/${LABEL}:latest; then
       echo "ERROR: Failed to push latest image"
       exit 1
     fi
