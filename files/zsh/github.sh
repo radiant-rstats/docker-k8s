@@ -10,7 +10,7 @@ read -p "Enter your @ucsd.edu email address for Git commits: " git_email
 
 
 git config --global user.email "$git_email"
-git config --global user.name "rsm-${git_email%@ucsd.edu}"
+git config --global user.name "${git_email%@ucsd.edu}"
 git config --global pull.rebase false
 git config --global init.defaultBranch main
 
